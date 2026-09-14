@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'apiSimpegnas' => [
+        'key' => env('API_SIMPEGNAS'),
+    ],
+
 ];

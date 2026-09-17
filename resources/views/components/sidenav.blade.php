@@ -81,7 +81,7 @@
                     <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Dashboard PIC BKPSDM</div> <i
                         class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a></li>
-            <li><a href="{{ url('/pic') }}"
+            <li><a href="{{ url('/pic/dashboard') }}"
                     class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
                     <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> PIC BKPSDM</div> <i
                         class="fa-solid fa-chevron-right text-[10px]"></i>

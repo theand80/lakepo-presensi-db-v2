@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('import_apis', function (Blueprint $table) {
+        Schema::create('data_absens', function (Blueprint $table) {
             $table->id();
             $table->string('nip'); //""
             $table->string('nama'); //""
@@ -22,9 +22,6 @@ return new class extends Migration
             $table->string('unor_simpegnas')->nullable(); //"BKPSDM"
             $table->string('unor_simpegnas_id')->nullable(); //"123-abc-234"
 
-            $table->string('tahun')->nullable(); //"2026"
-            $table->string('bulan')->nullable(); //"8"
-            $table->string('day')->nullable(); //13
             // ---
             // $table->string('checkIn');
             $table->string('checkIn_work_from'); //"WFO"
@@ -65,6 +62,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('import_apis');
+        Schema::dropIfExists('data_absens');
     }
 };

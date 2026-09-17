@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ImportApi extends Model
+class DataAbsen extends Model
 {
     protected $fillable = [
         'nip',
@@ -15,9 +15,6 @@ class ImportApi extends Model
 
         'unor_simpegnas',
         'unor_simpegnas_id',
-        'tahun',
-        'bulan',
-        'day',
         // ---
         // 'checkIn',
         'checkIn_work_from',

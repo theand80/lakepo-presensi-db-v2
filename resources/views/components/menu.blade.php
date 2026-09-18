@@ -14,7 +14,7 @@
         
         <a href="http://" class="bg-green-600 py-2 px-4 text-white">Import Excel</a>
         <a href="{{ url('/admin/lihatRekapBulananByKantor') }}" class="bg-gray-600 py-2 px-4 text-white">dd Import Data Absen dari API Simpegnas</a>
-        <a href="http://" class="bg-sky-600 py-2 px-4 text-white">Import Data Absen dari API Simpegnas</a>
+        <a href="{{ url('/admin/simpanRekapBulananByKantor') }}" class="bg-sky-600 py-2 px-4 text-white">Import Data Absen dari API Simpegnas</a>
 
     </div>
 

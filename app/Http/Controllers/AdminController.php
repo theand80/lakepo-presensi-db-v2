@@ -35,7 +35,8 @@ class AdminController extends Controller
             'presensi-key' => config('services.apiSimpegnas.key'),
         ])->get('https://api-absensi.simpegnas.go.id/absensi/api/get/kantor');
 
-        $data = $response->json()['data']['kantor']; //data
+        $datas = $response->json()['data']['kantor']; //data
+        $data = array_slice($datas, 73, 5);
 
         DB::transaction(function () use ($data) {
             $dataToUpsert = [];
@@ -47,8 +48,8 @@ class AdminController extends Controller
             }
             ListKantor::upsert(
                 $dataToUpsert,
-                ['id_kantor', 'nama_kantor'],
-                ['created_at', 'updated_at']
+                ['id_kantor'],
+                ['nama_kantor', 'updated_at']
             );
         });
 

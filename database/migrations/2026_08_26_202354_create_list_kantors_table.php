@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('list_kantors', function (Blueprint $table) {
             $table->id();
-            $table->string('id_kantor');
+            $table->string('id_kantor')->unique();
+            // $table->unsignedBigInteger('id_kantor')->unique();
             $table->string('nama_kantor');
             $table->string('bulan_1')->nullable();
             $table->string('bulan_2')->nullable();

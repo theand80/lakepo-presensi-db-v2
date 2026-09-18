@@ -12,9 +12,10 @@
         <a href="{{ url('/admin/simpanListKantorkeDB') }}" class="bg-fuchsia-600 py-2 px-4 text-white">simpanListKantorDariApikeDB</a>
         <a href="{{ url('/admin/listKantorDariDBIndex') }}" class="bg-teal-600 py-2 px-4 text-white">List Kantor Dari DB</a>
         
-        <a href="http://" class="bg-green-600 py-2 px-4 text-white">Import Excel</a>
+        <a href="{{ url('/admin/data-asn') }}" class="bg-green-600 py-2 px-4 text-white">Data ASN yg diimport dari Excel</a>
         <a href="{{ url('/admin/lihatRekapBulananByKantor') }}" class="bg-gray-600 py-2 px-4 text-white">dd Import Data Absen dari API Simpegnas</a>
         <a href="{{ url('/admin/simpanRekapBulananByKantor') }}" class="bg-sky-600 py-2 px-4 text-white">Import Data Absen dari API Simpegnas</a>
+        <a href="#" class="bg-sky-600 py-2 px-4 text-white">Hitung</a>
 
     </div>
 

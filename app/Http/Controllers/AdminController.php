@@ -46,14 +46,17 @@ class AdminController extends Controller
                     'nama_kantor' => $item['nama_kantor'],
                 ];
             }
-            ListKantor::upsert(
-                $dataToUpsert,
-                ['id_kantor'],
-                ['nama_kantor', 'updated_at']
-            );
+
+            if (!empty($dataToUpsert)) {
+                ListKantor::upsert(
+                    $dataToUpsert,
+                    ['id_kantor'],
+                    ['nama_kantor', 'updated_at']
+                );
+            };
         });
 
-        return redirect('/admin/listKantorDariApiIndex')->with('status', 'List Kantor berhasil disimpan ke DB');
+        return redirect('/admin/listKantorDariDBIndex')->with('status', 'List Kantor berhasil disimpan ke DB');
     }
 
     public function listKantorDariDBIndex()
@@ -101,7 +104,7 @@ class AdminController extends Controller
         // return array_slice($semuaDataKantor, 18, 5);
     }
 
-    public function lihatRekapBulananByKantor()
+    public function lihatDataAbsenDariApi()
     {
         //
         $nama_kantor = 'BKPSDM';
@@ -115,21 +118,23 @@ class AdminController extends Controller
         return $data;
     }
 
-    public function simpanRekapBulananByKantor(Request $request)
+    public function simpanDataAbsenDariApiKeDB(Request $request)
     {
         //
-        $request->validate([
-            'kantor_id' => 'required',
-            'kantor_nama' => 'required',
-            'bulan' => 'required|integer|min:1|max:12',
-        ]);
+        // $request->validate([
+        //     'kantor_id' => 'required',
+        //     'kantor_nama' => 'required',
+        //     'bulan' => 'required|integer|min:1|max:12',
+        // ]);
 
-        $id = $request['kantor_id'];
-        $nama_kantor = $request['kantor_nama'];
-        $tgl = '2026-' . $request['bulan']; //
+        $id = $request['kantor_id'] ?? 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e';
+        $nama_kantor = $request['kantor_nama'] ?? 'Badan Kepegawaian dan Pengembangan Sumber Daya Manusia test';
+        $tgl = '2026-' . $request['bulan'] ?? '2026-8'; //
 
 
-        $data = $this->__rekapBulananByKantor($id, $tgl);
+        $datas = $this->__rekapBulananByKantor($id, $tgl);
+
+        $data = array_slice($datas, 1, 3);
 
         // dd($data);
         // return $data;
@@ -192,8 +197,6 @@ class AdminController extends Controller
                 }
             }
 
-            // dd($dataToUpsert);
-
             // 3. Eksekusi Upsert Massal (Tetap menggunakan acuan unique gabungan)
             if (!empty($dataToUpsert)) {
                 // ImportApi::insert($dataToUpsert);
@@ -229,11 +232,19 @@ class AdminController extends Controller
             }
         });
 
-        DB::table('list_kantors')
-            ->where('id_kantor', $request['kantor_id'])
-            ->update(['bulan_' . $request['bulan'] => '1']);
+        // DB::table('list_kantors')
+        //     ->where('id_kantor', $request['kantor_id'])
+        //     ->update(['bulan_' . $request['bulan'] => '1']);
 
         return redirect('/')->with('status', 'Data berhasil disimpan');
+    }
+
+    // -----------
+
+    public function listDataAsn()
+    {
+        //
+        return view('admin.importDataAsnDariExcel');
     }
 
 

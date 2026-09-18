@@ -26,6 +26,7 @@ return new class extends Migration
             // $table->string('checkIn');
             $table->string('checkIn_work_from'); //"WFO"
             $table->string('checkIn_status'); //"HN"
+            $table->string('checkIn_status_script')->nullable(); //"HN"
             $table->string('checkIn_status_change')->nullable(); //"HN"
             $table->string('checkIn_time_with_timezone'); //"09:20:36"
             $table->string('checkIn_time_with_timezone_change')->nullable(); //"07:20:36"
@@ -34,6 +35,7 @@ return new class extends Migration
             // $table->string('checkRest');
             $table->string('checkRest_work_from');
             $table->string('checkRest_status');
+            $table->string('checkRest_status_script')->nullable();
             $table->string('checkRest_status_change')->nullable();
             $table->string('checkRest_time_with_timezone');
             $table->string('checkRest_time_with_timezone_change')->nullable();
@@ -42,12 +44,14 @@ return new class extends Migration
             // $table->string('checkOut');
             $table->string('checkOut_work_from');
             $table->string('checkOut_status');
+            $table->string('checkOut_status_script')->nullable();
             $table->string('checkOut_status_change')->nullable();
             $table->string('checkOut_time_with_timezone');
             $table->string('checkOut_time_with_timezone_change')->nullable();
             $table->string('checkOut_late');
             // ---
             $table->string('status'); //"TK"
+            $table->string('status_script')->nullable(); //"TK"
             $table->string('status_change')->nullable(); //"TK"
             $table->string('late'); //0
             $table->string('tak');

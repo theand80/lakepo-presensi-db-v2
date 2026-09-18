@@ -29,22 +29,6 @@ class AdminController extends Controller
         return view('admin.listKantorDariApi', ['data' => $listKantor]);
     }
 
-    private function __listKantor()
-    {
-        $response = Http::withHeaders([
-            'presensi-key' => config('services.apiSimpegnas.key'),
-        ])->get('https://api-absensi.simpegnas.go.id/absensi/api/get/kantor');
-
-        // dd($response->json());
-        $status = $response->status(); //true
-        $responseCode = $response->reason(); //200
-        $data = $response->json()['data']['kantor']; //data
-        // $listKantor = array_slice($data, 73, 25);
-
-        // return $listKantor;
-        return $data;
-    }
-
     public function simpanListKantorkeDB()
     {
         $response = Http::withHeaders([
@@ -70,11 +54,10 @@ class AdminController extends Controller
 
         return redirect('/admin/listKantorDariApiIndex')->with('status', 'List Kantor berhasil disimpan ke DB');
     }
+
     public function listKantorDariDBIndex()
     {
         $listKantor = ListKantor::all();
-        // return $listKantor;
-        // dd($listKantor->nama_kantor);
 
         return view('admin.listKantorDariApi', ['data' => $listKantor]);
     }
@@ -127,8 +110,8 @@ class AdminController extends Controller
 
         $data = $this->__rekapBulananByKantor($id, $tgl);
 
-        dd($data);
-        // return $data;
+        // dd($data);
+        return $data;
     }
 
     public function simpanRekapBulananByKantor(Request $request)
@@ -149,8 +132,6 @@ class AdminController extends Controller
 
         // dd($data);
         // return $data;
-
-
         DB::transaction(function () use ($data, $nama_kantor, $id) {
             $dataToUpsert = [];
 
@@ -251,7 +232,7 @@ class AdminController extends Controller
             ->where('id_kantor', $request['kantor_id'])
             ->update(['bulan_' . $request['bulan'] => '1']);
 
-        return redirect('/import-api')->with('status', 'Data berhasil disimpan');
+        return redirect('/')->with('status', 'Data berhasil disimpan');
     }
 
 

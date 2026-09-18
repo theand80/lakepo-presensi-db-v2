@@ -15,12 +15,17 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/admin');
 
 Route::get('/admin', [AdminController::class, 'index']);
+
 Route::get('/admin/listKantorDariApiIndex', [AdminController::class, 'listKantorDariApiIndex']);
 Route::get('/admin/simpanListKantorkeDB', [AdminController::class, 'simpanListKantorkeDB']);
 Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorDariDBIndex']);
+
 Route::get('/admin/lihatRekapBulananByKantor', [AdminController::class, 'lihatRekapBulananByKantor']);
 Route::get('/admin/simpanRekapBulananByKantor', [AdminController::class, 'simpanRekapBulananByKantor']);
 
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);
 
-Route::get('/pic/dashboard', [PicController::class, 'index']);
+// ------------
+Route::get('/pic/dashboard/pic', [PicController::class, 'index']);
+Route::get('/pic/detail', [PicController::class, 'show']);
+Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);

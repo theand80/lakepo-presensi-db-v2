@@ -12,7 +12,7 @@
                                 <select id="filterKantor" name="filterNamaKantor"
                                     class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none bg-white">
                                     <option value="">Semua Kantor</option>
-                                    @foreach ($listKantor as $kantor)
+                                    @foreach ([] as $kantor)
                                         <option value="{{ $kantor }}" {{ ($selectedKantor ?? '') == $kantor ? 'selected' : '' }}>
                                             {{ $kantor }}
                                         </option>
@@ -21,7 +21,7 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 <label for="filterBulan" class="text-xs font-medium text-slate-600">Periode:</label>
-                                <input type="month" id="filterBulan" value="{{ $selectedMonth }}" name="month"
+                                <input type="month" id="filterBulan" value="{{ $selectedMonth ?? '' }}" name="month"
                                     class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none">
                             </div>
                             <div class="flex items-center gap-2">
@@ -67,7 +67,7 @@
                                     </th>
 
                                     <!-- Colspan dikali 4 karena setiap tanggal dipecah menjadi 4 kolom komponen presensi -->
-                                    <th colspan="<?= $jumlah_hari * 3; ?>" style="padding: 6px; text-align:center;">
+                                    <th colspan="<?= 30 * 3; ?>" style="padding: 6px; text-align:center;">
                                         Tanggal</th>
 
                                     <th rowspan="3"
@@ -78,31 +78,32 @@
                                 <!-- Baris 2: Angka Kalender Tanggal (1 sampai 30/31) -->
 
                                 <tr class="bg-slate-100">
-                                    <?php for ($hari = 1; $hari <= $jumlah_hari; $hari++): ?>
+                                    @php for ($hari = 1; $hari <= 30; $hari++): @endphp
                                     <th colspan="3"
                                         class="px-4 py-3 font-semibold text-center border border-r-2 border-gray-200">
                                         {{-- style="border: 1px solid green; padding: 4px; text-align:center;
                                         font-weight: bold; font-size: 13px; background-color: #cbd5e1;"> --}}
-                                        <?= $hari; ?>
+                                        <?= $hari ?? ''; ?>
                                     </th>
-                                    <?php endfor; ?>
+                                    @php endfor; @endphp
                                 </tr>
 
                                 <!-- Baris 3: Komponen Presensi Per Tanggal -->
-                                <tr class="bg-slate-50 text-[9px]">
-                                    <?php for ($hari = 1; $hari <= $jumlah_hari; $hari++): ?>
+                                {{-- <tr class="bg-slate-50 text-[9px]">
+                                    @php for ($hari = 1; $hari <= 30; $hari++): @endphp
                                     <th class="border border-gray-200 p-2 text-center text-[#1e3a8a]" title="Check In">
                                         Status API</th>
                                     <th class="border border-gray-200 p-2 text-center text-[#b45309]"
                                         title="Check Rest">Status Edited DB</th>
                                     <th class="border border-gray-200 border-r-2 p-2 text-center text-green-600"
                                         title="Check Rest">Status Booth</th>
-                                    <?php endfor; ?>
-                                </tr>
+                                    @php endfor; @endphp
+                                </tr> --}}
                             </thead>
 
                             <tbody>
-                                @forelse($data as $nip => $records)
+                                @forelse([] as $nip => $records)
+                                {{-- @forelse($data as $nip => $records) --}}
                                     @php
                                         $asn = $asnMap[$nip] ?? null;
                                         $totalDays = $records->count();

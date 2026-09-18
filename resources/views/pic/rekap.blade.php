@@ -17,22 +17,20 @@
                                 <select id="filterKantor" name="filterNamaKantor"
                                     class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none bg-white">
                                     <option value="">Semua Kantor</option>
-                                    {{-- <option value="Dinas Pemberdayaan Perempuan dan Perlindungan Anak">Dinas
-                                        Pemberdayaan Perempuan dan Perlindungan Anak</option> --}}
+                                    <option value="BKPSDM">BKPSDM</option>
+                                    <option value="Dinas Pemberdayaan Perempuan dan Perlindungan Anak">Dinas
+                                        Pemberdayaan Perempuan dan Perlindungan Anak</option>
                                     {{-- @foreach ($listKantor as $kantor)
-                                    <option value="{{ $kantor }}">{{ $kantor }}</option>
-                                    @endforeach --}}
-                                    @foreach ($listKantor as $kantor)
                                         <option value="{{ $kantor }}" {{ ($selectedKantor ?? '') == $kantor ? 'selected' : '' }}>
                                             {{ $kantor }}
                                         </option>
-                                    @endforeach
+                                    @endforeach --}}
                                 </select>
                             </div>
                             <div class="flex items-center gap-2">
                                 <label for="filterBulan" class="text-xs font-medium text-slate-600">Periode:</label>
-                                {{-- <input type="month" id="filterBulan" value="2026-07" name="month" --}} <input
-                                    type="month" id="filterBulan" value="{{ $selectedMonth }}" name="month"
+                                <input type="month" id="filterBulan" value="2026-07" name="month" 
+                                {{-- <input type="month" id="filterBulan" value="{{ $selectedMonth }}" name="month" --}}
                                     class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none">
                             </div>
                             <div class="flex items-center gap-2">
@@ -62,7 +60,8 @@
                                     round(($summary['totalHadir'] / ($summary['totalASN'] * 30)) * 100) : 0 }}%
                                 </span> --}}
                                 <span
-                                    class="text-2xl font-bold text-slate-800">{{ $summary['rataRata'] ?? '0' }}%</span>
+                                    {{-- class="text-2xl font-bold text-slate-800">{{ $summary['rataRata'] ?? '0' }}%</span> --}}
+                                    class="text-2xl font-bold text-slate-800">12%</span>
                                 <span class="text-xs text-slate-500">Rata-rata</span>
                             </div>
                         </div>
@@ -74,7 +73,7 @@
                             </div>
                             <div>
                                 <p class="text-xs text-slate-500">Total ASN</p>
-                                <p class="text-lg font-bold text-green-700">{{ $summary['totalASN'] ?? '' }}</p>
+                                <p class="text-lg font-bold text-green-700">32</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 bg-blue-50 rounded-lg p-3">
@@ -83,7 +82,7 @@
                             </div>
                             <div>
                                 <p class="text-xs text-slate-500">Hadir (H+HN)</p>
-                                <p class="text-lg font-bold text-blue-700">{{ $summary['totalHadir'] ?? '' }}</p>
+                                <p class="text-lg font-bold text-blue-700">12</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 bg-orange-50 rounded-lg p-3">
@@ -92,7 +91,7 @@
                             </div>
                             <div>
                                 <p class="text-xs text-slate-500">Cuti (CT)</p>
-                                <p class="text-lg font-bold text-orange-700">{{ $summary['totalCuti'] ?? '' }}</p>
+                                <p class="text-lg font-bold text-orange-700">3</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3 bg-red-50 rounded-lg p-3">
@@ -101,7 +100,7 @@
                             </div>
                             <div>
                                 <p class="text-xs text-slate-500">Tidak Hadir</p>
-                                <p class="text-lg font-bold text-red-700">{{ $summary['totalTidakHadir'] ?? '' }}</p>
+                                <p class="text-lg font-bold text-red-700">23</p>
                             </div>
                         </div>
                     </div>
@@ -114,9 +113,9 @@
                             labels: ['Hadir (H)', 'Cuti (CT)', 'Tidak Hadir (TK)'],
                             datasets: [{
                                 data: [
-                                    {{ $summary['totalHadir'] ?? 0 }},
-                                    {{ $summary['totalCuti'] ?? 0 }},
-                                    {{ $summary['totalTidakHadir'] ?? 0 }},
+                                    12,
+                                    12,
+                                    76,
                                 ],
                                 backgroundColor: ['#16a34a', '#f97316', '#94a3b8'],
                                 borderWidth: 0
@@ -152,7 +151,7 @@
                         <span class="font-bold text-xs uppercase tracking-wide text-slate-600">List Data ASN</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <a href="{{ url('/pic/export?filterNamaKantor=' . urlencode($selectedKantor) . '&month=' . $selectedMonth) }}"
+                        <a href=""
                             class="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg transition-colors">
                             <i class="fa-solid fa-download"></i> Download Rekapan
                         </a>
@@ -202,7 +201,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($data as $item)
+                            {{-- @forelse ($data as $item)
                                 <tr class="bg-white border-b border-slate-100 hover:bg-slate-50"
                                     data-persentase="{{ $item['persentase'] }}">
                                     <td class="p-4">
@@ -271,15 +270,21 @@
                                         <a href="{{ url('/pic/detail/' . $item['nip'] . '/' . $selectedMonth . '/' . $item['persentase'] . '') }}"
                                             class="font-medium text-green-600 hover:underline">Detail</a>
                                     </td>
-                                </tr>
-                            @empty
+                                </tr> --}}
+                            {{-- @empty
                                 <tr>
                                     <td colspan="30" class="px-4 py-8 text-center text-slate-400">
                                         Tidak ada data ditemukan.
                                     </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+                                </tr> --}}
+                            {{-- @endforelse --}}
+
+                            <tr>
+                                <td colspan="30" class="px-4 py-8 text-center text-slate-400">
+                                    Tidak ada data ditemukan.
+                                </td>
+                            </tr>
+                    </tbody>
                     </table>
                 </div>
                 <nav class="flex items-center flex-col sm:flex-row justify-between p-4 border-t border-slate-200"

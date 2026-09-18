@@ -19,21 +19,12 @@ class PicController extends Controller
     // index: rekap dari data lokal import_api
     public function index(Request $request)
     {
-        $result = [];
+        return view('pic.rekap');
+    }
 
-        $listKantor = DataAbsen::query()
-            ->whereNotNull('unor_simpegnas')
-            ->where('unor_simpegnas', '!=', '')
-            ->distinct()
-            ->orderBy('unor_simpegnas')
-            ->pluck('unor_simpegnas');
-
-        $data = $result['data'];
-        $summary = $result['summary'];
-        $selectedKantor = $result['selectedKantor'];
-        $selectedMonth = $result['selectedMonth'];
-
-        return view('pic.index', compact('listKantor', 'data', 'summary', 'selectedKantor', 'selectedMonth'));
+    public function bpk(Request $request)
+    {
+        return view('pic.bpk');
     }
 
     /**
@@ -56,66 +47,67 @@ class PicController extends Controller
      * Display the specified resource.
      */
     // rakapByNip
-    public function show(string $nip, $bulan, $persen)
+    public function show()
     {
-        \Carbon\Carbon::setLocale('id');
+        // \Carbon\Carbon::setLocale('id');
 
-        $asn = DataAsn::where('nip', $nip)->first()
-            ?: new DataAsn([
-                'nip'              => $nip,
-                'pangkat'          => '',
-                'golongan'         => '',
-                'jabatan'          => '-',
-                'status'           => '-',
-                'unor_siasn_induk' => '-',
-            ]);
+        // $asn = DataAsn::where('nip', $nip)->first()
+        //     ?: new DataAsn([
+        //         'nip'              => $nip,
+        //         'pangkat'          => '',
+        //         'golongan'         => '',
+        //         'jabatan'          => '-',
+        //         'status'           => '-',
+        //         'unor_siasn_induk' => '-',
+        //     ]);
 
-        $records = DataAbsen::where('nip', $nip)
-            ->where('date', 'like', $bulan . '%')
-            ->orderBy('date')
-            ->get();
+        // $records = DataAbsen::where('nip', $nip)
+        //     ->where('date', 'like', $bulan . '%')
+        //     ->orderBy('date')
+        //     ->get();
 
-        $presensi = [];
-        foreach ($records as $rec) {
-            $presensi[] = [
-                'id'        => $rec->id,
-                'tgl'       => $rec->date,
-                'jam_pagi'  => $rec->checkIn_time_with_timezone_change ?: $rec->checkIn_time_with_timezone,
-                'jam_siang' => $rec->checkRest_time_with_timezone_change ?: $rec->checkRest_time_with_timezone,
-                'jam_sore'  => $rec->checkOut_time_with_timezone_change ?: $rec->checkOut_time_with_timezone,
-                'pagi'      => $rec->checkIn_status_change ?: $rec->checkIn_status,
-                'siang'     => $rec->checkRest_status_change ?: $rec->checkRest_status,
-                'sore'      => $rec->checkOut_status_change ?: $rec->checkOut_status,
-                'keterangan' => $rec->status_change ?: $rec->status ?? '-',
-                'change_applied' => (bool) ($rec->status_change
-                    || $rec->checkIn_status_change
-                    || $rec->checkIn_time_with_timezone_change
-                    || $rec->checkRest_status_change
-                    || $rec->checkRest_time_with_timezone_change
-                    || $rec->checkOut_status_change
-                    || $rec->checkOut_time_with_timezone_change),
-                'change'    => [
-                    'status_change'                          => $rec->status_change,
-                    'checkIn_status_change'                  => $rec->checkIn_status_change,
-                    'checkIn_time_with_timezone_change'      => $rec->checkIn_time_with_timezone_change,
-                    'checkRest_status_change'                => $rec->checkRest_status_change,
-                    'checkRest_time_with_timezone_change'    => $rec->checkRest_time_with_timezone_change,
-                    'checkOut_status_change'                 => $rec->checkOut_status_change,
-                    'checkOut_time_with_timezone_change'     => $rec->checkOut_time_with_timezone_change,
-                ],
-            ];
-        }
+        // $presensi = [];
+        // foreach ($records as $rec) {
+        //     $presensi[] = [
+        //         'id'        => $rec->id,
+        //         'tgl'       => $rec->date,
+        //         'jam_pagi'  => $rec->checkIn_time_with_timezone_change ?: $rec->checkIn_time_with_timezone,
+        //         'jam_siang' => $rec->checkRest_time_with_timezone_change ?: $rec->checkRest_time_with_timezone,
+        //         'jam_sore'  => $rec->checkOut_time_with_timezone_change ?: $rec->checkOut_time_with_timezone,
+        //         'pagi'      => $rec->checkIn_status_change ?: $rec->checkIn_status,
+        //         'siang'     => $rec->checkRest_status_change ?: $rec->checkRest_status,
+        //         'sore'      => $rec->checkOut_status_change ?: $rec->checkOut_status,
+        //         'keterangan' => $rec->status_change ?: $rec->status ?? '-',
+        //         'change_applied' => (bool) ($rec->status_change
+        //             || $rec->checkIn_status_change
+        //             || $rec->checkIn_time_with_timezone_change
+        //             || $rec->checkRest_status_change
+        //             || $rec->checkRest_time_with_timezone_change
+        //             || $rec->checkOut_status_change
+        //             || $rec->checkOut_time_with_timezone_change),
+        //         'change'    => [
+        //             'status_change'                          => $rec->status_change,
+        //             'checkIn_status_change'                  => $rec->checkIn_status_change,
+        //             'checkIn_time_with_timezone_change'      => $rec->checkIn_time_with_timezone_change,
+        //             'checkRest_status_change'                => $rec->checkRest_status_change,
+        //             'checkRest_time_with_timezone_change'    => $rec->checkRest_time_with_timezone_change,
+        //             'checkOut_status_change'                 => $rec->checkOut_status_change,
+        //             'checkOut_time_with_timezone_change'     => $rec->checkOut_time_with_timezone_change,
+        //         ],
+        //     ];
+        // }
 
-        $data = [
-            'nip'      => $nip,
-            'nama'     => $records->first()->nama ?? $asn->nama,
-            'presensi' => $presensi,
-        ];
+        // $data = [
+        //     'nip'      => $nip,
+        //     'nama'     => $records->first()->nama ?? $asn->nama,
+        //     'presensi' => $presensi,
+        // ];
 
-        $totalHari  = count($presensi);
-        $totalHadir = $records->filter(fn($r) => in_array($r->status_change ?: $r->status, ['H', 'HN']))->count();
+        // $totalHari  = count($presensi);
+        // $totalHadir = $records->filter(fn($r) => in_array($r->status_change ?: $r->status, ['H', 'HN']))->count();
 
-        return view('pic.detail_RekapByNip', compact('asn', 'data', 'bulan', 'persen', 'totalHari', 'totalHadir'));
+        // return view('pic.detail_RekapByNip', compact('asn', 'data', 'bulan', 'persen', 'totalHari', 'totalHadir'));
+        return view('pic.detail_RekapByNip');
     }
 
     /**

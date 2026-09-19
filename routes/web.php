@@ -22,8 +22,9 @@ Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorD
 
 Route::get('/admin/lihatRekapBulananByKantor', [AdminController::class, 'lihatDataAbsenDariApi']);
 Route::get('/admin/simpanRekapBulananByKantor', [AdminController::class, 'simpanDataAbsenDariApiKeDB']);
-//Route::get('/admin/simpanRekapBulananByKantor', [AdminController::class, 'lihatDataAbsenDariDB']);
+//Route::get('/admin/lihatDataAbsenDariDB', [AdminController::class, 'lihatDataAbsenDariDB']);
 
+Route::get('/admin/lihatRekapBulananByNip', [AdminController::class, 'show']);
 
 // impord dari Excel
 Route::get('/admin/data-asn', [AdminController::class, 'listDataAsn']);

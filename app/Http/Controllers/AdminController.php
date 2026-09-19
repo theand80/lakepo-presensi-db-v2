@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataAbsen;
+use App\Models\JamReferensi;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Models\ListKantor;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -24,7 +26,9 @@ class AdminController extends Controller
         ])->get('https://api-absensi.simpegnas.go.id/absensi/api/get/kantor');
 
         $data = $response->json()['data']['kantor']; //data
-        $listKantor = array_slice($data, 73, 5);
+
+        // $listKantor = array_slice($data, 73, 5);
+        $listKantor=$data;
 
         return view('admin.listKantorDariApi', ['data' => $listKantor]);
     }
@@ -68,7 +72,6 @@ class AdminController extends Controller
 
     private function __rekapBulananByKantor($id, $month)
     {
-
         // 1. Pecah bulan dan tahun
         $tahun = explode("-", $month)[0];
         $bulan = explode("-", $month)[1];
@@ -99,7 +102,7 @@ class AdminController extends Controller
         }
 
         // 7. Kembalikan semua data yang sudah utuh berkumpul
-
+        // dd($semuaDataKantor[1]);
         return $semuaDataKantor;
         // return array_slice($semuaDataKantor, 18, 5);
     }
@@ -114,8 +117,8 @@ class AdminController extends Controller
 
         $data = $this->__rekapBulananByKantor($id, $tgl);
 
-        // dd($data);
-        return $data;
+        dd($data[0]);
+        // return $data;
     }
 
     public function simpanDataAbsenDariApiKeDB(Request $request)
@@ -129,16 +132,25 @@ class AdminController extends Controller
 
         $id = $request['kantor_id'] ?? 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e';
         $nama_kantor = $request['kantor_nama'] ?? 'Badan Kepegawaian dan Pengembangan Sumber Daya Manusia test';
-        $tgl = '2026-' . $request['bulan'] ?? '2026-8'; //
 
+        // $tgl = '2026-' . $request['bulan'] ?? '2026-07'; //
+        
+        // $id = $request['kantor_id'] ?? 'fd7277d4-c35d-4de5-a479-1adad7cfceed';
+        // $nama_kantor = $request['kantor_nama'] ?? 'Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu - Kantor test';
+
+        $tgl = '2026-07'; //
 
         $datas = $this->__rekapBulananByKantor($id, $tgl);
 
-        $data = array_slice($datas, 1, 3);
+        // dd($datas);
+        // dd($datas[1]['presensi']);
+
+        $data = array_slice($datas, 2, 3);
 
         // dd($data);
         // return $data;
         DB::transaction(function () use ($data, $nama_kantor, $id) {
+
             $dataToUpsert = [];
 
             // Loop Tingkat 1: Mengambil employee_id
@@ -161,6 +173,181 @@ class AdminController extends Controller
                     // Gabungkan menjadi format tanggal standar SQL: YYYY-MM-DD
                     $fullDate = "{$tahun}-{$bulanFormat}-{$dayFormat}";
 
+                    // Reset setiap kali loop presensi
+                    $checkIn_status_script = null;
+                    if (!empty($presensi['checkIn']['time_with_timezone'])) {
+                        $checkInTime = Carbon::parse(
+                            $presensi['checkIn']['time_with_timezone']
+                        );
+                        $jam = $checkInTime->format('H:i:s');
+                        if ($jam > '09:00:00') {
+                            $checkIn_status_script = 'TM4';
+                        } elseif ($jam > '08:30:00') {
+                            $checkIn_status_script = 'TM3';
+                        } elseif ($jam > '08:00:00') {
+                            $checkIn_status_script = 'TM2';
+                        } elseif ($jam > '07:30:00') {
+                            $checkIn_status_script = 'TM1';
+                        } elseif ($jam < '07:30:00') {
+                            $checkIn_status_script = 'PGN';
+                        }
+                    }
+
+                    $checkOut_status_script = null;
+                    if (!empty($presensi['checkOut']['time_with_timezone'])) {
+                        $jamCheckOut = Carbon::parse(
+                            $presensi['checkOut']['time_with_timezone']
+                        )->format('H:i:s');
+                        if ($jamCheckOut < '14:30:00') {
+                            $checkOut_status_script = 'CP4';
+                        } elseif ($jamCheckOut >= '14:30:00' && $jamCheckOut < '15:00:00') {
+                            $checkOut_status_script = 'CP3';
+                        } elseif ($jamCheckOut >= '15:00:00' && $jamCheckOut < '15:30:00') {
+                            $checkOut_status_script = 'CP2';
+                        } elseif ($jamCheckOut >= '15:30:00' && $jamCheckOut < '16:00:00') {
+                            $checkOut_status_script = 'CP1';
+                        } elseif ($jamCheckOut >= '16:00:00') {
+                            $checkOut_status_script = 'PLN';
+                        }
+                    }
+
+                    $kodeAbsen = [
+                                'H', 'HN','DL','TB','CT','CM','CB','CS','CAP','CTLN','CH','TK','TAS','TM1','TM2','TM3','TMM',
+                                'PC1','PC2','PC3','PCM','TAK','TM1-PC1','TM1-PC2','TM1-PC3','TM1-PCM','TM2-PC1','TM2-PC2','TM2-PC3','TM2-PCM',
+                                'TM3-PC1','TM3-PC2','TM3-PC3','TM3-PCM','TMM-PC1','TMM-PC2','TMM-PC3',
+                                //
+                                'TM1-SN','TM2-SN','TM3-SN','TMM-SN','PN-PC1','PN-PC2','PN-PC3','PN-PCM',
+                            ];
+
+                    $status_script = null;
+
+                    if (empty($checkIn_status_script) && empty($checkOut_status_script)) {
+                        $status_script = 'TK';
+                    }
+
+                    if (empty($checkIn_status_script) && $checkOut_status_script == 'PLN') {
+                        $status_script = 'TAD-PLN';
+                    }
+                    if (empty($checkIn_status_script) && $checkOut_status_script == 'CP1') {
+                        $status_script = 'TAD-CP1';
+                    }
+                    if (empty($checkIn_status_script) && $checkOut_status_script == 'CP2') {
+                        $status_script = 'TAD-CP2';
+                    }
+                    if (empty($checkIn_status_script) && $checkOut_status_script == 'CP3') {
+                        $status_script = 'TAD-CP3';
+                    }
+                    if (empty($checkIn_status_script) && $checkOut_status_script == 'CP4') {
+                        $status_script = 'TAD-CP4';
+                    }
+
+                    if ($checkIn_status_script == 'PGN' && empty($checkOut_status_script)) {
+                        $status_script = 'PGN-TAP';
+                    }
+                    if ($checkIn_status_script == 'TM1' && empty($checkOut_status_script)) {
+                        $status_script = 'TM1-TAP';
+                    }
+                    if ($checkIn_status_script == 'TM2' && empty($checkOut_status_script)) {
+                        $status_script = 'TM2-TAP';
+                    }
+                    if ($checkIn_status_script == 'TM3' && empty($checkOut_status_script)) {
+                        $status_script = 'TM3-TAP';
+                    }
+                    if ($checkIn_status_script == 'TM4' && empty($checkOut_status_script)) {
+                        $status_script = 'TM4-TAP';
+                    }
+
+
+
+                    if (!empty($checkIn_status_script) && !empty($checkOut_status_script)) {
+                        # code...
+                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'PLN') {
+                            $status_script = 'HN';
+                        }
+
+                        // 
+                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'PLN') {
+                            $status_script = 'TM1';
+                        }
+                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'PLN') {
+                            $status_script = 'TM2';
+                        }
+                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'PLN') {
+                            $status_script = 'TM3';
+                        }
+                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'PLN') {
+                            $status_script = 'TM4';
+                        }
+
+                        // 
+                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP1') {
+                            $status_script = 'CP1';
+                        }
+                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP1') {
+                            $status_script = 'TM1-CP1';
+                        }
+                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP1') {
+                            $status_script = 'TM2-CP1';
+                        }
+                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP1') {
+                            $status_script = 'TM3-CP1';
+                        }
+                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP1') {
+                            $status_script = 'TM4-CP1';
+                        }
+
+                        // 
+                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP2') {
+                            $status_script = 'CP2';
+                        }
+                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP2') {
+                            $status_script = 'TM1-CP2';
+                        }
+                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP2') {
+                            $status_script = 'TM2-CP2';
+                        }
+                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP2') {
+                            $status_script = 'TM3-CP2';
+                        }
+                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP2') {
+                            $status_script = 'TM4-CP2';
+                        }
+
+                        // 
+                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP3') {
+                            $status_script = 'CP3';
+                        }
+                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP3') {
+                            $status_script = 'TM1-CP3';
+                        }
+                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP3') {
+                            $status_script = 'TM2-CP3';
+                        }
+                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP3') {
+                            $status_script = 'TM3-CP3';
+                        }
+                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP3') {
+                            $status_script = 'TM4-CP3';
+                        }
+
+                        // 
+                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP4') {
+                            $status_script = 'CP4';
+                        }
+                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP4') {
+                            $status_script = 'TM1-CP4';
+                        }
+                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP4') {
+                            $status_script = 'TM2-CP4';
+                        }
+                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP4') {
+                            $status_script = 'TM3-CP4';
+                        }
+                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP4') {
+                            $status_script = 'TM4-CP4';
+                        }
+                    }
+
                     // Masukkan ke array penampung dengan format kolom database
                     $dataToUpsert[] = [
                         'nip'                           => $employeeNip,
@@ -172,10 +359,12 @@ class AdminController extends Controller
                         'unor_simpegnas_id'             => $id,
 
                         'status'                        => $status,
+                        'status_script'                 => $status_script ?? null,
                         'late'                          => $late,
 
                         'checkIn_work_from'             => $presensi['checkIn']['work_from'] ?? null,
                         'checkIn_status'                => $presensi['checkIn']['status'] ?? null,
+                        'checkIn_status_script'         => $checkIn_status_script ?? null,
                         'checkIn_time_with_timezone'    => $presensi['checkIn']['time_with_timezone'] ?? null,
                         'checkIn_late'                  => $presensi['checkIn']['late'] ?? null,
 
@@ -186,6 +375,7 @@ class AdminController extends Controller
 
                         'checkOut_work_from'             => $presensi['checkOut']['work_from'] ?? null,
                         'checkOut_status'                => $presensi['checkOut']['status'] ?? null,
+                        'checkOut_status_script'         => $checkOut_status_script ?? null,
                         'checkOut_time_with_timezone'    => $presensi['checkOut']['time_with_timezone'] ?? null,
                         'checkOut_late'                  => $presensi['checkOut']['late'] ?? null,
 
@@ -204,13 +394,16 @@ class AdminController extends Controller
                     $dataToUpsert,
                     ['nip', 'date'], // Kunci unik gabungan di DB tetap pakai 'date'
                     [
-                        'status', // <-- WAJIB DITAMBAHKAN
-                        'late',   // <-- WAJIB DITAMBAHKAN
+                        'status',
+                        'status_script',
+                        'late',
 
                         'unor_simpegnas',
                         'unor_simpegnas_id',
+
                         'checkIn_work_from',
                         'checkIn_status',
+                        'checkIn_status_script',
                         'checkIn_time_with_timezone',
                         'checkIn_late',
 
@@ -221,6 +414,7 @@ class AdminController extends Controller
 
                         'checkOut_work_from',
                         'checkOut_status',
+                        'checkOut_status_script',
                         'checkOut_time_with_timezone',
                         'checkOut_late',
 
@@ -236,7 +430,75 @@ class AdminController extends Controller
         //     ->where('id_kantor', $request['kantor_id'])
         //     ->update(['bulan_' . $request['bulan'] => '1']);
 
-        return redirect('/')->with('status', 'Data berhasil disimpan');
+        return redirect('/pic/dashboard/pic')->with('status', 'Data berhasil disimpan');
+    }
+
+    private function __rekapBulananByNip($nip, $bulan)
+    {
+
+        // 
+        $records = DataAbsen::where('nip', $nip)
+            ->where('date', 'like', $bulan . '%')
+            ->orderBy('date')
+            ->get();
+
+    // dd($records);
+
+        $presensi = [];
+        foreach ($records as $rec) {
+            $presensi[] = [
+                'id'        => $rec->id,
+                'tgl'       => $rec->date,
+                'jam_pagi'  => $rec->checkIn_time_with_timezone_change ?: $rec->checkIn_time_with_timezone,
+                'jam_siang' => $rec->checkRest_time_with_timezone_change ?: $rec->checkRest_time_with_timezone,
+                'jam_sore'  => $rec->checkOut_time_with_timezone_change ?: $rec->checkOut_time_with_timezone,
+                'pagi'      => $rec->checkIn_status_change ?: $rec->checkIn_status_script,
+                'siang'     => $rec->checkRest_status_change ?: $rec->checkRest_status,
+                'sore'      => $rec->checkOut_status_change ?: $rec->checkOut_status_script,
+                'keterangan' => $rec->status_change ?: $rec->status_script ?? '-',
+                'change_applied' => (bool) ($rec->status_change
+                    || $rec->checkIn_status_change
+                    || $rec->checkIn_time_with_timezone_change
+                    || $rec->checkRest_status_change
+                    || $rec->checkRest_time_with_timezone_change
+                    || $rec->checkOut_status_change
+                    || $rec->checkOut_time_with_timezone_change),
+                'change'    => [
+                    'status_change'                          => $rec->status_change,
+                    'checkIn_status_change'                  => $rec->checkIn_status_change,
+                    'checkIn_time_with_timezone_change'      => $rec->checkIn_time_with_timezone_change,
+                    'checkRest_status_change'                => $rec->checkRest_status_change,
+                    'checkRest_time_with_timezone_change'    => $rec->checkRest_time_with_timezone_change,
+                    'checkOut_status_change'                 => $rec->checkOut_status_change,
+                    'checkOut_time_with_timezone_change'     => $rec->checkOut_time_with_timezone_change,
+                ],
+            ];
+        }
+
+        $data = [
+            'nip'      => $nip,
+            'nama'     => $records->first()->nama ?? 'nama',
+            'presensi' => $presensi,
+        ];
+
+        // $totalHari  = count($presensi);
+        // $totalHadir = $records->filter(fn($r) => in_array($r->status_change ?: $r->status, ['H', 'HN']))->count();
+
+        // return view('pic.detail_RekapByNip', compact('asn', 'data', 'bulan', 'persen', 'totalHari', 'totalHadir'));
+
+        return $data;
+    }
+
+    public function show()
+    {
+        $nip = '197009131999021001';
+        $bulan = '2026-07';
+        //
+        $data = $this->__rekapBulananByNip($nip, $bulan);
+
+        dd($data);
+
+        return view('pic.detail_RekapByNip', compact('data'));
     }
 
     // -----------
@@ -252,6 +514,8 @@ class AdminController extends Controller
     public function referensi()
     {
         //
-        return view('admin.referensi');
+
+        $data = JamReferensi::all();
+        return view('admin.referensi', compact('data'));
     }
 }

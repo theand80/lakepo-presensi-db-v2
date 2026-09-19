@@ -1,5 +1,7 @@
 <x-layout>
     <x-slot:title>Operator Nama Kantor</x-slot>
+
+    @dd($data)
     <div>
         <div class="mb-4">
             {{-- <a href="{{ url('/pic/kantor') }}" --}}
@@ -209,14 +211,17 @@
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     {{ \Carbon\Carbon::parse($hadir['tgl'] ?? '')->locale('id')->translatedFormat('l, d F Y') }}
                                 </td>
-                                <td class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
+                                <td
+                                    class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
                                     {{ $hadir['jam_pagi'] == null ? '-' : $hadir['jam_pagi'] . ' WITA' }}
                                     {{-- {{ $hadir['jam_pagi'] ?? '-' }} --}}
                                 </td>
-                                <td class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
+                                <td
+                                    class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
                                     {{ $hadir['jam_siang'] == null ? '-' : $hadir['jam_siang'] . ' WITA' }}
                                 </td>
-                                <td class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
+                                <td
+                                    class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
                                     {{ $hadir['jam_sore'] == null ? '-' : $hadir['jam_sore'] . ' WITA' }}
                                 </td>
 
@@ -228,19 +233,28 @@
                                     <td class="px-4 py-3 text-center">-</td>
                                 @endif
 
-                                <td class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">{{ $hadir['pagi'] }}</td>
-                                <td class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">{{ $hadir['siang'] }}</td>
-                                <td class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">{{ $hadir['sore'] }}</td>
+                                <td
+                                    class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
+                                    {{ $hadir['pagi'] }}</td>
+                                <td
+                                    class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
+                                    {{ $hadir['siang'] }}</td>
+                                <td
+                                    class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
+                                    {{ $hadir['sore'] }}</td>
 
                                 @if ($hadir['keterangan'] == 'DL')
-                                    <td class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
+                                    <td
+                                        class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
                                         <a href="{{ url('/pic/dinas-luar/' . $asn['nip'] . '/' . $bulan . '') }}"
                                             class="bg-green-500 text-white hover:bg-amber-500 font-bold cursor-pointer px-2 rounded-2xl">
                                             {{ $hadir['keterangan'] }}
                                         </a>
                                     </td>
                                 @else
-                                    <td class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">{{ $hadir['keterangan'] }}</td>
+                                    <td
+                                        class="px-4 py-3 text-center {{ $hadir['change_applied'] ? 'text-amber-600 font-medium' : '' }}">
+                                        {{ $hadir['keterangan'] }}</td>
                                 @endif
 
                                 <td class="px-4 py-3 text-center">
@@ -316,8 +330,7 @@
     </div>
 
     <!-- Modal Edit Presensi -->
-    <div id="editModal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
         <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
             <h3 class="text-lg font-bold mb-4">Edit Presensi</h3>
             <form id="editForm" method="POST" action="">
@@ -424,7 +437,8 @@
                     <button type="button" onclick="closeEditModal()"
                         class="bg-slate-200 text-slate-700 px-4 py-2 rounded text-sm font-medium hover:bg-slate-300">Batal</button>
                     <button type="button" onclick="resetChange()"
-                        class="bg-red-100 text-red-600 px-4 py-2 rounded text-sm font-medium hover:bg-red-200 ml-auto">Reset ke Asli</button>
+                        class="bg-red-100 text-red-600 px-4 py-2 rounded text-sm font-medium hover:bg-red-200 ml-auto">Reset
+                        ke Asli</button>
                 </div>
             </form>
         </div>
@@ -464,7 +478,8 @@
         }
 
         function resetChange() {
-            ['edit_status', 'edit_pagi', 'edit_pagi_jam', 'edit_siang', 'edit_siang_jam', 'edit_sore', 'edit_sore_jam'].forEach(id => {
+            ['edit_status', 'edit_pagi', 'edit_pagi_jam', 'edit_siang', 'edit_siang_jam', 'edit_sore', 'edit_sore_jam']
+            .forEach(id => {
                 document.getElementById(id).value = '';
             });
             document.getElementById('editForm').submit();

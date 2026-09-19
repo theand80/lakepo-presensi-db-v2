@@ -23,8 +23,8 @@ class ListKantor extends Model
         'bulan_12',
     ];
 
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'user_unor', 'list_kantor_id', 'user_id');
-    }
+    // public function users()
+    // {
+    //     return $this->belongsToMany(User::class, 'user_unor', 'list_kantor_id', 'user_id');
+    // }
 }

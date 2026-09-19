@@ -19,6 +19,8 @@ class PicController extends Controller
     // index: rekap dari data lokal import_api
     public function index(Request $request)
     {
+        $data = DataAbsen::all();
+        // dd($data);
         return view('pic.rekap');
     }
 

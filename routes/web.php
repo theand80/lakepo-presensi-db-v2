@@ -16,15 +16,15 @@ Route::redirect('/', '/admin');
 
 Route::get('/admin', [AdminController::class, 'index']);
 
-Route::get('/admin/listKantorDariApiIndex', [AdminController::class, 'listKantorDariApiIndex']);
+Route::get('/admin/listKantorDariApiIndex', [AdminController::class, 'listKantorDariApiIndex'])->name('lihatListKator-DariApi');
 Route::get('/admin/simpanListKantorkeDB', [AdminController::class, 'simpanListKantorkeDB']);
-Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorDariDBIndex']);
+Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorDariDBIndex'])->name('lihatListKator-DariDB');
 
-Route::get('/admin/lihatRekapBulananByKantor', [AdminController::class, 'lihatDataAbsenDariApi']);
+Route::get('/admin/lihatRekapBulananByKantor', [AdminController::class, 'lihatDataAbsenDariApi'])->name('lihatRekapBulananByKantor-DariApi');
 Route::get('/admin/simpanRekapBulananByKantor', [AdminController::class, 'simpanDataAbsenDariApiKeDB']);
 //Route::get('/admin/lihatDataAbsenDariDB', [AdminController::class, 'lihatDataAbsenDariDB']);
 
-Route::get('/admin/lihatRekapBulananByNip', [AdminController::class, 'show']);
+Route::get('/admin/lihatRekapBulananByNip', [AdminController::class, 'show'])->name('lihatRekapBulananByNip-DariDB');
 
 // impord dari Excel
 Route::get('/admin/data-asn', [AdminController::class, 'listDataAsn']);

@@ -10,7 +10,7 @@ class DataAbsen extends Model
         'nip',
         'nama',
         'date',
-        'libur',
+        'hari_libur',
         'kegiatan',
 
         'unor_simpegnas',

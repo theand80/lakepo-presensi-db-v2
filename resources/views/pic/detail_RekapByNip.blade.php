@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>Operator Nama Kantor</x-slot>
 
-    @dd($data)
+    {{-- @dd($data) --}}
     <div>
         <div class="mb-4">
             {{-- <a href="{{ url('/pic/kantor') }}" --}}
@@ -203,7 +203,7 @@
                     </thead>
                     <tbody>
                         {{-- @foreach ($data['presensi'] as $hadir) --}}
-                        @foreach ([] as $hadir)
+                        @foreach ($data['presensi'] as $hadir)
                             <tr class="bg-white border-b border-slate-100 hover:bg-slate-50">
                                 <td class="p-4"><input type="checkbox"
                                         class="w-4 h-4 border border-slate-300 rounded bg-slate-100 focus:ring-2 focus:ring-green-300">

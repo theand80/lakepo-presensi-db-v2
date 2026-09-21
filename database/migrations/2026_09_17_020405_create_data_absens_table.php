@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nip'); //""
             $table->string('nama'); //""
             $table->string('date'); //"2026-08-01 dari script"
-            $table->string('libur'); //"1"
+            $table->string('hari_libur'); //"1"
             $table->string('kegiatan'); //"1"
 
             $table->string('unor_simpegnas')->nullable(); //"BKPSDM"

@@ -16,6 +16,8 @@ class AdminController extends Controller
 
     public function index()
     {
+        // $jam = JamReferensi::all();
+        // dd( $jam [0]['waktu']);
         return view('admin.dashboard');
     }
 
@@ -138,7 +140,7 @@ class AdminController extends Controller
         // $id = $request['kantor_id'] ?? 'fd7277d4-c35d-4de5-a479-1adad7cfceed';
         // $nama_kantor = $request['kantor_nama'] ?? 'Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu - Kantor test';
 
-        $tgl = '2026-07'; //
+        $tgl = '2026-08'; //
 
         $datas = $this->__rekapBulananByKantor($id, $tgl);
 
@@ -173,43 +175,7 @@ class AdminController extends Controller
                     // Gabungkan menjadi format tanggal standar SQL: YYYY-MM-DD
                     $fullDate = "{$tahun}-{$bulanFormat}-{$dayFormat}";
 
-                    // Reset setiap kali loop presensi
-                    $checkIn_status_script = null;
-                    if (!empty($presensi['checkIn']['time_with_timezone'])) {
-                        $checkInTime = Carbon::parse(
-                            $presensi['checkIn']['time_with_timezone']
-                        );
-                        $jam = $checkInTime->format('H:i:s');
-                        if ($jam > '09:00:00') {
-                            $checkIn_status_script = 'TM4';
-                        } elseif ($jam > '08:30:00') {
-                            $checkIn_status_script = 'TM3';
-                        } elseif ($jam > '08:00:00') {
-                            $checkIn_status_script = 'TM2';
-                        } elseif ($jam > '07:30:00') {
-                            $checkIn_status_script = 'TM1';
-                        } elseif ($jam < '07:30:00') {
-                            $checkIn_status_script = 'PGN';
-                        }
-                    }
-
-                    $checkOut_status_script = null;
-                    if (!empty($presensi['checkOut']['time_with_timezone'])) {
-                        $jamCheckOut = Carbon::parse(
-                            $presensi['checkOut']['time_with_timezone']
-                        )->format('H:i:s');
-                        if ($jamCheckOut < '14:30:00') {
-                            $checkOut_status_script = 'CP4';
-                        } elseif ($jamCheckOut >= '14:30:00' && $jamCheckOut < '15:00:00') {
-                            $checkOut_status_script = 'CP3';
-                        } elseif ($jamCheckOut >= '15:00:00' && $jamCheckOut < '15:30:00') {
-                            $checkOut_status_script = 'CP2';
-                        } elseif ($jamCheckOut >= '15:30:00' && $jamCheckOut < '16:00:00') {
-                            $checkOut_status_script = 'CP1';
-                        } elseif ($jamCheckOut >= '16:00:00') {
-                            $checkOut_status_script = 'PLN';
-                        }
-                    }
+                    
 
                     $kodeAbsen = [
                                 'H', 'HN','DL','TB','CT','CM','CB','CS','CAP','CTLN','CH','TK','TAS','TM1','TM2','TM3','TMM',
@@ -219,142 +185,35 @@ class AdminController extends Controller
                                 'TM1-SN','TM2-SN','TM3-SN','TMM-SN','PN-PC1','PN-PC2','PN-PC3','PN-PCM',
                             ];
 
-                    $status_script = null;
+                            
+                    // $status_script = $this->__nilaiStatusScript($presensi['checkIn']['time_with_timezone'], $presensi['checkOut']['time_with_timezone']); 
+                    // [
+                    //     $checkIn_status_script, $checkOut_status_script, $status_script
+                    // ] = $this->__nilaiStatusScript(
+                    //     $presensi['checkIn']['time_with_timezone'], $presensi['checkOut']['time_with_timezone']
+                    // );
+                    [
+                        'checkIn_status_script' => $checkIn_status_script,
+                        'checkOut_status_script' => $checkOut_status_script,
+                        'status_script' => $status_script,
+                    ] = $this->__nilaiStatusScript(
+                        $presensi['checkIn']['time_with_timezone'],
+                        $presensi['checkOut']['time_with_timezone'],
+                        $fullDate
+                    );
 
-                    if (empty($checkIn_status_script) && empty($checkOut_status_script)) {
-                        $status_script = 'TK';
-                    }
+                    // sabtu + Minggu
+                    $date = Carbon::parse($fullDate);
+                    $sabming = $date->isWeekend() ? 1 : '';
 
-                    if (empty($checkIn_status_script) && $checkOut_status_script == 'PLN') {
-                        $status_script = 'TAD-PLN';
-                    }
-                    if (empty($checkIn_status_script) && $checkOut_status_script == 'CP1') {
-                        $status_script = 'TAD-CP1';
-                    }
-                    if (empty($checkIn_status_script) && $checkOut_status_script == 'CP2') {
-                        $status_script = 'TAD-CP2';
-                    }
-                    if (empty($checkIn_status_script) && $checkOut_status_script == 'CP3') {
-                        $status_script = 'TAD-CP3';
-                    }
-                    if (empty($checkIn_status_script) && $checkOut_status_script == 'CP4') {
-                        $status_script = 'TAD-CP4';
-                    }
-
-                    if ($checkIn_status_script == 'PGN' && empty($checkOut_status_script)) {
-                        $status_script = 'PGN-TAP';
-                    }
-                    if ($checkIn_status_script == 'TM1' && empty($checkOut_status_script)) {
-                        $status_script = 'TM1-TAP';
-                    }
-                    if ($checkIn_status_script == 'TM2' && empty($checkOut_status_script)) {
-                        $status_script = 'TM2-TAP';
-                    }
-                    if ($checkIn_status_script == 'TM3' && empty($checkOut_status_script)) {
-                        $status_script = 'TM3-TAP';
-                    }
-                    if ($checkIn_status_script == 'TM4' && empty($checkOut_status_script)) {
-                        $status_script = 'TM4-TAP';
-                    }
-
-
-
-                    if (!empty($checkIn_status_script) && !empty($checkOut_status_script)) {
-                        # code...
-                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'PLN') {
-                            $status_script = 'HN';
-                        }
-
-                        // 
-                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'PLN') {
-                            $status_script = 'TM1';
-                        }
-                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'PLN') {
-                            $status_script = 'TM2';
-                        }
-                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'PLN') {
-                            $status_script = 'TM3';
-                        }
-                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'PLN') {
-                            $status_script = 'TM4';
-                        }
-
-                        // 
-                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP1') {
-                            $status_script = 'CP1';
-                        }
-                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP1') {
-                            $status_script = 'TM1-CP1';
-                        }
-                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP1') {
-                            $status_script = 'TM2-CP1';
-                        }
-                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP1') {
-                            $status_script = 'TM3-CP1';
-                        }
-                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP1') {
-                            $status_script = 'TM4-CP1';
-                        }
-
-                        // 
-                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP2') {
-                            $status_script = 'CP2';
-                        }
-                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP2') {
-                            $status_script = 'TM1-CP2';
-                        }
-                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP2') {
-                            $status_script = 'TM2-CP2';
-                        }
-                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP2') {
-                            $status_script = 'TM3-CP2';
-                        }
-                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP2') {
-                            $status_script = 'TM4-CP2';
-                        }
-
-                        // 
-                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP3') {
-                            $status_script = 'CP3';
-                        }
-                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP3') {
-                            $status_script = 'TM1-CP3';
-                        }
-                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP3') {
-                            $status_script = 'TM2-CP3';
-                        }
-                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP3') {
-                            $status_script = 'TM3-CP3';
-                        }
-                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP3') {
-                            $status_script = 'TM4-CP3';
-                        }
-
-                        // 
-                        if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP4') {
-                            $status_script = 'CP4';
-                        }
-                        if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP4') {
-                            $status_script = 'TM1-CP4';
-                        }
-                        if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP4') {
-                            $status_script = 'TM2-CP4';
-                        }
-                        if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP4') {
-                            $status_script = 'TM3-CP4';
-                        }
-                        if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP4') {
-                            $status_script = 'TM4-CP4';
-                        }
-                    }
 
                     // Masukkan ke array penampung dengan format kolom database
                     $dataToUpsert[] = [
                         'nip'                           => $employeeNip,
                         'nama'                          => $employeeNama,
                         'date'                          => $fullDate, //tahun - bulan // Disimpan sebagai tanggal lengkap di DB
-                        'libur'                         => 0,
-                        'kegiatan'                      => 0,
+                        'hari_libur'                    => $sabming, //sabtu atau minggu bernilai 1, lainnya 0
+                        'kegiatan'                      => '',
                         'unor_simpegnas'                => $nama_kantor,
                         'unor_simpegnas_id'             => $id,
 
@@ -433,6 +292,213 @@ class AdminController extends Controller
         return redirect('/pic/dashboard/pic')->with('status', 'Data berhasil disimpan');
     }
 
+    private function __nilaiStatusScript($checkIn_nilai, $checkOut_nilai, $fullDate)
+    {
+
+        $jamRef = JamReferensi::all();
+        // 
+        // Reset setiap kali loop presensi
+        $checkIn_status_script = null;
+        // if (!empty($presensi['checkIn']['time_with_timezone'])) {
+        if (!empty($checkIn_nilai)) {
+            $checkInTime = Carbon::parse(
+                // $presensi['checkIn']['time_with_timezone']
+                $checkIn_nilai
+            );
+            $jam = $checkInTime->format('H:i:s');
+
+            if (Carbon::parse($fullDate)->isFriday()) {
+                // proses khusus hari Jumat
+                // if ($jam > '09:00:00') {
+                $jamRef4 = date('H:i:s', strtotime($jamRef[3]['waktu'] . ' -30 minutes'));
+                $jamRef3 = date('H:i:s', strtotime($jamRef[2]['waktu'] . ' -30 minutes'));
+                $jamRef2 = date('H:i:s', strtotime($jamRef[1]['waktu'] . ' -30 minutes'));
+                $jamRef1 = date('H:i:s', strtotime($jamRef[0]['waktu'] . ' -30 minutes'));
+
+                if ($jam > $jamRef4) {          // 09:00 -> 08:30
+                    $checkIn_status_script = 'TM4';
+                } elseif ($jam > $jamRef3) {    // 08:30 -> 08:00
+                    $checkIn_status_script = 'TM3';
+                } elseif ($jam > $jamRef2) {    // 08:00 -> 07:30
+                    $checkIn_status_script = 'TM2';
+                } elseif ($jam > $jamRef1) {    // 07:30 -> 07:00
+                    $checkIn_status_script = 'TM1';
+                } else {
+                    $checkIn_status_script = 'PGN';
+                }
+            } else{
+                //
+                // if ($jam > '09:00:00') {
+                if ($jam > $jamRef[3]['waktu']) {  //'09:00:00'
+                    $checkIn_status_script = 'TM4';
+                } elseif ($jam > $jamRef[2]['waktu']) { //'08:30:00'
+                    $checkIn_status_script = 'TM3';
+                } elseif ($jam > $jamRef[1]['waktu']) {//'08:00:00'
+                    $checkIn_status_script = 'TM2';
+                } elseif ($jam > $jamRef[0]['waktu']) { //'07:30:00'
+                    $checkIn_status_script = 'TM1';
+                } elseif ($jam < $jamRef[0]['waktu']) { //'07:30:00'
+                    $checkIn_status_script = 'PGN';
+                }
+            }
+        }
+
+        $checkOut_status_script = null;
+        // if (!empty($presensi['checkOut']['time_with_timezone'])) {
+        if (!empty($checkOut_nilai)) {
+            $jamCheckOut = Carbon::parse(
+                // $presensi['checkOut']['time_with_timezone']
+                $checkOut_nilai
+            )->format('H:i:s');
+            if ($jamCheckOut < '14:30:00') {
+                $checkOut_status_script = 'CP4';
+            } elseif ($jamCheckOut >= '14:30:00' && $jamCheckOut < '15:00:00') {
+                $checkOut_status_script = 'CP3';
+            } elseif ($jamCheckOut >= '15:00:00' && $jamCheckOut < '15:30:00') {
+                $checkOut_status_script = 'CP2';
+            } elseif ($jamCheckOut >= '15:30:00' && $jamCheckOut < '16:00:00') {
+                $checkOut_status_script = 'CP1';
+            } elseif ($jamCheckOut >= '16:00:00') {
+                $checkOut_status_script = 'PLN';
+            }
+        }
+        // ============
+        $status_script = null;
+        if (empty($checkIn_status_script) && empty($checkOut_status_script)) {
+            $status_script = 'TK';
+        }
+
+        if (empty($checkIn_status_script) && $checkOut_status_script == 'PLN') {
+            $status_script = 'TAD-PLN';
+        }
+        if (empty($checkIn_status_script) && $checkOut_status_script == 'CP1') {
+            $status_script = 'TAD-CP1';
+        }
+        if (empty($checkIn_status_script) && $checkOut_status_script == 'CP2') {
+            $status_script = 'TAD-CP2';
+        }
+        if (empty($checkIn_status_script) && $checkOut_status_script == 'CP3') {
+            $status_script = 'TAD-CP3';
+        }
+        if (empty($checkIn_status_script) && $checkOut_status_script == 'CP4') {
+            $status_script = 'TAD-CP4';
+        }
+
+        if ($checkIn_status_script == 'PGN' && empty($checkOut_status_script)) {
+            $status_script = 'PGN-TAP';
+        }
+        if ($checkIn_status_script == 'TM1' && empty($checkOut_status_script)) {
+            $status_script = 'TM1-TAP';
+        }
+        if ($checkIn_status_script == 'TM2' && empty($checkOut_status_script)) {
+            $status_script = 'TM2-TAP';
+        }
+        if ($checkIn_status_script == 'TM3' && empty($checkOut_status_script)) {
+            $status_script = 'TM3-TAP';
+        }
+        if ($checkIn_status_script == 'TM4' && empty($checkOut_status_script)) {
+            $status_script = 'TM4-TAP';
+        }
+
+
+
+        if (!empty($checkIn_status_script) && !empty($checkOut_status_script)) {
+            # code...
+            if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'PLN') {
+                $status_script = 'HN';
+            }
+
+            // 
+            if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'PLN') {
+                $status_script = 'TM1';
+            }
+            if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'PLN') {
+                $status_script = 'TM2';
+            }
+            if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'PLN') {
+                $status_script = 'TM3';
+            }
+            if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'PLN') {
+                $status_script = 'TM4';
+            }
+
+            // 
+            if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP1') {
+                $status_script = 'CP1';
+            }
+            if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP1') {
+                $status_script = 'TM1-CP1';
+            }
+            if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP1') {
+                $status_script = 'TM2-CP1';
+            }
+            if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP1') {
+                $status_script = 'TM3-CP1';
+            }
+            if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP1') {
+                $status_script = 'TM4-CP1';
+            }
+
+            // 
+            if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP2') {
+                $status_script = 'CP2';
+            }
+            if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP2') {
+                $status_script = 'TM1-CP2';
+            }
+            if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP2') {
+                $status_script = 'TM2-CP2';
+            }
+            if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP2') {
+                $status_script = 'TM3-CP2';
+            }
+            if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP2') {
+                $status_script = 'TM4-CP2';
+            }
+
+            // 
+            if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP3') {
+                $status_script = 'CP3';
+            }
+            if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP3') {
+                $status_script = 'TM1-CP3';
+            }
+            if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP3') {
+                $status_script = 'TM2-CP3';
+            }
+            if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP3') {
+                $status_script = 'TM3-CP3';
+            }
+            if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP3') {
+                $status_script = 'TM4-CP3';
+            }
+
+            // 
+            if ($checkIn_status_script == 'PGN' && $checkOut_status_script == 'CP4') {
+                $status_script = 'CP4';
+            }
+            if ($checkIn_status_script == 'TM1' && $checkOut_status_script == 'CP4') {
+                $status_script = 'TM1-CP4';
+            }
+            if ($checkIn_status_script == 'TM2' && $checkOut_status_script == 'CP4') {
+                $status_script = 'TM2-CP4';
+            }
+            if ($checkIn_status_script == 'TM3' && $checkOut_status_script == 'CP4') {
+                $status_script = 'TM3-CP4';
+            }
+            if ($checkIn_status_script == 'TM4' && $checkOut_status_script == 'CP4') {
+                $status_script = 'TM4-CP4';
+            }
+        }
+
+        // return [$checkIn_status_script, $checkOut_status_script, $status_script];
+        return [
+            'checkIn_status_script' => $checkIn_status_script,
+            'checkOut_status_script' => $checkOut_status_script,
+            'status_script' => $status_script,
+        ];
+    }
+
     private function __rekapBulananByNip($nip, $bulan)
     {
 
@@ -441,8 +507,6 @@ class AdminController extends Controller
             ->where('date', 'like', $bulan . '%')
             ->orderBy('date')
             ->get();
-
-    // dd($records);
 
         $presensi = [];
         foreach ($records as $rec) {
@@ -492,11 +556,9 @@ class AdminController extends Controller
     public function show()
     {
         $nip = '197009131999021001';
-        $bulan = '2026-07';
+        $bulan = '2026-08';
         //
         $data = $this->__rekapBulananByNip($nip, $bulan);
-
-        dd($data);
 
         return view('pic.detail_RekapByNip', compact('data'));
     }

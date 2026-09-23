@@ -32,6 +32,9 @@ Route::get('/admin/data-asn', [AdminController::class, 'listDataAsn']);
 
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);
 
+// kegiatan
+Route::get('/admin/hari-kegiatan', [AdminController::class, 'hariKegiatan']);
+
 // ------------
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');
 

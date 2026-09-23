@@ -629,4 +629,11 @@ class AdminController extends Controller
         $data = JamReferensi::all();
         return view('admin.referensi', compact('data'));
     }
+
+    // hari kegiatan
+    public function hariKegiatan()
+    {
+        //
+        return view('admin.hariKegiatan');
+    }
 }

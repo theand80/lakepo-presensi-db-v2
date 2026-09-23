@@ -3,8 +3,8 @@
         {{-- @if (count($data) > 0)
         @dd($data)
         @endif --}}
+        {{-- @dd($data) --}}
 
-        {{-- @dd($listKantor); --}}
         <div>
             <div class="bg-white border border-slate-200 rounded-md overflow-hidden shadow-sm mb-5">
                 <div
@@ -201,9 +201,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @forelse ($data as $item)
+                            @forelse ($data as $item)
                                 <tr class="bg-white border-b border-slate-100 hover:bg-slate-50"
-                                    data-persentase="{{ $item['persentase'] }}">
+                                    data-persentase="{{ $item['persentase'] ?? 0 }}">
                                     <td class="p-4">
                                         <input type="checkbox"
                                             class="w-4 h-4 border border-slate-300 rounded bg-slate-100 focus:ring-2 focus:ring-green-300">
@@ -233,7 +233,7 @@
                                         </td>
                                     @endif
 
-                                    <td class="px-4 py-3 text-center">{{ $item['hadir'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['hadir'] ?? 'N/a'}}</td>
                                     <td class="px-4 py-3 text-center">{{ $item['rekap']['HN'] }}</td>
                                     <td class="px-4 py-3 text-center">{{ $item['rekap']['DL'] }}</td>
                                     <td class="px-4 py-3 text-center">{{ $item['rekap']['TB'] }}</td>
@@ -256,28 +256,28 @@
                                     <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW3'] }}</td>
                                     <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW4'] }}</td>
                                     <td class="px-4 py-3 text-center">{{ $item['rekap']['TAK'] }}</td>
-                                    <td class="px-4 py-3 font-semibold">
-                                        @if ($item['persentase'] < 50)
+                                    <td class="px-4 py-3 font-semibold"> N/a %
+                                        {{-- @if ($item['persentase'] < 50)
                                             <span class="text-red-600">{{ $item['persentase'] }}%</span>
                                         @elseif ($item['persentase'] < 75)
                                             <span class="text-amber-600">{{ $item['persentase'] }}%</span>
                                         @else
                                             <span class="text-green-600">{{ $item['persentase'] }}%</span>
-                                        @endif
+                                        @endif --}}
                                     </td>
 
                                     <td class="px-4 py-3 text-center">
-                                        <a href="{{ url('/pic/detail/' . $item['nip'] . '/' . $selectedMonth . '/' . $item['persentase'] . '') }}"
+                                        <a href="{{ route('lihatRekapBulananByNip-DariDB', ['nip' => $item['nip']]) }}"
                                             class="font-medium text-green-600 hover:underline">Detail</a>
                                     </td>
-                                </tr> --}}
-                            {{-- @empty
+                                </tr>
+                            @empty
                                 <tr>
                                     <td colspan="30" class="px-4 py-8 text-center text-slate-400">
                                         Tidak ada data ditemukan.
                                     </td>
-                                </tr> --}}
-                            {{-- @endforelse --}}
+                                </tr>
+                            @endforelse
 
                             <tr>
                                 <td colspan="30" class="px-4 py-8 text-center text-slate-400">

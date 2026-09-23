@@ -33,6 +33,9 @@ Route::get('/admin/data-asn', [AdminController::class, 'listDataAsn']);
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);
 
 // ------------
-Route::get('/pic/dashboard/pic', [PicController::class, 'index']);
-Route::get('/pic/detail', [PicController::class, 'show']);
+Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');
+
+Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
+// Route::get('/pic/detail', [PicController::class, 'show']);
+
 Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);

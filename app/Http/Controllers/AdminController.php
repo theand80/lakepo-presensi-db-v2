@@ -30,7 +30,7 @@ class AdminController extends Controller
         $data = $response->json()['data']['kantor']; //data
 
         // $listKantor = array_slice($data, 73, 5);
-        $listKantor=$data;
+        $listKantor = $data;
 
         return view('admin.listKantorDariApi', ['data' => $listKantor]);
     }
@@ -132,22 +132,23 @@ class AdminController extends Controller
         //     'bulan' => 'required|integer|min:1|max:12',
         // ]);
 
-        $id = $request['kantor_id'] ?? 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e';
-        $nama_kantor = $request['kantor_nama'] ?? 'Badan Kepegawaian dan Pengembangan Sumber Daya Manusia test';
+        // $id = $request['kantor_id'] ?? 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e';
+        // $nama_kantor = $request['kantor_nama'] ?? 'Badan Kepegawaian dan Pengembangan Sumber Daya Manusia test';
 
         // $tgl = '2026-' . $request['bulan'] ?? '2026-07'; //
-        
-        // $id = $request['kantor_id'] ?? 'fd7277d4-c35d-4de5-a479-1adad7cfceed';
-        // $nama_kantor = $request['kantor_nama'] ?? 'Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu - Kantor test';
 
-        $tgl = '2026-08'; //
+        $id = $request['kantor_id'] ?? 'fd7277d4-c35d-4de5-a479-1adad7cfceed';
+        $nama_kantor = $request['kantor_nama'] ?? 'Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu - Kantor test';
+
+        $tgl = '2026-07'; //
 
         $datas = $this->__rekapBulananByKantor($id, $tgl);
 
         // dd($datas);
         // dd($datas[1]['presensi']);
 
-        $data = array_slice($datas, 2, 3);
+        $data = $datas;
+        // $data = array_slice($datas, 2, 3);
 
         // dd($data);
         // return $data;
@@ -175,17 +176,58 @@ class AdminController extends Controller
                     // Gabungkan menjadi format tanggal standar SQL: YYYY-MM-DD
                     $fullDate = "{$tahun}-{$bulanFormat}-{$dayFormat}";
 
-                    
+
 
                     $kodeAbsen = [
-                                'H', 'HN','DL','TB','CT','CM','CB','CS','CAP','CTLN','CH','TK','TAS','TM1','TM2','TM3','TMM',
-                                'PC1','PC2','PC3','PCM','TAK','TM1-PC1','TM1-PC2','TM1-PC3','TM1-PCM','TM2-PC1','TM2-PC2','TM2-PC3','TM2-PCM',
-                                'TM3-PC1','TM3-PC2','TM3-PC3','TM3-PCM','TMM-PC1','TMM-PC2','TMM-PC3',
-                                //
-                                'TM1-SN','TM2-SN','TM3-SN','TMM-SN','PN-PC1','PN-PC2','PN-PC3','PN-PCM',
-                            ];
+                        'H',
+                        'HN',
+                        'DL',
+                        'TB',
+                        'CT',
+                        'CM',
+                        'CB',
+                        'CS',
+                        'CAP',
+                        'CTLN',
+                        'CH',
+                        'TK',
+                        'TAS',
+                        'TM1',
+                        'TM2',
+                        'TM3',
+                        'TMM',
+                        'PC1',
+                        'PC2',
+                        'PC3',
+                        'PCM',
+                        'TAK',
+                        'TM1-PC1',
+                        'TM1-PC2',
+                        'TM1-PC3',
+                        'TM1-PCM',
+                        'TM2-PC1',
+                        'TM2-PC2',
+                        'TM2-PC3',
+                        'TM2-PCM',
+                        'TM3-PC1',
+                        'TM3-PC2',
+                        'TM3-PC3',
+                        'TM3-PCM',
+                        'TMM-PC1',
+                        'TMM-PC2',
+                        'TMM-PC3',
+                        //
+                        'TM1-SN',
+                        'TM2-SN',
+                        'TM3-SN',
+                        'TMM-SN',
+                        'PN-PC1',
+                        'PN-PC2',
+                        'PN-PC3',
+                        'PN-PCM',
+                    ];
 
-                            
+
                     // $status_script = $this->__nilaiStatusScript($presensi['checkIn']['time_with_timezone'], $presensi['checkOut']['time_with_timezone']); 
                     // [
                     //     $checkIn_status_script, $checkOut_status_script, $status_script
@@ -319,25 +361,25 @@ class AdminController extends Controller
                     $checkIn_status_script = 'TM4';
                 } elseif ($jam > $jamRef3) {    // 08:30 -> 08:00
                     $checkIn_status_script = 'TM3';
-                } elseif ($jam > $jamRef2) {    // 08:00 -> 07:30
+                } elseif ($jam > $jamRef2) {    // 08:00:30 -> 07:30:31
                     $checkIn_status_script = 'TM2';
-                } elseif ($jam > $jamRef1) {    // 07:30 -> 07:00
+                } elseif ($jam > '') {    // 07:30 -> 07:00
                     $checkIn_status_script = 'TM1';
                 } else {
                     $checkIn_status_script = 'PGN';
                 }
-            } else{
+            } else {
                 //
                 // if ($jam > '09:00:00') {
                 if ($jam > $jamRef[3]['waktu']) {  //'09:00:00'
                     $checkIn_status_script = 'TM4';
                 } elseif ($jam > $jamRef[2]['waktu']) { //'08:30:00'
                     $checkIn_status_script = 'TM3';
-                } elseif ($jam > $jamRef[1]['waktu']) {//'08:00:00'
+                } elseif ($jam > $jamRef[1]['waktu']) { //'08:00:00'
                     $checkIn_status_script = 'TM2';
-                } elseif ($jam > $jamRef[0]['waktu']) { //'07:30:00'
+                } elseif ($jam > $jamRef[0]['waktu']) { //'07:30:31'
                     $checkIn_status_script = 'TM1';
-                } elseif ($jam < $jamRef[0]['waktu']) { //'07:30:00'
+                } elseif ($jam < $jamRef[0]['waktu']) { //'07:30:30'
                     $checkIn_status_script = 'PGN';
                 }
             }
@@ -553,14 +595,21 @@ class AdminController extends Controller
         return $data;
     }
 
-    public function show()
+    public function show(Request $request)
     {
-        $nip = '197009131999021001';
-        $bulan = '2026-08';
-        //
-        $data = $this->__rekapBulananByNip($nip, $bulan);
+        // dd($request['nip']);
+        if (!empty($request['nip'])) {
+            # code...
 
-        return view('pic.detail_RekapByNip', compact('data'));
+            $nip = $request['nip'];
+            $bulan = '2026-08';
+            //
+            $data = $this->__rekapBulananByNip($nip, $bulan);
+
+            return view('pic.detail_RekapByNip', compact('data'));
+        }
+
+        return back()->with('error', 'Data NIP tidak ada.');
     }
 
     // -----------

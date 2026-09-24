@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\HariKegiatanController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PicController;
 use Illuminate\Support\Facades\Route;
@@ -33,7 +34,7 @@ Route::get('/admin/data-asn', [AdminController::class, 'listDataAsn']);
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);
 
 // kegiatan
-Route::get('/admin/hari-kegiatan', [AdminController::class, 'hariKegiatan']);
+Route::get('/admin/hari-kegiatan', [HariKegiatanController::class, 'hariKegiatan']);
 
 // ------------
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');

@@ -72,6 +72,7 @@ class AdminController extends Controller
         return view('admin.listKantorDariApi', ['data' => $listKantor]);
     }
 
+    // panggil dari simpanDataAbsenDariApiKeDB dan lihatDataAbsenDariApi
     private function __rekapBulananByKantor($id, $month)
     {
         // 1. Pecah bulan dan tahun
@@ -123,6 +124,8 @@ class AdminController extends Controller
         // return $data;
     }
 
+
+    // simpan ke DB
     public function simpanDataAbsenDariApiKeDB(Request $request)
     {
         //
@@ -178,54 +181,54 @@ class AdminController extends Controller
 
 
 
-                    $kodeAbsen = [
-                        'H',
-                        'HN',
-                        'DL',
-                        'TB',
-                        'CT',
-                        'CM',
-                        'CB',
-                        'CS',
-                        'CAP',
-                        'CTLN',
-                        'CH',
-                        'TK',
-                        'TAS',
-                        'TM1',
-                        'TM2',
-                        'TM3',
-                        'TMM',
-                        'PC1',
-                        'PC2',
-                        'PC3',
-                        'PCM',
-                        'TAK',
-                        'TM1-PC1',
-                        'TM1-PC2',
-                        'TM1-PC3',
-                        'TM1-PCM',
-                        'TM2-PC1',
-                        'TM2-PC2',
-                        'TM2-PC3',
-                        'TM2-PCM',
-                        'TM3-PC1',
-                        'TM3-PC2',
-                        'TM3-PC3',
-                        'TM3-PCM',
-                        'TMM-PC1',
-                        'TMM-PC2',
-                        'TMM-PC3',
-                        //
-                        'TM1-SN',
-                        'TM2-SN',
-                        'TM3-SN',
-                        'TMM-SN',
-                        'PN-PC1',
-                        'PN-PC2',
-                        'PN-PC3',
-                        'PN-PCM',
-                    ];
+                    // $kodeAbsen = [
+                    //     'H',
+                    //     'HN',
+                    //     'DL',
+                    //     'TB',
+                    //     'CT',
+                    //     'CM',
+                    //     'CB',
+                    //     'CS',
+                    //     'CAP',
+                    //     'CTLN',
+                    //     'CH',
+                    //     'TK',
+                    //     'TAS',
+                    //     'TM1',
+                    //     'TM2',
+                    //     'TM3',
+                    //     'TMM',
+                    //     'PC1',
+                    //     'PC2',
+                    //     'PC3',
+                    //     'PCM',
+                    //     'TAK',
+                    //     'TM1-PC1',
+                    //     'TM1-PC2',
+                    //     'TM1-PC3',
+                    //     'TM1-PCM',
+                    //     'TM2-PC1',
+                    //     'TM2-PC2',
+                    //     'TM2-PC3',
+                    //     'TM2-PCM',
+                    //     'TM3-PC1',
+                    //     'TM3-PC2',
+                    //     'TM3-PC3',
+                    //     'TM3-PCM',
+                    //     'TMM-PC1',
+                    //     'TMM-PC2',
+                    //     'TMM-PC3',
+                    //     //
+                    //     'TM1-SN',
+                    //     'TM2-SN',
+                    //     'TM3-SN',
+                    //     'TMM-SN',
+                    //     'PN-PC1',
+                    //     'PN-PC2',
+                    //     'PN-PC3',
+                    //     'PN-PCM',
+                    // ];
 
 
                     // $status_script = $this->__nilaiStatusScript($presensi['checkIn']['time_with_timezone'], $presensi['checkOut']['time_with_timezone']); 
@@ -334,6 +337,7 @@ class AdminController extends Controller
         return redirect('/pic/dashboard/pic')->with('status', 'Data berhasil disimpan');
     }
 
+    // setting Jam
     private function __nilaiStatusScript($checkIn_nilai, $checkOut_nilai, $fullDate)
     {
 
@@ -357,13 +361,13 @@ class AdminController extends Controller
                 $jamRef2 = date('H:i:s', strtotime($jamRef[1]['waktu'] . ' -30 minutes'));
                 $jamRef1 = date('H:i:s', strtotime($jamRef[0]['waktu'] . ' -30 minutes'));
 
-                if ($jam > $jamRef4) {          // 09:00 -> 08:30
+                if ($jam > '08:30:00') {          // 09:00 -> 08:30
                     $checkIn_status_script = 'TM4';
-                } elseif ($jam > $jamRef3) {    // 08:30 -> 08:00
+                } elseif ($jam > '08:00:00') {    // 08:30 -> 08:00
                     $checkIn_status_script = 'TM3';
-                } elseif ($jam > $jamRef2) {    // 08:00:30 -> 07:30:31
+                } elseif ($jam > '07:30:00') {    // 08:00:30 -> 07:30:31
                     $checkIn_status_script = 'TM2';
-                } elseif ($jam > '') {    // 07:30 -> 07:00
+                } elseif ($jam > '07:00:00') {    // 07:30 -> 07:00
                     $checkIn_status_script = 'TM1';
                 } else {
                     $checkIn_status_script = 'PGN';
@@ -371,15 +375,15 @@ class AdminController extends Controller
             } else {
                 //
                 // if ($jam > '09:00:00') {
-                if ($jam > $jamRef[3]['waktu']) {  //'09:00:00'
+                if ($jam > '09:00:00') {  //'09:00:00'
                     $checkIn_status_script = 'TM4';
-                } elseif ($jam > $jamRef[2]['waktu']) { //'08:30:00'
+                } elseif ($jam > '08:30:00') { //'08:30:00'
                     $checkIn_status_script = 'TM3';
-                } elseif ($jam > $jamRef[1]['waktu']) { //'08:00:00'
+                } elseif ($jam > '08:00:00') { //'08:00:00'
                     $checkIn_status_script = 'TM2';
-                } elseif ($jam > $jamRef[0]['waktu']) { //'07:30:31'
+                } elseif ($jam > '07:30:00') { //'07:30:31'
                     $checkIn_status_script = 'TM1';
-                } elseif ($jam < $jamRef[0]['waktu']) { //'07:30:30'
+                } elseif ($jam < '07:30:00') { //'07:30:30'
                     $checkIn_status_script = 'PGN';
                 }
             }
@@ -541,6 +545,7 @@ class AdminController extends Controller
         ];
     }
 
+    // panggil dari show
     private function __rekapBulananByNip($nip, $bulan)
     {
 
@@ -552,16 +557,21 @@ class AdminController extends Controller
 
         $presensi = [];
         foreach ($records as $rec) {
+
+            // ubah TM daji TL, CP jadi PSW
+            $status_script_update = $this->__ubahStatusYangTampil($rec->status_script);
+
             $presensi[] = [
                 'id'        => $rec->id,
                 'tgl'       => $rec->date,
                 'jam_pagi'  => $rec->checkIn_time_with_timezone_change ?: $rec->checkIn_time_with_timezone,
                 'jam_siang' => $rec->checkRest_time_with_timezone_change ?: $rec->checkRest_time_with_timezone,
                 'jam_sore'  => $rec->checkOut_time_with_timezone_change ?: $rec->checkOut_time_with_timezone,
-                'pagi'      => $rec->checkIn_status_change ?: $rec->checkIn_status_script,
+                'pagi'      => $rec->checkIn_status_change ?: $rec->checkin_status_script,
                 'siang'     => $rec->checkRest_status_change ?: $rec->checkRest_status,
                 'sore'      => $rec->checkOut_status_change ?: $rec->checkOut_status_script,
-                'keterangan' => $rec->status_change ?: $rec->status_script ?? '-',
+                // 'keterangan' => $rec->status_change ?: $status_script_update ?? '-',
+                'keterangan' => $rec->status_change ?? $status_script_update ?? $rec->status_script ?? '-',
                 'change_applied' => (bool) ($rec->status_change
                     || $rec->checkIn_status_change
                     || $rec->checkIn_time_with_timezone_change
@@ -595,6 +605,58 @@ class AdminController extends Controller
         return $data;
     }
 
+    // panggil dari __rekapBulananByNip
+    private function __ubahStatusYangTampil($kodeStatus)
+    {
+        $mapping = [
+            'TM1'     => 'TL1',
+            'TM2'     => 'TL2',
+            'TM3'     => 'TL3',
+            'TM4'     => 'TL4',
+            'CP1'     => 'PSW1',
+            'CP2'     => 'PSW2',
+            'CP3'     => 'PSW3',
+            'CP4'     => 'PSW4',
+
+            'TAD-PLN' => 'TL4',
+            'PGN-TAP' => 'PSW4',
+
+            'TAD-CP1' => 'TL4-PSW1',
+            'TAD-CP2' => 'TL4-PSW2',
+            'TAD-CP3' => 'TL4-PSW3',
+            'TAD-CP4' => 'TL4-PSW4',
+
+            'TM1-TAP' => 'TL1-PSW4',
+            'TM2-TAP' => 'TL2-PSW4',
+            'TM3-TAP' => 'TL3-PSW4',
+            'TM4-TAP' => 'TL4-PSW4',
+
+            'TM1-CP1' => 'TL1-PSW1',
+            'TM2-CP1' => 'TL2-PSW1',
+            'TM3-CP1' => 'TL3-PSW1',
+            'TM4-CP1' => 'TL4-PSW1',
+
+            'TM1-CP2' => 'TL1-PSW2',
+            'TM2-CP2' => 'TL2-PSW2',
+            'TM3-CP2' => 'TL3-PSW2',
+            'TM4-CP2' => 'TL4-PSW2',
+
+            'TM1-CP3' => 'TL1-PSW3',
+            'TM2-CP3' => 'TL2-PSW3',
+            'TM3-CP3' => 'TL3-PSW3',
+            'TM4-CP3' => 'TL4-PSW3',
+
+            'TM1-CP4' => 'TL1-PSW4',
+            'TM2-CP4' => 'TL2-PSW4',
+            'TM3-CP4' => 'TL3-PSW4',
+            'TM4-CP4' => 'TL4-PSW4',
+
+
+        ];
+
+        return $mapping[$kodeStatus] ?? $kodeStatus;
+    }
+
     public function show(Request $request)
     {
         // dd($request['nip']);
@@ -602,7 +664,7 @@ class AdminController extends Controller
             # code...
 
             $nip = $request['nip'];
-            $bulan = '2026-08';
+            $bulan = '2026-07';
             //
             $data = $this->__rekapBulananByNip($nip, $bulan);
 
@@ -628,12 +690,5 @@ class AdminController extends Controller
 
         $data = JamReferensi::all();
         return view('admin.referensi', compact('data'));
-    }
-
-    // hari kegiatan
-    public function hariKegiatan()
-    {
-        //
-        return view('admin.hariKegiatan');
     }
 }

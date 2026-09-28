@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('nip'); //""
             $table->string('nama'); //""
             $table->string('date'); //"2026-08-01 dari script"
-            $table->string('hari_libur'); //"1"
-            $table->string('kegiatan'); //"1"
+            $table->string('hari_libur')->nullable(); //"1"
+            $table->string('kegiatan')->nullable(); //"1"
 
             $table->string('unor_simpegnas')->nullable(); //"BKPSDM"
             $table->string('unor_simpegnas_id')->nullable(); //"123-abc-234"
@@ -54,7 +54,9 @@ return new class extends Migration
             $table->string('status_script')->nullable(); //"TK"
             $table->string('status_change')->nullable(); //"TK"
             $table->string('late'); //0
-            $table->string('tak');
+            $table->string('tak')->nullable();
+            // ---
+            $table->string('persentase')->nullable();
             $table->timestamps();
             // --- 
             $table->unique(['nip', 'date']);

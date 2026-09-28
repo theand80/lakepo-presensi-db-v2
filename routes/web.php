@@ -42,6 +42,8 @@ Route::get('/admin/asn-kegiatan', [HariKegiatanController::class, 'ImportAsnYgMe
 // ------------
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');
 
+Route::get('/pic/simpan-persentase', [PicController::class, '__hitungPersentase']);
+
 Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 // Route::get('/pic/detail', [PicController::class, 'show']);
 

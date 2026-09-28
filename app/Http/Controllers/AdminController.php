@@ -29,8 +29,8 @@ class AdminController extends Controller
 
         $data = $response->json()['data']['kantor']; //data
 
-        // $listKantor = array_slice($data, 73, 5);
-        $listKantor = $data;
+        $listKantor = array_slice($data, 73, 5);
+        // $listKantor = $data;
 
         return view('admin.listKantorDariApi', ['data' => $listKantor]);
     }
@@ -143,15 +143,15 @@ class AdminController extends Controller
         // $id = $request['kantor_id'] ?? 'fd7277d4-c35d-4de5-a479-1adad7cfceed';
         // $nama_kantor = $request['kantor_nama'] ?? 'Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu - Kantor test';
 
-        $tgl = '2026-07'; //
+        $tgl = '2026-08'; //
 
         $datas = $this->__rekapBulananByKantor($id, $tgl); //diatas
 
         // dd($datas);
         // dd($datas[1]['presensi']);
 
-        $data = $datas;
-        // $data = array_slice($datas, 2, 3);
+        // $data = $datas;
+        $data = array_slice($datas, 2, 3);
 
         // dd($data);
         // return $data;
@@ -328,7 +328,7 @@ class AdminController extends Controller
                     $checkIn_status_script = 'TM3';
                 } elseif ($jam > $jamRef2) {    // 08:00:30 -> 07:30:31
                     $checkIn_status_script = 'TM2';
-                } elseif ($jam > '') {    // 07:30 -> 07:00
+                } elseif ($jam > $jamRef1) {    // 07:30 -> 07:00
                     $checkIn_status_script = 'TM1';
                 } else {
                     $checkIn_status_script = 'PGN';
@@ -357,15 +357,26 @@ class AdminController extends Controller
                 // $presensi['checkOut']['time_with_timezone']
                 $checkOut_nilai
             )->format('H:i:s');
-            if ($jamCheckOut < '14:30:00') {
+            // if ($jamCheckOut < '14:30:00') {
+            //     $checkOut_status_script = 'CP4';
+            // } elseif ($jamCheckOut >= '14:30:00' && $jamCheckOut < '15:00:00') {
+            //     $checkOut_status_script = 'CP3';
+            // } elseif ($jamCheckOut >= '15:00:00' && $jamCheckOut < '15:30:00') {
+            //     $checkOut_status_script = 'CP2';
+            // } elseif ($jamCheckOut >= '15:30:00' && $jamCheckOut < '16:00:00') {
+            //     $checkOut_status_script = 'CP1';
+            // } elseif ($jamCheckOut >= '16:00:00') {
+            //     $checkOut_status_script = 'PLN';
+            // }
+            if ($jamCheckOut < $jamRef[7]['waktu']) {
                 $checkOut_status_script = 'CP4';
-            } elseif ($jamCheckOut >= '14:30:00' && $jamCheckOut < '15:00:00') {
+            } elseif ($jamCheckOut >= $jamRef[7]['waktu'] && $jamCheckOut < $jamRef[6]['waktu']) {
                 $checkOut_status_script = 'CP3';
-            } elseif ($jamCheckOut >= '15:00:00' && $jamCheckOut < '15:30:00') {
+            } elseif ($jamCheckOut >= $jamRef[6]['waktu'] && $jamCheckOut < $jamRef[5]['waktu']) {
                 $checkOut_status_script = 'CP2';
-            } elseif ($jamCheckOut >= '15:30:00' && $jamCheckOut < '16:00:00') {
+            } elseif ($jamCheckOut >= $jamRef[5]['waktu'] && $jamCheckOut < $jamRef[4]['waktu']) {
                 $checkOut_status_script = 'CP1';
-            } elseif ($jamCheckOut >= '16:00:00') {
+            } elseif ($jamCheckOut >= $jamRef[4]['waktu']) {
                 $checkOut_status_script = 'PLN';
             }
         }
@@ -679,7 +690,7 @@ class AdminController extends Controller
             # code...
 
             $nip = $request['nip'];
-            $bulan = '2026-07';
+            $bulan = '2026-08';
             //
             $data = $this->__rekapBulananByNip($nip, $bulan); //diatas
 

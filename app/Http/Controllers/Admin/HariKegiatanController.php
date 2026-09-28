@@ -64,7 +64,7 @@ class HariKegiatanController extends Controller
             // DataAbsen::whereDate('date', $request->input('tglKegiatan'))
             DataAbsen::whereDate('date', $request->input('tanggalYgDihapus'))
                 ->update([
-                    'kegiatan' => 0,
+                    'kegiatan' => '',
                 ]);
 
             // Hapus data hari kegiatan

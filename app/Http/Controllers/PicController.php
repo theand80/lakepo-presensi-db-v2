@@ -19,15 +19,39 @@ class PicController extends Controller
     // index: rekap dari data DB hasil import_api
     public function index(Request $request)
     {
+       
+        // $request->validate([
+        //     'filterNamaKantor'  => 'required|date',
+        //     'month'             => 'required|string',
+        // ]);
+        
+
+        $selectedKantor = $request->input('filterNamaKantor', '');
+        $selectedMonth = $request->input('month', date('Y-m-d'));
+        // $selectedMonth = $request->input('month', '2026-08-01');
+
+
         $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
 
-        $tgl = '2026-07';
+        $tgl = '2026-08';
 
+        $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // dibawah
+
+        // dd($data);
+
+        return view('pic.rekap', compact('data'));
+    }
+
+    // dipanggil di index diatas dan dari __hitungPersentase dibawah
+    private function __dataYangDitampilkan($unor_simpegnas_id, $tgl)
+    {
+        // 
         $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id)->whereLike('date', $tgl . '%')->get()->groupBy('nip');
 
         // $nipList = $records->keys()->toArray();
 
+        // dd($records);
         // dd($records['197009131999021001'][0]['nama']);
 
         $kodeAbsen = [
@@ -140,19 +164,33 @@ class PicController extends Controller
                     'PSW3'  => $rekap['rekap']['PSW3'],
                     'PSW4'  => $rekap['rekap']['PSW4'],
                     'H'     => $rekap['hadir'],
-                ] = $this->__jumlahkanBeberapaKode($rekap);
+                ] = $this->__jumlahkanBeberapaKode($rekap); //dibawah
             }
 
 
             $data[] = $rekap;
         }
 
-        // dd($data);
-
-
-        return view('pic.rekap', compact('data'));
+        return $data;
     }
 
+    public function __hitungPersentase(){
+        // 
+        $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
+        // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
+
+        $tgl = '2026-08';
+        $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // diatas
+
+        dd($data);
+
+        foreach ($data as $key => $value) {
+            # code...
+        }
+
+    }
+
+    // dipanggil dari __dataYangDitampilkan diatas
     private function __jumlahkanBeberapaKode($rekap)
     {
         // dd($rekap);

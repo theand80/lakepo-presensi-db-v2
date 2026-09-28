@@ -35,7 +35,8 @@ Route::get('/admin/referensi', [AdminController::class, 'referensi']);
 
 // kegiatan
 Route::get('/admin/hari-kegiatan', [HariKegiatanController::class, 'setHariKegiatan']);
-Route::post('/admin/hari-kegiatan', [HariKegiatanController::class, 'simpanHariKegiatan']);
+Route::post('/admin/hari-kegiatan', [HariKegiatanController::class, 'simpanSetHariKegiatan']);
+Route::delete('/admin/hari-kegiatan/{id}', [HariKegiatanController::class, 'hapusHariKegiatan']);
 Route::get('/admin/asn-kegiatan', [HariKegiatanController::class, 'ImportAsnYgMengikutiKegiatan']);
 
 // ------------

@@ -39,8 +39,22 @@ class PicController extends Controller
         $tgl = '2026-08';
 
         $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // dibawah
+        $persentases = Persentase::get();
 
-        dd($data);
+
+        $persentaseByNip = $persentases->keyBy('nip');
+
+        $data = collect($data)->map(function ($item) use ($persentaseByNip) {
+            $persentase = $persentaseByNip->get($item['nip']);
+
+            if ($persentase) {
+                $item['persentase'] = $persentase->{'08'};
+            }
+
+            return $item;
+        })->toArray();
+
+        // dd($data);
 
         return view('pic.rekap', compact('data'));
     }
@@ -250,6 +264,8 @@ class PicController extends Controller
     // ini dipanggil dari route
     public function __hitungPersentase()
     {
+        // $data = Persentase::get();
+        // dd($data);
         // 
         $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
@@ -272,7 +288,10 @@ class PicController extends Controller
                     + ($item['rekap']['PSW3']*1.25) + ($item['rekap']['PSW4']*1.5)
                 ;
 
-                $persentase = (1- ($persentases/100));
+                // $persentase = (1- ($persentases/100));
+                // $persentase = 100 - $persentases;
+                // $persentase = round(1 - ($persentases / 100), 2);
+                $persentase = round((1 - ($persentases / 100)) * 100, 2);
 
                 $dataToUpsert[] = [
                     'nip' => $item['nip'],
@@ -280,6 +299,8 @@ class PicController extends Controller
                     $bln => $persentase,
                 ];
             }
+
+            // dd($dataToUpsert);
 
             if (!empty($dataToUpsert)) {
                 Persentase::upsert(
@@ -295,7 +316,8 @@ class PicController extends Controller
             }
         });
 
-        return 'coba persentase sukses';
+        return redirect('/admin')->with('success', 'Hitung Persentase bulan '.$bln.' berhasil dilakukan.');
+        // return 'coba persentase sukses';
 
     }
 

@@ -56,7 +56,6 @@ return new class extends Migration
             $table->string('late'); //0
             $table->string('tak')->nullable();
             // ---
-            $table->string('persentase')->nullable();
             $table->timestamps();
             // --- 
             $table->unique(['nip', 'date']);

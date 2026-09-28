@@ -8,8 +8,10 @@ use App\Models\DataAbsen;
 use App\Models\DataAsn;
 use App\Models\ImportApi;
 use App\Models\ListKantor;
+use App\Models\Persentase;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class PicController extends Controller
 {
@@ -38,7 +40,7 @@ class PicController extends Controller
 
         $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // dibawah
 
-        // dd($data);
+        dd($data);
 
         return view('pic.rekap', compact('data'));
     }
@@ -174,22 +176,6 @@ class PicController extends Controller
         return $data;
     }
 
-    public function __hitungPersentase(){
-        // 
-        $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
-        // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
-
-        $tgl = '2026-08';
-        $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // diatas
-
-        dd($data);
-
-        foreach ($data as $key => $value) {
-            # code...
-        }
-
-    }
-
     // dipanggil dari __dataYangDitampilkan diatas
     private function __jumlahkanBeberapaKode($rekap)
     {
@@ -259,6 +245,58 @@ class PicController extends Controller
             'PSW4'  => $rekap['rekap']['PSW4'],
             'H'     => $rekap['hadir'],
         ];
+    }
+
+    // ini dipanggil dari route
+    public function __hitungPersentase()
+    {
+        // 
+        $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
+        // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
+
+        $tgl = '2026-08';
+        $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // diatas
+
+        $bln = substr($tgl, 5, 2);//08
+        // dd($data);
+
+        DB::transaction(function () use ($data, $bln) {
+            $dataToUpsert = [];
+            foreach ($data as $item) {
+
+                // hitung perentasenya
+                $persentases = ($item['rekap']['TK']*3) 
+                    + ($item['rekap']['TL1']*0.5) + ($item['rekap']['TL2']*1) 
+                    + ($item['rekap']['TL3']*1.25) + ($item['rekap']['TL4']*1.5)
+                    + ($item['rekap']['PSW1']*0.5) + ($item['rekap']['PSW2']*1) 
+                    + ($item['rekap']['PSW3']*1.25) + ($item['rekap']['PSW4']*1.5)
+                ;
+
+                $persentase = (1- ($persentases/100));
+
+                $dataToUpsert[] = [
+                    'nip' => $item['nip'],
+                    'nama' => $item['nama'],
+                    $bln => $persentase,
+                ];
+            }
+
+            if (!empty($dataToUpsert)) {
+                Persentase::upsert(
+                    $dataToUpsert,
+                    ['nip'], // Kunci unik gabungan di DB tetap pakai 'date'
+                    [
+                        'nama',
+                        'nip',
+                        $bln
+                    ]
+                );
+
+            }
+        });
+
+        return 'coba persentase sukses';
+
     }
 
     public function bpk(Request $request)

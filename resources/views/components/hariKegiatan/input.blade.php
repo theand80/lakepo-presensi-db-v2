@@ -1,4 +1,4 @@
-<form action="{{ url('tambahHariKegiatan') }}" method="POST"
+<form action="{{ url('/admin/hari-kegiatan') }}" method="POST"
     class="w-4xl bg-white rounded-2xl shadow-lg border border-gray-100 p-6 m-6">
     @csrf
     {{-- Form Horizontal --}}

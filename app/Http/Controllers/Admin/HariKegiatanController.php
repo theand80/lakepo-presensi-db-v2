@@ -8,9 +8,14 @@ use Illuminate\Http\Request;
 class HariKegiatanController extends Controller
 {
     //
-    public function hariKegiatan()
+    public function setHariKegiatan()
     {
         //
-        return view('admin.hariKegiatan');
+        return view('admin.kegiatan.setHariKegiatan');
+    }
+    public function ImportAsnYgMengikutiKegiatan()
+    {
+        //
+        return view('admin.kegiatan.importAsnYgIkutHariKegiatan');
     }
 }

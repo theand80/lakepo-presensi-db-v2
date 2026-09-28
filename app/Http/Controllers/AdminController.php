@@ -537,7 +537,7 @@ class AdminController extends Controller
                 'jam_siang' => $rec->checkRest_time_with_timezone_change ?: $rec->checkRest_time_with_timezone,
                 'jam_sore'  => $rec->checkOut_time_with_timezone_change ?: $rec->checkOut_time_with_timezone,
                 // 'pagi'      => $rec->checkIn_status_change ?: $rec->checkIn_status_script,
-                'siang'     => $rec->checkRest_status_change ?: $rec->checkRest_status,
+                'siang'     => $rec->checkRest_status_change ?: $rec->checkRest_status ?: '-',
                 // 'sore'      => $rec->checkOut_status_change ?: $rec->checkOut_status_script,
                 'pagi'      => $rec->checkIn_status_change ?: $status_script_pagi_update,
                 // 'siang'     => $rec->checkRest_status_change ?: $status_script_siang_update,

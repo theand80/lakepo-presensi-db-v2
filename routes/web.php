@@ -27,14 +27,16 @@ Route::get('/admin/simpanRekapBulananByKantor', [AdminController::class, 'simpan
 
 Route::get('/admin/lihatRekapBulananByNip', [AdminController::class, 'show'])->name('lihatRekapBulananByNip-DariDB');
 
-// impord dari Excel
+// impord data ASN dari Excel
 Route::get('/admin/data-asn', [AdminController::class, 'listDataAsn']);
 
-
+// set Jam dan Kode
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);
 
 // kegiatan
-Route::get('/admin/hari-kegiatan', [HariKegiatanController::class, 'hariKegiatan']);
+Route::get('/admin/hari-kegiatan', [HariKegiatanController::class, 'setHariKegiatan']);
+Route::post('/admin/hari-kegiatan', [HariKegiatanController::class, 'simpanHariKegiatan']);
+Route::get('/admin/asn-kegiatan', [HariKegiatanController::class, 'ImportAsnYgMengikutiKegiatan']);
 
 // ------------
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');

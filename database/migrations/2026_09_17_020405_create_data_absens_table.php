@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('checkIn_late'); //0
             // ---
             // $table->string('checkRest');
-            $table->string('checkRest_work_from');
+            $table->string('checkRest_work_from'); //"WFO"
             $table->string('checkRest_status');
             $table->string('checkRest_status_script')->nullable();
             $table->string('checkRest_status_change')->nullable();
@@ -42,7 +42,7 @@ return new class extends Migration
             $table->string('checkRest_late');
             // ---
             // $table->string('checkOut');
-            $table->string('checkOut_work_from');
+            $table->string('checkOut_work_from'); //"WFO"
             $table->string('checkOut_status');
             $table->string('checkOut_status_script')->nullable();
             $table->string('checkOut_status_change')->nullable();

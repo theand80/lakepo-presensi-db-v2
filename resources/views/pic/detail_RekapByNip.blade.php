@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>Operator Nama Kantor</x-slot>
 
-    {{-- @dd($data) --}}
+    {{-- @dd(   $data) --}}
     <div>
         <div class="mb-4">
             {{-- <a href="{{ url('/pic/kantor') }}" --}}
@@ -225,12 +225,21 @@
                                     {{ $hadir['jam_sore'] == null ? '-' : $hadir['jam_sore'] . ' WITA' }}
                                 </td>
 
-                                @if (in_array('WFH', [$hadir['pagi'] ?? '', $hadir['siang'] ?? '', $hadir['sore'] ?? '']))
+                                {{-- @if (in_array('WFH', [$hadir['pagi'] ?? '', $hadir['siang'] ?? '', $hadir['sore'] ?? '']))
                                     <td class="px-4 py-3 text-center text-green-500 font-bold">WFH</td>
                                 @elseif(in_array('WFO', [$hadir['pagi'] ?? '', $hadir['siang'] ?? '', $hadir['sore'] ?? '']))
                                     <td class="px-4 py-3 text-center text-blue-500 font-bold">WFO</td>
                                 @else
                                     <td class="px-4 py-3 text-center">-</td>
+                                @endif --}}
+                                
+                                {{-- <td class="px-4 py-3 text-center text-green-500 font-bold">{{ $hadir['work_from'] }}</td> --}}
+                                @if ($hadir['work_from'] == 'WFH')
+                                    <td class="px-4 py-3 text-center text-green-500 font-bold">{{ $hadir['work_from'] }}</td>
+                                @elseif($hadir['work_from'] == 'WFO')
+                                    <td class="px-4 py-3 text-center text-blue-500 font-bold">{{ $hadir['work_from'] }}</td>
+                                @else
+                                    <td class="px-4 py-3 text-center">{{ $hadir['work_from'] }}</td>
                                 @endif
 
                                 <td

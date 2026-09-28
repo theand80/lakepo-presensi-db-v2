@@ -16,11 +16,11 @@ class PicController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // index: rekap dari data lokal import_api
+    // index: rekap dari data DB hasil import_api
     public function index(Request $request)
     {
-        // $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
-        $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
+        $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
+        // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
 
         $tgl = '2026-07';
 

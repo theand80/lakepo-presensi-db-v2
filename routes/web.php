@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\HariKegiatanController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DataAsnController;
 use App\Http\Controllers\PicController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +29,10 @@ Route::get('/admin/simpanRekapBulananByKantor', [AdminController::class, 'simpan
 Route::post('/admin/lihatRekapBulananByNip', [AdminController::class, 'show'])->name('lihatRekapBulananByNip-DariDB');
 
 // impord data ASN dari Excel
-Route::get('/admin/data-asn', [AdminController::class, 'listDataAsn']);
+Route::get('/admin/data-asn', [DataAsnController::class, 'listDataAsn']);
+Route::post('/import-excel-add-data-asn', [DataAsnController::class, 'addDataAsn']);
+Route::post('/import-excel-update-data-asn', [DataAsnController::class, 'updateDataAsn']);
+Route::delete('/import-excel-delete-all-data-asn', [DataAsnController::class, 'destroyAllDataAsn']);
 
 // set Jam dan Kode
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);

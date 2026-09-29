@@ -1,9 +1,34 @@
 <x-layout>
     <x-slot:title>Data ASN V2</x-slot>
 
-        <div class="space-y-5">
+    {{-- @dd($data) --}}
 
-            <x-notifError />
+    @if (session('error'))
+        <div
+            class="mb-4 flex items-center gap-3 rounded-lg border border-red-
+                200 bg-red-50 p-4 text-sm text-red-700">
+            <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ session('error') }}</span>
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div
+            class="mb-4 flex items-center gap-3 rounded-lg border border-green-
+                200 bg-green-50 p-4 text-sm text-green-700">
+            <svg class="h-5 w-5 shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
+
+        <div class="space-y-5">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:mx-40">
                 <!-- Import Data ASN -->
@@ -154,7 +179,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ([] as $asn)
+                            @foreach ($data as $asn)
                                 <tr class="bg-white border-b border-slate-100 hover:bg-slate-50">
                                     <td class="p-4">
                                         <input type="checkbox"

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataAbsen;
+use App\Models\DataAsn;
 use App\Models\JamReferensi;
 use App\Models\ListKantor;
 use App\Models\Persentase;
@@ -723,11 +724,6 @@ class AdminController extends Controller
 
     // -----------
 
-    public function listDataAsn()
-    {
-        //
-        return view('admin.importDataAsnDariExcel');
-    }
 
 
     // =====================

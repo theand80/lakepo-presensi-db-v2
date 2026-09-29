@@ -1,7 +1,7 @@
 <x-layout>
     <x-slot:title>Operator Nama Kantor</x-slot>
 
-    {{-- @dd(   $data) --}}
+    {{-- @dd($data) --}}
     <div>
         <div class="mb-4">
             {{-- <a href="{{ url('/pic/kantor') }}" --}}
@@ -43,11 +43,11 @@
                 <div class="flex-1 p-5 space-y-2">
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-semibold text-slate-500 w-40">NIP</span>
-                        <span class="text-sm text-slate-800">123</span>
+                        <span class="text-sm text-slate-800">{{ $data['nip'] }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-semibold text-slate-500 w-40">Nama</span>
-                        <span class="text-sm text-slate-800">aaa</span>
+                        <span class="text-sm text-slate-800">{{ $data['nama'] }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-semibold text-slate-500 w-40">Pangkat / Golongan</span>
@@ -86,7 +86,7 @@
                         <div class="absolute inset-0 flex flex-col items-center justify-center">
 
                             <span class="text-2xl font-bold text-slate-800">
-                                80 %
+                                {{ $data['persentase'] }} %
                             </span>
 
                             <span class="text-xs text-slate-500">Ketidakhadiran</span>
@@ -204,6 +204,13 @@
                     <tbody>
                         {{-- @foreach ($data['presensi'] as $hadir) --}}
                         @foreach ($data['presensi'] as $hadir)
+                            @php
+                                $tanggal = \Carbon\Carbon::parse($hadir['tgl']);
+                            @endphp
+                            @if ($tanggal->isWeekend())
+                                @continue
+                            @endif
+
                             <tr class="bg-white border-b border-slate-100 hover:bg-slate-50">
                                 <td class="p-4"><input type="checkbox"
                                         class="w-4 h-4 border border-slate-300 rounded bg-slate-100 focus:ring-2 focus:ring-green-300">

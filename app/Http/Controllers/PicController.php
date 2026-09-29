@@ -21,17 +21,14 @@ class PicController extends Controller
     // index: rekap dari data DB hasil import_api
     public function index(Request $request)
     {
-       
         // $request->validate([
         //     'filterNamaKantor'  => 'required|date',
         //     'month'             => 'required|string',
         // ]);
         
-
         $selectedKantor = $request->input('filterNamaKantor', '');
         $selectedMonth = $request->input('month', date('Y-m-d'));
         // $selectedMonth = $request->input('month', '2026-08-01');
-
 
         $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
@@ -41,20 +38,19 @@ class PicController extends Controller
         $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // dibawah
         $persentases = Persentase::get();
 
-
         $persentaseByNip = $persentases->keyBy('nip');
-
         $data = collect($data)->map(function ($item) use ($persentaseByNip) {
             $persentase = $persentaseByNip->get($item['nip']);
-
             if ($persentase) {
                 $item['persentase'] = $persentase->{'08'};
             }
-
             return $item;
-        })->toArray();
+        })
+        ->sortByDesc(function ($item) {
+                return $item['persentase'] ?? 0;
+            })->values()
+        ->toArray();
 
-        // dd($data);
 
         return view('pic.rekap', compact('data'));
     }

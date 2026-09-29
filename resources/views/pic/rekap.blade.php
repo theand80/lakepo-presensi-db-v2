@@ -254,7 +254,9 @@
                                 <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW4'] }}</td>
                                 <td class="px-4 py-3 text-center">{{ $item['rekap']['TAK'] }}</td>
                                 <td class="px-4 py-3 font-semibold">
-                                    @if ($item['persentase'] < 50)
+                                    @if (!isset($item['persentase']) || $item['persentase'] === '')
+                                        <span class="text-red-600 text-center">N/a %</span>
+                                    @elseif ($item['persentase'] < 50)
                                         <span class="text-red-600">{{ $item['persentase'] }}%</span>
                                     @elseif ($item['persentase'] < 75)
                                         <span class="text-amber-600">{{ $item['persentase'] }}%</span>
@@ -264,8 +266,13 @@
                                 </td>
 
                                 <td class="px-4 py-3 text-center">
-                                    <a href="{{ route('lihatRekapBulananByNip-DariDB', ['nip' => $item['nip']]) }}"
-                                        class="font-medium text-green-600 hover:underline">Detail</a>
+                                    {{-- <a href="{{ route('lihatRekapBulananByNip-DariDB', ['nip' => $item['nip']]) }}"
+                                        class="font-medium text-green-600 hover:underline">Detail</a> --}}
+                                    <form action="{{ route('lihatRekapBulananByNip-DariDB') }}" method="post">
+                                        @csrf
+                                        <input type="hidden" name="nip" value="{{ $item['nip'] }}">
+                                        <button type="submit" class="font-medium text-amber-600 hover:underline cursor-pointer">Detail</button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty

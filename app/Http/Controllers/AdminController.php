@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\DataAbsen;
 use App\Models\JamReferensi;
+use App\Models\ListKantor;
+use App\Models\Persentase;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use App\Models\ListKantor;
-use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -150,8 +150,8 @@ class AdminController extends Controller
         // dd($datas);
         // dd($datas[1]['presensi']);
 
-        // $data = $datas;
-        $data = array_slice($datas, 2, 3);
+        $data = $datas;
+        // $data = array_slice($datas, 2, 3);
 
         // dd($data);
         // return $data;
@@ -618,6 +618,20 @@ class AdminController extends Controller
     // panggil dari __rekapBulananByNip diatas
     private function __statusWorkFrom($checkIn_work_from, $checkOut_work_from)
     {
+        if ($checkIn_work_from == 'WFH' && empty($checkOut_work_from)) {
+            return 'WFH - X';
+        }
+        if (empty($checkIn_work_from)&& $checkOut_work_from == 'WFH') {
+            return 'X - WFH';
+        }
+
+        if ($checkIn_work_from == 'WFO' && empty($checkOut_work_from)) {
+            return 'WFO - X';
+        }
+        if (empty($checkIn_work_from)&& $checkOut_work_from == 'WFO') {
+            return 'X - WFO';
+        }
+
         if ($checkIn_work_from == 'WFH' && $checkOut_work_from == 'WFH') {
             return 'WFH';
         } elseif ($checkIn_work_from == 'WFH' && $checkOut_work_from == 'WFO') {
@@ -685,7 +699,7 @@ class AdminController extends Controller
 
     public function show(Request $request)
     {
-        // dd($request['nip']);
+        // dd($request->nip);
         if (!empty($request['nip'])) {
             # code...
 
@@ -693,6 +707,12 @@ class AdminController extends Controller
             $bulan = '2026-08';
             //
             $data = $this->__rekapBulananByNip($nip, $bulan); //diatas
+
+            $persentases = Persentase::get();
+            $persentase = $persentases->firstWhere('nip', $data['nip']);
+            $data['persentase'] = $persentase ? (float) $persentase->{'08'} : 0;
+
+            // dd($persentases);
 
             return view('pic.detail_RekapByNip', compact('data'));
         }

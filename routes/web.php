@@ -25,7 +25,7 @@ Route::get('/admin/lihatRekapBulananByKantor', [AdminController::class, 'lihatDa
 Route::get('/admin/simpanRekapBulananByKantor', [AdminController::class, 'simpanDataAbsenDariApiKeDB']);
 //Route::get('/admin/lihatDataAbsenDariDB', [AdminController::class, 'lihatDataAbsenDariDB']);
 
-Route::get('/admin/lihatRekapBulananByNip', [AdminController::class, 'show'])->name('lihatRekapBulananByNip-DariDB');
+Route::post('/admin/lihatRekapBulananByNip', [AdminController::class, 'show'])->name('lihatRekapBulananByNip-DariDB');
 
 // impord data ASN dari Excel
 Route::get('/admin/data-asn', [AdminController::class, 'listDataAsn']);

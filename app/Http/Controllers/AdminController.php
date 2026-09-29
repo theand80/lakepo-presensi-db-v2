@@ -42,7 +42,8 @@ class AdminController extends Controller
         ])->get('https://api-absensi.simpegnas.go.id/absensi/api/get/kantor');
 
         $datas = $response->json()['data']['kantor']; //data
-        $data = array_slice($datas, 73, 5);
+        // $data = array_slice($datas, 73, 5);
+        $data = $datas;
 
         DB::transaction(function () use ($data) {
             $dataToUpsert = [];

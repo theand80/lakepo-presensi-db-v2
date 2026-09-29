@@ -257,19 +257,33 @@ class PicController extends Controller
         ];
     }
 
-    // ini dipanggil dari route
-    public function __hitungPersentase()
+    public function persentase()
     {
-        // $data = Persentase::get();
-        // dd($data);
+        //
+        return view('admin.persentase.setPersentase');
+    }
+
+    // ini dipanggil dari route
+    public function __hitungPersentase(Request $request)
+    {
+        $request->validate([
+            'namaKantor'            => 'required|string',
+            'bulanUntukDihitung'    => 'required|date',
+        ]);
+        
+        $selectedKantor = $request->input('namaKantor', '');
+        $selectedMonth = $request->input('bulanUntukDihitung', date('Y-m'));
+
+        // dd($request);
         // 
         $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
 
-        $tgl = '2026-08';
+        // $tgl = '2026-08';
+        $tgl = $selectedMonth;
         $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // diatas
 
-        $bln = substr($tgl, 5, 2);//08
+        $bln = substr($tgl, 5, 2);//dari 2026-08 jadi 08
         // dd($data);
 
         DB::transaction(function () use ($data, $bln) {
@@ -312,7 +326,7 @@ class PicController extends Controller
             }
         });
 
-        return redirect('/admin')->with('success', 'Hitung Persentase bulan '.$bln.' berhasil dilakukan.');
+        return redirect('/pic/simpan-persentase')->with('success', 'Hitung Persentase bulan '.$bln.' berhasil dilakukan.');
         // return 'coba persentase sukses';
 
     }

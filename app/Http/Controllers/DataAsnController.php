@@ -26,18 +26,23 @@ class DataAsnController extends Controller
         // dd($request->status);
         // dd($request->all());
 
+        // if ($request->hasFile('file-add-import')) {
+        //     try {
+        //         Excel::import(new AddDataAsnImport($request->status), $request->file('file-add-import'));
+        //         return redirect('/admin/data-asn')->with('success', 'Data Berhasil Terinput!');
+        //     } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+        //         // Menangkap error validasi baris excel (misal kolom kosong/salah tipe data)
+        //         $failures = $e->failures();
+        //         dd($failures);
+        //     } catch (\Exception $e) {
+        //         // Menangkap error umum (misal duplikat database, kolom tidak cocok)
+        //         dd($e->getMessage());
+        //     }
+        // }
+
         if ($request->hasFile('file-add-import')) {
-            try {
-                Excel::import(new AddDataAsnImport($request->status), $request->file('file-add-import'));
-                return redirect('/admin/data-asn')->with('success', 'Data Berhasil Terinput!');
-            } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-                // Menangkap error validasi baris excel (misal kolom kosong/salah tipe data)
-                $failures = $e->failures();
-                dd($failures);
-            } catch (\Exception $e) {
-                // Menangkap error umum (misal duplikat database, kolom tidak cocok)
-                dd($e->getMessage());
-            }
+            Excel::import(new AddDataAsnImport($request->status), $request->file('file-add-import'));
+            return redirect('/admin/data-asn')->with('success', 'Data Berhasil Terinput!');
         }
 
         return redirect()->back()->with('error', 'File tidak ditemukan.');

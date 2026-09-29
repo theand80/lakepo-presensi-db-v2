@@ -9,79 +9,6 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class AddDataAsnImport implements ToCollection, WithHeadingRow
 {
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    // public function model(array $row)
-    // {
-
-    //     $nip = trim($row['NOMOR INDUK KEPEGAWAIAN'] ?? '');
-    //     $nama = trim($row['NAMA'] ?? '');
-    //     $pangkat = trim($row['PANGKAT'] ?? '');
-    //     $golongan = trim($row['GOL'] ?? '');
-    //     $jabatan = trim($row['NAMA JABATAN'] ?? '');
-    //     $unor_siasn = trim($row['UNIT KERJA'] ?? '');
-    //     $unor_siasn_induk = trim($row['UNIT KERJA INDUK'] ?? '');
-    //     $unor_simpegnas_id = trim($row['NAMA JABATAN PENUGASAN STRUKTURAL'] ?? '');
-    //     $unor_simpegnas = trim($row['UNIT KERJA PENUGASAN STRUKTURAL'] ?? '');
-    //     $foto_simpegnas = trim($row['TMT PENUGASAN STRUKTURAL'] ?? '');
-
-
-    //     if ($nama === '' || $nip === '' || $unor_siasn_induk === '') {
-    //         return null;
-    //     }
-
-    //     return new DataAsn([
-    //         'nip' => $nip,
-    //         'nama' => $nama,
-    //         'pangkat' => $pangkat,
-    //         'golongan' => $golongan,
-    //         'jabatan' => $jabatan,
-    //         'unor_siasn' => $unor_siasn,
-    //         'unor_siasn_induk' => $unor_siasn_induk,
-    //         'unor_simpegnas_id' => $unor_simpegnas_id,
-    //         'unor_simpegnas' => $unor_simpegnas,
-    //         'foto_simpegnas' => $foto_simpegnas,
-    //     ]);
-    // }
-
-    // ini kelemahannya karna memanggil create() berkali-kal
-    // public function collection(Collection $rows)
-    // {
-    //     foreach ($rows as $row) {
-
-    //         $nip = trim($row['NOMOR INDUK KEPEGAWAIAN'] ?? '');
-    //         $nama = trim($row['NAMA'] ?? '');
-    //         $pangkat = trim($row['PANGKAT'] ?? '');
-    //         $golongan = trim($row['GOL'] ?? '');
-    //         $jabatan = trim($row['NAMA JABATAN'] ?? '');
-    //         $unor_siasn = trim($row['UNIT KERJA'] ?? '');
-    //         $unor_siasn_induk = trim($row['UNIT KERJA INDUK'] ?? '');
-    //         $unor_simpegnas_id = trim($row['NAMA JABATAN PENUGASAN STRUKTURAL'] ?? '');
-    //         $unor_simpegnas = trim($row['UNIT KERJA PENUGASAN STRUKTURAL'] ?? '');
-    //         $foto_simpegnas = trim($row['TMT PENUGASAN STRUKTURAL'] ?? '');
-
-    //         if ($nama === '' || $nip === '' || $unor_siasn_induk === '') {
-    //             continue;
-    //         }
-
-    //         DataAsn::create([
-    //             'nip' => $nip,
-    //             'nama' => $nama,
-    //             'pangkat' => $pangkat,
-    //             'golongan' => $golongan,
-    //             'jabatan' => $jabatan,
-    //             'unor_siasn' => $unor_siasn,
-    //             'unor_siasn_induk' => $unor_siasn_induk,
-    //             'unor_simpegnas_id' => $unor_simpegnas_id,
-    //             'unor_simpegnas' => $unor_simpegnas,
-    //             'foto_simpegnas' => $foto_simpegnas,
-    //         ]);
-    //     }
-    // }
-
     protected $status;
 
     public function __construct($status)
@@ -129,10 +56,28 @@ class AddDataAsnImport implements ToCollection, WithHeadingRow
             ];
         }
 
+        // if (!empty($data)) {
+        //     // dd($data);
+        //     DataAsn::insert($data);
+        // }
         if (!empty($data)) {
-            // dd($data);
-            DataAsn::insert($data);
+            DataAsn::upsert(
+                $data,
+                ['nip'], // Kunci unik gabungan di DB tetap pakai 'date'
+                [
+                    'nama',
+                    'pangkat',
+                    'golongan',
+                    'status',
+                    'jabatan',
+                    'unor_siasn',
+                    'unor_siasn_induk',
+                    'updated_at'
+                ]
+            );
         }
+
+        
     }
 
     // public function startRow(): int

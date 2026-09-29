@@ -50,6 +50,11 @@ Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRe
 Route::get('/pic/simpan-persentase', [PicController::class, 'persentase']);
 Route::post('/pic/simpan-persentase', [PicController::class, '__hitungPersentase']);
 
+// persentase v2
+Route::get('/pic/simpan-persentase-v2', [PicController::class, 'persentasev2']);
+Route::post('/pic/simpan-persentase-v2', [PicController::class, '__hitungPersentasev2']);
+
+
 Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 // Route::get('/pic/detail', [PicController::class, 'show']);
 

@@ -33,6 +33,7 @@ Route::get('/admin/data-asn', [DataAsnController::class, 'listDataAsn']);
 Route::post('/import-excel-add-data-asn', [DataAsnController::class, 'addDataAsn']);
 Route::post('/import-excel-update-data-asn', [DataAsnController::class, 'updateDataAsn']);
 Route::delete('/import-excel-delete-all-data-asn', [DataAsnController::class, 'destroyAllDataAsn']);
+Route::post('/admin/eksport-data-asn', [DataAsnController::class, 'exportDataAsn']);
 
 // set Jam dan Kode
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);

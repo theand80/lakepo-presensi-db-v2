@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DataAsnExport;
 use App\Imports\AddDataAsnImport;
 use App\Imports\UpdateDataAsnImport;
 use App\Models\DataAsn;
@@ -62,5 +63,15 @@ class DataAsnController extends Controller
     {
         DataAsn::truncate();
         return redirect('/admin/data-asn')->with('success', 'Semua data ASN berhasil dihapus!');
+    }
+
+    public function exportDataAsn(Request $request)
+    {
+        $filename = 'data_asn_di_lakepo_presensi.xlsx';
+
+        return Excel::download(new DataAsnExport, $filename);
+
+        // 
+        // return redirect('/admin/data-asn')->with('success', 'Semua data ASN berhasil Download');
     }
 }

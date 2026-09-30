@@ -154,10 +154,14 @@
                                 <i class="fa-solid fa-trash"></i> Hapus Semua
                             </button>
                         </form>
-                        <button
-                            class="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg transition-colors">
-                            <i class="fa-solid fa-download"></i> Download
-                        </button>
+
+                        <form action="{{ url('/admin/eksport-data-asn') }}" method="post">
+                            @csrf
+                            <button type="submit"
+                                class="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg transition-colors">
+                                <i class="fa-solid fa-download"></i> Download
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <div class="overflow-auto max-h-[730px]">

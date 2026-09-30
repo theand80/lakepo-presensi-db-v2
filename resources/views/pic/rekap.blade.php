@@ -10,26 +10,27 @@
             <div
                 class="bg-slate-50 py-3 px-4 flex justify-between items-center font-bold text-xs uppercase tracking-wide text-gray-500 border-b border-slate-200">
                 <span>Operator Nama Kantor</span>
-                <form action="{{ url('/pic') }}" method="get">
+                <form action="{{ url('/pic/lihat-satu-kantor-saja') }}" method="post">
+                    @csrf
                     <div class="flex items-center gap-3 normal-case font-normal">
                         <div class="flex items-center gap-2">
                             <label for="filterKantor" class="text-xs font-medium text-slate-600">Kantor:</label>
                             <select id="filterKantor" name="filterNamaKantor"
                                 class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none bg-white">
                                 <option value="">Semua Kantor</option>
-                                <option value="BKPSDM">BKPSDM</option>
-                                <option value="Dinas Pemberdayaan Perempuan dan Perlindungan Anak">Dinas
-                                    Pemberdayaan Perempuan dan Perlindungan Anak</option>
-                                {{-- @foreach ($listKantor as $kantor)
-                                        <option value="{{ $kantor }}" {{ ($selectedKantor ?? '') == $kantor ? 'selected' : '' }}>
-                                            {{ $kantor }}
-                                        </option>
-                                    @endforeach --}}
+                                {{-- <option value="BKPSDM">BKPSDM</option>
+                                <option value="Dinas Pemberdayaan Perempuan dan Perlindungan Anak">Dinas Pemberdayaan Perempuan dan Perlindungan Anak</option> --}}
+                                @foreach ($listKantor as $kantor)
+                                    <option value="{{ $kantor->unor_siasn_induk }}" {{ ($selectedKantor ?? '') == $kantor->unor_siasn_induk ? 'selected' : '' }}>
+                                        {{ $kantor->unor_siasn_induk }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="flex items-center gap-2">
                             <label for="filterBulan" class="text-xs font-medium text-slate-600">Periode:</label>
-                            <input type="month" id="filterBulan" value="2026-07" name="month" {{-- <input type="month" id="filterBulan" value="{{ $selectedMonth }}" name="month" --}}
+                            {{-- <input type="month" id="filterBulan" value="2026-07" name="month"  --}}
+                            <input type="month" id="filterBulan" value="{{ $selectedMonth }}" name="month"
                                 class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none">
                         </div>
                         <div class="flex items-center gap-2">
@@ -282,12 +283,6 @@
                                 </td>
                             </tr>
                         @endforelse
-
-                        <tr>
-                            <td colspan="30" class="px-4 py-8 text-center text-slate-400">
-                                Tidak ada data ditemukan.
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>

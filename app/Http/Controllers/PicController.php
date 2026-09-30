@@ -19,40 +19,91 @@ class PicController extends Controller
      * Display a listing of the resource.
      */
     // index: rekap dari data DB hasil import_api
-    public function index(Request $request)
+    public function index()
     {
+        // dd(empty($request->all()));
+        // if (empty($request->all())) {
+            $listKantor = DataAsn::select('unor_siasn_induk')->distinct()->get();
+
+            // dd($listKantor);
+            $selectedMonth = date('Y-m');
+
+            $data = [];
+            return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth'));
+        // }
+
+        // dd($request);
+
+    }
+    
+    public function lihatSatuKantorSaja(Request $request)
+    {
+        // 
         // $request->validate([
         //     'filterNamaKantor'  => 'required|date',
         //     'month'             => 'required|string',
         // ]);
         
+        $selectedMonth = $request->input('month', date('Y-m'));
         $selectedKantor = $request->input('filterNamaKantor', '');
-        $selectedMonth = $request->input('month', date('Y-m-d'));
         // $selectedMonth = $request->input('month', '2026-08-01');
 
-        $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
+        // $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
+        // $tgl = '2026-08';
 
-        $tgl = '2026-08';
+        $kantorYgDicariDatanya = DataAsn::where('unor_siasn_induk', $selectedKantor)->select('unor_simpegnas')->distinct()->get();
+        
+        $listKantor = ListKantor::get();
 
-        $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // dibawah
+        // dd($kantorYgDicariDatanya[0]['unor_simpegnas']);
+        // dd($kantorYgDicariDatanya[1]['unor_simpegnas']);
+
+        // dd($listKantor[0]['nama_kantor']);
+        // .
+        // .
+        // .
+        // dd($listKantor[300]['nama_kantor']);
+
+        // id didapatkan
+        $hasil = [];
+        foreach ($kantorYgDicariDatanya as $data) {
+            $hasil[] = collect($listKantor)->firstWhere('nama_kantor', $data['unor_simpegnas'])['id_kantor'];
+        }
+
+        // dd($hasil);
+
+        $tgl = $selectedMonth;
+
+        // $data = $this->__dataYangDitampilkan('c9956f8f-77ea-4bbf-a22a-182b6ac9823e', $tgl); // dibawah
+        $data=[];
+        foreach ($hasil as $id_kantor) {
+            $data[] = $this->__dataYangDitampilkan($id_kantor, $tgl); // dibawah
+        }
+        dd($data);
+
+
         $persentases = Persentase::get();
 
         $persentaseByNip = $persentases->keyBy('nip');
-        $data = collect($data)->map(function ($item) use ($persentaseByNip) {
-            $persentase = $persentaseByNip->get($item['nip']);
-            if ($persentase) {
-                $item['persentase'] = $persentase->{'08'};
+        $data = collect($data)->map(
+            function ($item) use ($persentaseByNip) {
+                $persentase = $persentaseByNip->get($item['nip']);
+                if ($persentase) {
+                    $item['persentase'] = $persentase->{'08'};
+                }
+                return $item;
             }
-            return $item;
-        })
+        )
         ->sortByDesc(function ($item) {
                 return $item['persentase'] ?? 0;
-            })->values()
-        ->toArray();
+            })
+        ->values()->toArray();
+
+        
 
 
-        return view('pic.rekap', compact('data'));
+        // return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth'));
     }
 
     // dipanggil di index diatas dan dari __hitungPersentase dibawah

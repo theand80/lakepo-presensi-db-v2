@@ -45,7 +45,9 @@ Route::delete('/admin/hari-kegiatan/{id}', [HariKegiatanController::class, 'hapu
 Route::get('/admin/asn-kegiatan', [HariKegiatanController::class, 'ImportAsnYgMengikutiKegiatan']);
 
 // ------------
+// rekap bulanan by kantor
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');
+Route::post('/pic/lihat-satu-kantor-saja', [PicController::class, 'lihatSatuKantorSaja']);
 
 // persentase
 Route::get('/pic/simpan-persentase', [PicController::class, 'persentase']);

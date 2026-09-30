@@ -50,12 +50,15 @@ class PicController extends Controller
 
         // $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
-        // $tgl = '2026-08';
+        $tgl = '2026-08';
+        // $tgl = $selectedMonth;
+
 
         $kantorYgDicariDatanya = DataAsn::where('unor_siasn_induk', $selectedKantor)->select('unor_simpegnas')->distinct()->get();
         
         $listKantor = ListKantor::get();
 
+        dd($kantorYgDicariDatanya);
         // dd($kantorYgDicariDatanya[0]['unor_simpegnas']);
         // dd($kantorYgDicariDatanya[1]['unor_simpegnas']);
 
@@ -68,12 +71,11 @@ class PicController extends Controller
         // id didapatkan
         $hasil = [];
         foreach ($kantorYgDicariDatanya as $data) {
-            $hasil[] = collect($listKantor)->firstWhere('nama_kantor', $data['unor_simpegnas'])['id_kantor'];
+            $hasil[] = collect($listKantor)->firstWhere('nama_kantor', $data['unor_simpegnas']);
         }
 
-        // dd($hasil);
+        dd($hasil);
 
-        $tgl = $selectedMonth;
 
         // $data = $this->__dataYangDitampilkan('c9956f8f-77ea-4bbf-a22a-182b6ac9823e', $tgl); // dibawah
         $data=[];

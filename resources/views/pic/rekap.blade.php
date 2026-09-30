@@ -21,7 +21,8 @@
                                 {{-- <option value="BKPSDM">BKPSDM</option>
                                 <option value="Dinas Pemberdayaan Perempuan dan Perlindungan Anak">Dinas Pemberdayaan Perempuan dan Perlindungan Anak</option> --}}
                                 @foreach ($listKantor as $kantor)
-                                    <option value="{{ $kantor->unor_siasn_induk }}" {{ ($selectedKantor ?? '') == $kantor->unor_siasn_induk ? 'selected' : '' }}>
+                                    <option value="{{ $kantor->unor_siasn_induk }}"
+                                        {{ ($selectedKantor ?? '') == $kantor->unor_siasn_induk ? 'selected' : '' }}>
                                         {{ $kantor->unor_siasn_induk }}
                                     </option>
                                 @endforeach
@@ -272,7 +273,8 @@
                                     <form action="{{ route('lihatRekapBulananByNip-DariDB') }}" method="post">
                                         @csrf
                                         <input type="hidden" name="nip" value="{{ $item['nip'] }}">
-                                        <button type="submit" class="font-medium text-amber-600 hover:underline cursor-pointer">Detail</button>
+                                        <button type="submit"
+                                            class="font-medium text-amber-600 hover:underline cursor-pointer">Detail</button>
                                     </form>
                                 </td>
                             </tr>

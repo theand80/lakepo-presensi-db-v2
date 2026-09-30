@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\HariKegiatanController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AsnDariApiController;
 use App\Http\Controllers\DataAsnController;
 use App\Http\Controllers\PicController;
 use Illuminate\Support\Facades\Route;
@@ -62,3 +63,40 @@ Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 // Route::get('/pic/detail', [PicController::class, 'show']);
 
 Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
+
+// TARIK DATA DARI API
+
+// tarik data semua asn dari simpegnasm simpan beserta nama kantor dan id kantorya
+
+Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAbsenDariApiKeDB']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -152,8 +152,8 @@ class AdminController extends Controller
         // dd($datas);
         // dd($datas[1]['presensi']);
 
-        $data = $datas;
-        // $data = array_slice($datas, 2, 3);
+        // $data = $datas;
+        $data = array_slice($datas, 2, 3);
 
         // dd($data);
         // return $data;

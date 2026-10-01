@@ -28,6 +28,7 @@
     <div class="min-h-[100px] flex items-center justify-center text-slate-500 bg-white gap-4">
 
         <a href="{{ url('/admin/asn-dari-api') }}" class="bg-red-900 py-2 px-4 text-white">ASN dari API</a>
+        <a href="{{ url('/admin/lihat-asn-dari-api') }}" class="bg-blue-900 py-2 px-4 text-white">Lihat ASN dari API yang sudah di DB</a>
         <a href="{{ url('/pic/simpan-persentase') }}" class="bg-sky-600 py-2 px-4 text-white">Set Persentase</a>
         <a href="{{ url('/pic/simpan-persentase-v2') }}" class="bg-green-600 py-2 px-4 text-white">Set Persentase v2</a>
         {{-- <a href="http://" class="bg-red-900 py-2 px-4 text-white">Hari Libur</a> --}}

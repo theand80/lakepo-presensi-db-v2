@@ -2,118 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DataAsnDariApiKeDbExport;
+use App\Imports\lengkapiDataAsnDariApiKeDbMenggunakanDukImport;
 use App\Models\AsnDariApi;
 use App\Models\ListKantor;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AsnDariApiController extends Controller
 {
-
-    // private function __rekapBulananByKantor($id, $month)
-    // {
-    //     // 1. Pecah bulan dan tahun
-    //     $tahun = explode("-", $month)[0];
-    //     $bulan = explode("-", $month)[1];
-
-    //     // 2. Siapkan wadah untuk menampung semua data kantor
-    //     $semuaDataKantor = [];
-
-    //     // 3. Pastikan $id selalu berupa array (antisipasi jika hanya 1 ID berupa string yang dikirim)
-    //     $idArray = is_array($id) ? $id : [$id];
-
-    //     // 4. Looping untuk mengambil data dari setiap ID kantor
-    //     foreach ($idArray as $kantorId) {
-    //         $url = "https://api-absensi.simpegnas.go.id/absensi/api/get/rekap-bulanan-by-kantor?kantor_id={$kantorId}&tahun={$tahun}&bulan={$bulan}";
-    //         $apiKey = config('services.apiSimpegnas.key');
-    //         $response = Http::withHeaders([
-    //             'presensi-key' => $apiKey,
-    //         ])->get($url);
-
-    //         // 5. Periksa jika request sukses dan data ada
-    //         if ($response->successful() && isset($response->json()['data'])) {
-    //             $dataKantor = $response->json()['data'];
-
-    //             // 6. Gabungkan data ke wadah utama
-    //             // $semuaDataKantor[] = $dataKantor; 
-    //             // ATAU gunakan array_merge jika data berbentuk list/array numerik:
-    //             $semuaDataKantor = array_merge($semuaDataKantor, $dataKantor);
-    //         }
-    //     }
-
-    //     // 7. Kembalikan semua data yang sudah utuh berkumpul
-    //     // dd($semuaDataKantor[1]);
-    //     return $semuaDataKantor;
-    //     // return array_slice($semuaDataKantor, 18, 5);
-    // }
-
-    // simpan ke DB
-    // public function simpanDataAbsenDariApiKeDB()
-    // {
-    //     // dd($listKantor);
-    //     $listKantor = ListKantor::select('id_kantor', 'nama_kantor')->skip(72)->limit(1)->get();
-
-    //     foreach ($listKantor as $value) {
-
-    //         $id = $value['id_kantor'];
-    //         $nama_kantor = $value['nama_kantor'];
-
-    //         $tgl = '2026-08'; //
-
-    //         $datas = $this->__rekapBulananByKantor($id, $tgl); //diatas
-
-    //         // $data = $datas;
-    //         $data = array_slice($datas, 2, 3);
-
-    //         DB::transaction(function () use ($data, $nama_kantor, $id) {
-
-    //             $dataToUpsert = [];
-
-    //             // Loop Tingkat 1: Mengambil employee_id
-    //             foreach ($data as $item) {
-    //                 $employeeNip = $item['nip'];
-    //                 $employeeNama = $item['nama'];
-
-    //                 if ($employeeNip === '') {
-    //                     continue;
-    //                 }
-
-    //                 // Masukkan ke array penampung dengan format kolom database
-    //                 $dataToUpsert[] = [
-    //                     'nip'                           => $employeeNip,
-    //                     'nama'                          => $employeeNama,
-    //                     'unor_simpegnas'                => $nama_kantor,
-    //                     'unor_simpegnas_id'             => $id,
-
-    //                     'created_at'        => now(),
-    //                     'updated_at'        => now(),
-    //                 ];
-                    
-    //             }
-
-    //             // 3. Eksekusi Upsert Massal (Tetap menggunakan acuan unique gabungan)
-    //             if (!empty($dataToUpsert)) {
-    //                 // ImportApi::insert($dataToUpsert);
-    //                 AsnDariApi::upsert(
-    //                     $dataToUpsert,
-    //                     ['nip'], // Kunci unik gabungan di DB tetap pakai 'date'
-    //                     [
-    //                         'nama',
-    //                         'unor_simpegnas',
-    //                         'unor_simpegnas_id',
-
-    //                         'updated_at'
-    //                     ]
-    //                 );
-    //             }
-    //         });
-
-    //     }
-
-    //     return redirect('/admin')->with('success', 'Data ASN dari API berhasil disimpan ke DB');
-    // }
-
     private function __rekapBulananByKantor($id, $month)
     {
         [$tahun, $bulan] = explode('-', $month);
@@ -145,13 +44,12 @@ class AsnDariApiController extends Controller
         return $response->json('data', []);
     }
 
-
-    public function simpanDataAbsenDariApiKeDB()
+    public function simpanDataAsnDariApiKeDB()
     {
         $tgl = '2026-08';
 
         ListKantor::select('id_kantor', 'nama_kantor')
-            ->limit(2) // TESTING: batasi 2 kantor
+            ->skip(72)->limit(2) // TESTING: batasi 2 kantor
             ->chunkById(10, function ($listKantor) use ($tgl) {
 
                 foreach ($listKantor as $kantor) {
@@ -177,7 +75,7 @@ class AsnDariApiController extends Controller
                         }
 
                         // TESTING: hanya ambil 4 ASN dari setiap kantor
-                        $datas = array_slice($datas, 0, 4);
+                        // $datas = array_slice($datas, 0, 4);
 
                         $jumlahData = count($datas);
 
@@ -272,6 +170,141 @@ class AsnDariApiController extends Controller
                 'Proses sinkronisasi ASN dari API selesai.'
             );
     }
+
+    public function lihatDataAsnDariApiKeDB(){
+        // 
+        $data = AsnDariApi::limit(10)->get();
+        return view('admin.asnDariApi.listAsnDariApiYangSudahKeDB', compact('data'));
+    }
+
+    public function lengkapiDataAsnDariApiKeDbMenggunakanDuk(Request $request){
+        // 
+        if ($request->hasFile('file-update-import')) {
+            Excel::import(new lengkapiDataAsnDariApiKeDbMenggunakanDukImport($request->status), $request->file('file-update-import'));
+            return redirect('/admin/lihat-asn-dari-api')->with('success', 'Data Berhasil Diupdate!');
+        }
+
+        return redirect()->back()->with('error', 'File tidak ditemukan.');
+    }
+
+    public function hapusSemuaDataAsnDariApiKeDb()
+    {
+        AsnDariApi::truncate();
+        return redirect('/admin/lihat-asn-dari-api')->with('success', 'Semua data ASN berhasil dihapus!');
+    }
+
+    public function downloadDataAsnDariApiKeDb()
+    {
+        $filename = 'data_asn_di_lakepo_presensi.xlsx';
+
+        return Excel::download(new DataAsnDariApiKeDbExport, $filename);
+
+    }
+
+    // private function __rekapBulananByKantor($id, $month)
+    // {
+    //     // 1. Pecah bulan dan tahun
+    //     $tahun = explode("-", $month)[0];
+    //     $bulan = explode("-", $month)[1];
+
+    //     // 2. Siapkan wadah untuk menampung semua data kantor
+    //     $semuaDataKantor = [];
+
+    //     // 3. Pastikan $id selalu berupa array (antisipasi jika hanya 1 ID berupa string yang dikirim)
+    //     $idArray = is_array($id) ? $id : [$id];
+
+    //     // 4. Looping untuk mengambil data dari setiap ID kantor
+    //     foreach ($idArray as $kantorId) {
+    //         $url = "https://api-absensi.simpegnas.go.id/absensi/api/get/rekap-bulanan-by-kantor?kantor_id={$kantorId}&tahun={$tahun}&bulan={$bulan}";
+    //         $apiKey = config('services.apiSimpegnas.key');
+    //         $response = Http::withHeaders([
+    //             'presensi-key' => $apiKey,
+    //         ])->get($url);
+
+    //         // 5. Periksa jika request sukses dan data ada
+    //         if ($response->successful() && isset($response->json()['data'])) {
+    //             $dataKantor = $response->json()['data'];
+
+    //             // 6. Gabungkan data ke wadah utama
+    //             // $semuaDataKantor[] = $dataKantor; 
+    //             // ATAU gunakan array_merge jika data berbentuk list/array numerik:
+    //             $semuaDataKantor = array_merge($semuaDataKantor, $dataKantor);
+    //         }
+    //     }
+
+    //     // 7. Kembalikan semua data yang sudah utuh berkumpul
+    //     // dd($semuaDataKantor[1]);
+    //     return $semuaDataKantor;
+    //     // return array_slice($semuaDataKantor, 18, 5);
+    // }
+
+    // simpan ke DB
+    // public function simpanDataAsnDariApiKeDB()
+    // {
+    //     // dd($listKantor);
+    //     $listKantor = ListKantor::select('id_kantor', 'nama_kantor')->skip(72)->limit(1)->get();
+
+    //     foreach ($listKantor as $value) {
+
+    //         $id = $value['id_kantor'];
+    //         $nama_kantor = $value['nama_kantor'];
+
+    //         $tgl = '2026-08'; //
+
+    //         $datas = $this->__rekapBulananByKantor($id, $tgl); //diatas
+
+    //         // $data = $datas;
+    //         $data = array_slice($datas, 2, 3);
+
+    //         DB::transaction(function () use ($data, $nama_kantor, $id) {
+
+    //             $dataToUpsert = [];
+
+    //             // Loop Tingkat 1: Mengambil employee_id
+    //             foreach ($data as $item) {
+    //                 $employeeNip = $item['nip'];
+    //                 $employeeNama = $item['nama'];
+
+    //                 if ($employeeNip === '') {
+    //                     continue;
+    //                 }
+
+    //                 // Masukkan ke array penampung dengan format kolom database
+    //                 $dataToUpsert[] = [
+    //                     'nip'                           => $employeeNip,
+    //                     'nama'                          => $employeeNama,
+    //                     'unor_simpegnas'                => $nama_kantor,
+    //                     'unor_simpegnas_id'             => $id,
+
+    //                     'created_at'        => now(),
+    //                     'updated_at'        => now(),
+    //                 ];
+                    
+    //             }
+
+    //             // 3. Eksekusi Upsert Massal (Tetap menggunakan acuan unique gabungan)
+    //             if (!empty($dataToUpsert)) {
+    //                 // ImportApi::insert($dataToUpsert);
+    //                 AsnDariApi::upsert(
+    //                     $dataToUpsert,
+    //                     ['nip'], // Kunci unik gabungan di DB tetap pakai 'date'
+    //                     [
+    //                         'nama',
+    //                         'unor_simpegnas',
+    //                         'unor_simpegnas_id',
+
+    //                         'updated_at'
+    //                     ]
+    //                 );
+    //             }
+    //         });
+
+    //     }
+
+    //     return redirect('/admin')->with('success', 'Data ASN dari API berhasil disimpan ke DB');
+    // }
+
+
     
 
 }

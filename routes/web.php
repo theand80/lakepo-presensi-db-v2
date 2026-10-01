@@ -68,7 +68,12 @@ Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
 
 // tarik data semua asn dari simpegnasm simpan beserta nama kantor dan id kantorya
 
-Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAbsenDariApiKeDB']);
+Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAsnDariApiKeDB']);
+
+Route::get('/admin/lihat-asn-dari-api', [AsnDariApiController::class, 'lihatDataAsnDariApiKeDB']);
+Route::post('/admin/import-duk-excel-untuk-lengkapi-data-asn', [AsnDariApiController::class, 'lengkapiDataAsnDariApiKeDbMenggunakanDuk']);
+Route::delete('/admin/hapus-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'hapusSemuaDataAsnDariApiKeDb']);
+Route::post('/admin/download-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'downloadDataAsnDariApiKeDb']);
 
 
 

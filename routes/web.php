@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\HariKegiatanController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AsnDariApiController;
+use App\Http\Controllers\DataAbsenController;
 use App\Http\Controllers\DataAsnController;
 use App\Http\Controllers\PicController;
 use Illuminate\Support\Facades\Route;
@@ -19,17 +20,20 @@ Route::redirect('/', '/admin');
 
 Route::get('/admin', [AdminController::class, 'index']);
 
+// admin / list kantor
 Route::get('/admin/listKantorDariApiIndex', [AdminController::class, 'listKantorDariApiIndex'])->name('lihatListKator-DariApi');
 Route::get('/admin/simpanListKantorkeDB', [AdminController::class, 'simpanListKantorkeDB']);
 Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorDariDBIndex'])->name('lihatListKator-DariDB');
 
-Route::get('/admin/lihatRekapBulananByKantor', [AdminController::class, 'lihatDataAbsenDariApi'])->name('lihatRekapBulananByKantor-DariApi');
-Route::get('/admin/simpanRekapBulananByKantor', [AdminController::class, 'simpanDataAbsenDariApiKeDB']);
+// absensi
+Route::get('/admin/lihatRekapBulananByKantor', [DataAbsenController::class, 'lihatDataAbsenDariApi'])->name('lihatRekapBulananByKantor-DariApi');
+Route::get('/admin/kantorYangAkanDisimpanRekapBulananByKantor', [DataAbsenController::class, 'kantorYgAkanDisimpanDataAbsenDariApiKeDB']);
+Route::get('/admin/simpanRekapBulananByKantor', [DataAbsenController::class, 'simpanDataAbsenDariApiKeDB']);
 //Route::get('/admin/lihatDataAbsenDariDB', [AdminController::class, 'lihatDataAbsenDariDB']);
 
 Route::post('/admin/lihatRekapBulananByNip', [AdminController::class, 'show'])->name('lihatRekapBulananByNip-DariDB');
 
-// impord data ASN dari Excel
+// impord data ASN dari Excel (Data ASN V1)
 Route::get('/admin/data-asn', [DataAsnController::class, 'listDataAsn']);
 Route::post('/import-excel-add-data-asn', [DataAsnController::class, 'addDataAsn']);
 Route::post('/import-excel-update-data-asn', [DataAsnController::class, 'updateDataAsn']);
@@ -39,7 +43,7 @@ Route::post('/admin/eksport-data-asn', [DataAsnController::class, 'exportDataAsn
 // set Jam dan Kode
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);
 
-// kegiatan
+// hariKegiatan
 Route::get('/admin/hari-kegiatan', [HariKegiatanController::class, 'setHariKegiatan']);
 Route::post('/admin/hari-kegiatan', [HariKegiatanController::class, 'simpanSetHariKegiatan']);
 Route::delete('/admin/hari-kegiatan/{id}', [HariKegiatanController::class, 'hapusHariKegiatan']);
@@ -65,7 +69,7 @@ Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
 
 
-// TARIK DATA DARI API
+// TARIK DATA DARI API (Data ASN V2)
 // tarik data semua asn dari simpegnasm simpan beserta nama kantor dan id kantorya
 Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAsnDariApiKeDB']);
 // 

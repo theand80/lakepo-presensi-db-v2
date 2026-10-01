@@ -15,7 +15,7 @@ class HariKegiatanController extends Controller
     {
         //
         $data = HariKegiatan::orderBy('tanggal', 'asc')->get();
-        return view('admin.kegiatan.setHariKegiatan', compact('data'));
+        return view('admin.hariKegiatan.setHariKegiatan', compact('data'));
     }
 
     public function simpanSetHariKegiatan(Request $request)
@@ -105,6 +105,6 @@ class HariKegiatanController extends Controller
         // $data = $query->get()->groupBy('nip');
 
 
-        return view('admin.kegiatan.importAsnYgIkutHariKegiatan', compact('data'));
+        return view('admin.hariKegiatan.importAsnYgIkutHariKegiatan', compact('data'));
     }
 }

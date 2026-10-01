@@ -18,7 +18,7 @@ class DataAsnController extends Controller
         //
         // $data = DataAsn::orderBy('unor_siasn_induk', 'desc')->get();
         $data = DataAsn::orderBy('unor_siasn_induk', 'desc')->paginate(10);
-        return view('admin.importDataAsnDariExcel', compact('data'));
+        return view('admin.dataAsn.importDataAsnDariExcel', compact('data'));
     }
 
     public function addDataAsn(Request $request)

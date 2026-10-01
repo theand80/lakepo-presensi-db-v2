@@ -3,7 +3,7 @@
     {{-- @if (count($data) > 0)
         @dd($data)
         @endif --}}
-    {{-- @dd($data) --}}
+    {{-- @dd($selectedMonth) --}}
 
     <div>
         <div class="bg-white border border-slate-200 rounded-md overflow-hidden shadow-sm mb-5">
@@ -30,8 +30,8 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <label for="filterBulan" class="text-xs font-medium text-slate-600">Periode:</label>
-                            {{-- <input type="month" id="filterBulan" value="2026-07" name="month"  --}}
-                            <input type="month" id="filterBulan" value="{{ $selectedMonth }}" name="month"
+                            {{-- <input type="month" id="filterBulan" value="2026-07" name="month"  2026-10--}}
+                            <input type="month" id="filterBulan" value={{ $selectedMonth }} name="month"
                                 class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none">
                         </div>
                         <div class="flex items-center gap-2">

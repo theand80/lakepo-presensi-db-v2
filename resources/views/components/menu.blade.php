@@ -37,7 +37,7 @@
 
         {{-- <a href="{{ url('/admin/lihatRekapBulananByNip') }}" class="bg-teal-600 py-2 px-4 text-white">Rekap Bulanan By Nip / Detail</a> --}}
 
-        <a href="{{ url('/admin/referensi') }}" class="bg-red-700 py-2 px-4 text-white">Referensi</a>
+        
         <a href="http://" class="bg-blue-700 py-2 px-4 text-white">Rekapitulasi (chart)</a>
     </div>
 </div>
@@ -59,6 +59,7 @@
         <a href="{{ url('/admin/hari-kegiatan') }}" class="bg-amber-600 py-2 px-4 text-white">Tambah Hari Kegiatan</a>
         <a href="{{ url('/admin/asn-kegiatan') }}" class="bg-teal-600 py-2 px-4 text-white">Import ASN yg mengikuti
             Kegiatan</a>
+        <a href="{{ url('/admin/referensi') }}" class="bg-red-700 py-2 px-4 text-white">Referensi</a>
     </div>
 
 </div>

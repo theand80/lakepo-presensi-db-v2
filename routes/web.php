@@ -64,12 +64,11 @@ Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 
 Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
 
+
 // TARIK DATA DARI API
-
 // tarik data semua asn dari simpegnasm simpan beserta nama kantor dan id kantorya
-
 Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAsnDariApiKeDB']);
-
+// 
 Route::get('/admin/lihat-asn-dari-api', [AsnDariApiController::class, 'lihatDataAsnDariApiKeDB']);
 Route::post('/admin/import-duk-excel-untuk-lengkapi-data-asn', [AsnDariApiController::class, 'lengkapiDataAsnDariApiKeDbMenggunakanDuk']);
 Route::delete('/admin/hapus-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'hapusSemuaDataAsnDariApiKeDb']);

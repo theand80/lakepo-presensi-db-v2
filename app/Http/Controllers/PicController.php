@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Exports\RekapAbsenExport;
 use App\Models\ApiSimpegnas;
+use App\Models\AsnDariApi;
 use App\Models\DataAbsen;
 use App\Models\DataAsn;
 use App\Models\ImportApi;
 use App\Models\ListKantor;
 use App\Models\Persentase;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PicController extends Controller
 {
@@ -23,7 +24,7 @@ class PicController extends Controller
     {
         // dd(empty($request->all()));
         // if (empty($request->all())) {
-            $listKantor = DataAsn::select('unor_siasn_induk')->distinct()->get();
+            $listKantor = AsnDariApi::select('unor_siasn_induk')->distinct()->get();
 
             // dd($listKantor);
             $selectedMonth = date('Y-m');

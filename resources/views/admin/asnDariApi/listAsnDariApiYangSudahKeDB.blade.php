@@ -148,7 +148,7 @@
                                 </td>
                                 <td class="px-4 py-3">{{ $asn['nama'] }}</td>
                                 <td class="px-4 py-3 text-center">
-                                    {{ $asn['golongan'] }}{{ $asn['pangkat'] ? " - {$asn['pangkat']}" : '' }}
+                                    {{ $asn['pangkat'] ? $asn['pangkat']." -" : ""}}  {{ $asn['golongan'] }}
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @if ($asn['status'] == 'PNS')

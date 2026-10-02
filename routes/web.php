@@ -21,12 +21,12 @@ Route::redirect('/', '/admin');
 
 Route::get('/admin', [AdminController::class, 'index']);
 
-// admin / list kantor
+// 1. admin / list kantor
 Route::get('/admin/listKantorDariApiIndex', [AdminController::class, 'listKantorDariApiIndex'])->name('lihatListKator-DariApi');
 Route::get('/admin/simpanListKantorkeDB', [AdminController::class, 'simpanListKantorkeDB']);
 Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorDariDBIndex'])->name('lihatListKator-DariDB');
 
-// absensi
+// 2. absensi
 Route::get('/admin/lihatRekapBulananByKantor', [DataAbsenController::class, 'lihatDataAbsenDariApi'])
         ->name('lihatRekapBulananByKantor-DariApi'); // masih dd
 Route::get('/admin/kantorYangAkanDisimpanRekapBulananByKantor', [DataAbsenController::class, 'kantorYgAkanDisimpanDataAbsenDariApiKeDB']);
@@ -52,11 +52,11 @@ Route::delete('/admin/hari-kegiatan/{id}', [HariKegiatanController::class, 'hapu
 Route::get('/admin/asn-kegiatan', [HariKegiatanController::class, 'ImportAsnYgMengikutiKegiatan']);
 
 // ------------
-// rekap bulanan by kantor
+// 3. rekap bulanan by kantor
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');
 Route::post('/pic/lihat-satu-kantor-saja', [PicController::class, 'lihatSatuKantorSaja']);
 
-// persentase
+// 4. persentase
 Route::get('/pic/simpan-persentase', [PersentaseController::class, 'persentase']);
 Route::post('/pic/simpan-persentase', [PersentaseController::class, '__hitungPersentase']);
 

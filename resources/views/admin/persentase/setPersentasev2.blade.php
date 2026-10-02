@@ -1,6 +1,6 @@
 <x-layout>
 
-    @dd($data->all()[0])
+    {{-- @dd($data->all()[0]) --}}
     @if (session('error'))
         <div
             class="mb-4 flex items-center gap-3 rounded-lg border border-red-

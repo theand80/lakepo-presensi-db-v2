@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ListKantor;
 use App\Models\Persentase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PersentaseController extends Controller
 {
@@ -88,7 +89,9 @@ class PersentaseController extends Controller
     public function persentasev2()
     {
         //
-        $data = ListKantor::all();
+        // $data = ListKantor::all();
+
+        
 
         return view('admin.persentase.setPersentasev2', compact('data'));
     }
@@ -112,7 +115,12 @@ class PersentaseController extends Controller
 
         // $tgl = '2026-08';
         $tgl = $selectedMonth;
-        $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // diatas
+
+        //ini sebaiknya jadikan Service (cara panggil fungsi di controller lain laravel)
+        // di PicController diubah jadi private, atau dihapus jika sudah menggunakan service
+        $picController = new PicController();
+        $data = $picController->__dataYangDitampilkan($unor_simpegnas_id, $tgl);
+        // $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // diatas
 
         $bln = substr($tgl, 5, 2);//dari 2026-08 jadi 08
         // dd($data);
@@ -156,9 +164,6 @@ class PersentaseController extends Controller
 
             }
 
-            ListKantor::updated([
-                'bulan_'.$bln => 1 //sudah dihitung
-            ]);
         });
 
         return redirect('/pic/simpan-persentase')->with('success', 'Hitung Persentase bulan '.$bln.' berhasil dilakukan.');

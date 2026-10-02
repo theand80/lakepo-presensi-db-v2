@@ -21,16 +21,16 @@
                                 {{-- <option value="BKPSDM">BKPSDM</option>
                                 <option value="Dinas Pemberdayaan Perempuan dan Perlindungan Anak">Dinas Pemberdayaan Perempuan dan Perlindungan Anak</option> --}}
                                 @foreach ($listKantor as $kantor)
-                                    <option value="{{ $kantor->unor_siasn_induk }}"
-                                        {{ ($selectedKantor ?? '') == $kantor->unor_siasn_induk ? 'selected' : '' }}>
-                                        {{ $kantor->unor_siasn_induk }}
+                                    <option value="{{ $kantor }}"
+                                        {{ ($selectedKantor ?? '') == $kantor ? 'selected' : '' }}>
+                                        {{ $kantor }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="flex items-center gap-2">
                             <label for="filterBulan" class="text-xs font-medium text-slate-600">Periode:</label>
-                            {{-- <input type="month" id="filterBulan" value="2026-07" name="month"  2026-10--}}
+                            {{-- <input type="month" id="filterBulan" value="2026-07" name="month"  2026-10 --}}
                             <input type="month" id="filterBulan" value={{ $selectedMonth }} name="month"
                                 class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none">
                         </div>

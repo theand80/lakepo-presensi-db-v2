@@ -101,7 +101,7 @@ class DataAbsenController extends Controller
         // dd($datas[1]['presensi']);
 
         // $data = $datas;
-        $data = array_slice($datas, 0, 3);
+        $data = array_slice($datas, 6, 3); // ambil 3 orang, dari urutan nama ke 6
 
         // dd($data);
         // return $data;

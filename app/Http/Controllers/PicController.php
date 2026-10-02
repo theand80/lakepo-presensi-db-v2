@@ -24,9 +24,18 @@ class PicController extends Controller
     {
         // dd(empty($request->all()));
         // if (empty($request->all())) {
-            $listKantor = AsnDariApi::select('unor_siasn_induk')->distinct()->get();
+            
+        // kantor yang ada di data absen
+        // di data absen, kolom unor_simpegnas, cari yang sama di AsnDariApi kolom unor_simpegnas, 
+        // jika sama, ambil kolom unor_siasn_induk, munculkan di list
+        // $listKantor = AsnDariApi::select('unor_siasn_induk')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
+        
+            $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->pluck('unor_simpegnas');
+            $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
 
+            // dd($unorSimpegnas);
             // dd($listKantor);
+
             $selectedMonth = date('Y-m');
 
             $data = [];
@@ -49,17 +58,19 @@ class PicController extends Controller
         $selectedKantor = $request->input('filterNamaKantor', '');
         // $selectedMonth = $request->input('month', '2026-08-01');
 
+        // dd($selectedMonth);
+
         // $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
         $tgl = '2026-08';
         // $tgl = $selectedMonth;
 
 
-        $kantorYgDicariDatanya = DataAsn::where('unor_siasn_induk', $selectedKantor)->select('unor_simpegnas')->distinct()->get();
+        $kantorYgDicariDatanya = AsnDariApi::where('unor_siasn_induk', $selectedKantor)->select('unor_simpegnas')->distinct()->get();
         
         $listKantor = ListKantor::get();
 
-        dd($kantorYgDicariDatanya);
+        // dd($kantorYgDicariDatanya);
         // dd($kantorYgDicariDatanya[0]['unor_simpegnas']);
         // dd($kantorYgDicariDatanya[1]['unor_simpegnas']);
 
@@ -75,7 +86,7 @@ class PicController extends Controller
             $hasil[] = collect($listKantor)->firstWhere('nama_kantor', $data['unor_simpegnas']);
         }
 
-        dd($hasil);
+        // dd($hasil);
 
 
         // $data = $this->__dataYangDitampilkan('c9956f8f-77ea-4bbf-a22a-182b6ac9823e', $tgl); // dibawah
@@ -83,14 +94,14 @@ class PicController extends Controller
         foreach ($hasil as $id_kantor) {
             $data[] = $this->__dataYangDitampilkan($id_kantor, $tgl); // dibawah
         }
-        dd($data);
+        // dd($data);
 
 
         $persentases = Persentase::get();
 
         $persentaseByNip = $persentases->keyBy('nip');
         $data = collect($data)->map(
-            function ($item) use ($persentaseByNip) {
+            function ($item) use ($persentaseByNip, ) {
                 $persentase = $persentaseByNip->get($item['nip']);
                 if ($persentase) {
                     $item['persentase'] = $persentase->{'08'};
@@ -110,10 +121,10 @@ class PicController extends Controller
     }
 
     // dipanggil di index diatas dan dari __hitungPersentase dibawah
-    private function __dataYangDitampilkan($unor_simpegnas_id, $tgl)
+    public function __dataYangDitampilkan($unor_simpegnas_id, $tgl)
     {
         // 
-        $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id)->whereLike('date', $tgl . '%')->get()->groupBy('nip');
+        $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl . '%')->get()->groupBy('nip');
 
         // $nipList = $records->keys()->toArray();
 

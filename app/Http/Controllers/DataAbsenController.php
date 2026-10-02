@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DataAbsen;
 use App\Models\JamReferensi;
+use App\Models\ListKantor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,14 +13,14 @@ use Illuminate\Support\Facades\Http;
 class DataAbsenController extends Controller
 {
     //
-
-
     // panggil dari simpanDataAbsenDariApiKeDB dibawah dan lihatDataAbsenDariApi dibawah
-    private function __rekapBulananByKantor($id, $month)
+    private function __rekapBulananByKantor($id, $bln)
     {
         // 1. Pecah bulan dan tahun
-        $tahun = explode("-", $month)[0];
-        $bulan = explode("-", $month)[1];
+        $tahun = date('Y');
+        $bulan = $bln;
+
+        // dd($bulan);
 
         // 2. Siapkan wadah untuk menampung semua data kantor
         $semuaDataKantor = [];
@@ -70,34 +71,41 @@ class DataAbsenController extends Controller
     // simpan ke DB
     public function simpanDataAbsenDariApiKeDB(Request $request)
     {
-        //
-        // $request->validate([
-        //     'kantor_id' => 'required',
-        //     'kantor_nama' => 'required',
-        //     'bulan' => 'required|integer|min:1|max:12',
-        // ]);
+        // dd($request->all());
 
-        $id = $request['kantor_id'] ?? 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e';
-        $nama_kantor = $request['kantor_nama'] ?? 'Badan Kepegawaian dan Pengembangan Sumber Daya Manusia test';
+        //
+        $request->validate([
+            'kantor_id' => 'required',
+            'kantor_nama' => 'required',
+            'bulan' => 'required|string|min:1|max:12',
+        ]);
+
+
+        // $id = $request['kantor_id'] ?? 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e';
+        // $nama_kantor = $request['kantor_nama'] ?? 'Badan Kepegawaian dan Pengembangan Sumber Daya Manusia test';
+        // $tgl = '2026-08'; //
 
         // $tgl = '2026-' . $request['bulan'] ?? '2026-07'; //
 
         // $id = $request['kantor_id'] ?? 'fd7277d4-c35d-4de5-a479-1adad7cfceed';
         // $nama_kantor = $request['kantor_nama'] ?? 'Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu - Kantor test';
 
-        $tgl = '2026-08'; //
+        // $tahun = date('Y');
+        $id = $request['kantor_id'];
+        $nama_kantor = $request['kantor_nama'];
+        $bln = $request['bulan']; //
 
-        $datas = $this->__rekapBulananByKantor($id, $tgl); //diatas
+        $datas = $this->__rekapBulananByKantor($id, $bln); //diatas
 
         // dd($datas);
         // dd($datas[1]['presensi']);
 
         // $data = $datas;
-        $data = array_slice($datas, 2, 3);
+        $data = array_slice($datas, 0, 3);
 
         // dd($data);
         // return $data;
-        DB::transaction(function () use ($data, $nama_kantor, $id) {
+        DB::transaction(function () use ($data, $nama_kantor, $id, $bln) {
 
             $dataToUpsert = [];
 
@@ -121,8 +129,6 @@ class DataAbsenController extends Controller
                     // Gabungkan menjadi format tanggal standar SQL: YYYY-MM-DD
                     $fullDate = "{$tahun}-{$bulanFormat}-{$dayFormat}";
 
-
-
                     // $kodeAbsen = [
                     //     'H','HN','DL','TB','CT','CM','CB','CS','CAP','CTLN','CH','TK','TAS','TM1','TM2','TM3','TMM','PC1','PC2','PC3',
                     //     'PCM','TAK','TM1-PC1','TM1-PC2','TM1-PC3','TM1-PCM','TM2-PC1','TM2-PC2','TM2-PC3','TM2-PCM','TM3-PC1','TM3-PC2',
@@ -130,7 +136,6 @@ class DataAbsenController extends Controller
                     //     //
                     //     'TM1-SN','TM2-SN','TM3-SN','TMM-SN','PN-PC1','PN-PC2','PN-PC3','PN-PCM',
                     // ];
-
 
                     // $status_script = $this->__nilaiStatusScript($presensi['checkIn']['time_with_timezone'], $presensi['checkOut']['time_with_timezone']); 
                     // [
@@ -153,7 +158,6 @@ class DataAbsenController extends Controller
                     // sabtu + Minggu
                     $date = Carbon::parse($fullDate);
                     $sabming = $date->isWeekend() ? 1 : '';
-
 
                     // Masukkan ke array penampung dengan format kolom database
                     $dataToUpsert[] = [
@@ -231,11 +235,14 @@ class DataAbsenController extends Controller
                     ]
                 );
             }
+
+            DB::table('list_kantors')
+            ->where('id_kantor', $id)
+            ->update(['bulan_' . $bln => '1']);
+            
         });
 
-        // DB::table('list_kantors')
-        //     ->where('id_kantor', $request['kantor_id'])
-        //     ->update(['bulan_' . $request['bulan'] => '1']);
+        
 
         return redirect('/pic/dashboard/pic')->with('status', 'Data berhasil disimpan');
     }
@@ -462,6 +469,7 @@ class DataAbsenController extends Controller
     public function kantorYgAkanDisimpanDataAbsenDariApiKeDB(Request $request)
     {
         // 
-        return view('admin.dataAbsen.listKantor');
+        $data = ListKantor::all();
+        return view('admin.dataAbsen.listKantor', compact('data'));
     }
 }

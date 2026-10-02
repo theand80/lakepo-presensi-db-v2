@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AsnDariApiController;
 use App\Http\Controllers\DataAbsenController;
 use App\Http\Controllers\DataAsnController;
+use App\Http\Controllers\PersentaseController;
 use App\Http\Controllers\PicController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,9 +27,10 @@ Route::get('/admin/simpanListKantorkeDB', [AdminController::class, 'simpanListKa
 Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorDariDBIndex'])->name('lihatListKator-DariDB');
 
 // absensi
-Route::get('/admin/lihatRekapBulananByKantor', [DataAbsenController::class, 'lihatDataAbsenDariApi'])->name('lihatRekapBulananByKantor-DariApi');
+Route::get('/admin/lihatRekapBulananByKantor', [DataAbsenController::class, 'lihatDataAbsenDariApi'])
+        ->name('lihatRekapBulananByKantor-DariApi'); // masih dd
 Route::get('/admin/kantorYangAkanDisimpanRekapBulananByKantor', [DataAbsenController::class, 'kantorYgAkanDisimpanDataAbsenDariApiKeDB']);
-Route::get('/admin/simpanRekapBulananByKantor', [DataAbsenController::class, 'simpanDataAbsenDariApiKeDB']);
+Route::post('/admin/simpanRekapBulananByKantor', [DataAbsenController::class, 'simpanDataAbsenDariApiKeDB']);
 //Route::get('/admin/lihatDataAbsenDariDB', [AdminController::class, 'lihatDataAbsenDariDB']);
 
 Route::post('/admin/lihatRekapBulananByNip', [AdminController::class, 'show'])->name('lihatRekapBulananByNip-DariDB');
@@ -55,12 +57,12 @@ Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRe
 Route::post('/pic/lihat-satu-kantor-saja', [PicController::class, 'lihatSatuKantorSaja']);
 
 // persentase
-Route::get('/pic/simpan-persentase', [PicController::class, 'persentase']);
-Route::post('/pic/simpan-persentase', [PicController::class, '__hitungPersentase']);
+Route::get('/pic/simpan-persentase', [PersentaseController::class, 'persentase']);
+Route::post('/pic/simpan-persentase', [PersentaseController::class, '__hitungPersentase']);
 
 // persentase v2
-Route::get('/pic/simpan-persentase-v2', [PicController::class, 'persentasev2']);
-Route::post('/pic/simpan-persentase-v2', [PicController::class, '__hitungPersentasev2']);
+Route::get('/pic/simpan-persentase-v2', [PersentaseController::class, 'persentasev2']);
+Route::post('/pic/simpan-persentase-v2', [PersentaseController::class, '__hitungPersentasev2']);
 
 
 Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');

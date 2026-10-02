@@ -1,6 +1,6 @@
 <x-layout>
 
-    @dd($data->all()[0])
+    {{-- @dd($data->all()[0]) --}}
     @if (session('error'))
         <div
             class="mb-4 flex items-center gap-3 rounded-lg border border-red-
@@ -25,13 +25,13 @@
         </div>
     @endif
 
-    <x-slot:title>Set Persentase v2</x-slot>
+    <x-slot:title>List Kantor</x-slot>
 
     <div>
         <div class="bg-white border border-slate-200 rounded-md overflow-hidden shadow-sm mb-5">
             <div
                 class="bg-slate-50 py-3 px-4 flex justify-between items-center font-bold text-xs uppercase tracking-wide text-gray-500 border-b border-slate-200">
-                <span>Set Persentase v2</span>
+                <span>List Kantor</span>
             </div>
         </div>
 
@@ -91,14 +91,13 @@
 
                                 @for ($bulan = 1; $bulan <= 12; $bulan++)
                                     <td class="px-4 py-3 text-xs text-center border-r border-gray-200">
-                                        <form action="{{ url('/pic/simpan-persentase-v2') }}" method="POST">
+                                        <form action="{{ url('/admin/simpanRekapBulananByKantor') }}" method="POST">
                                             @csrf
 
                                             <input type="hidden" name="kantor_id" value="{{ $kantor['id_kantor'] }}">
-                                            <input type="hidden" name="namaKantor"
-                                                value="{{ $kantor['nama_kantor'] }}">
+                                            <input type="hidden" name="kantor_nama" value="{{ $kantor['nama_kantor'] }}">
                                             {{-- <input type="hidden" name="bulan{{ $bulan }}" value="{{ $bulan }}"> --}}
-                                            <input type="hidden" name="bulanUntukDihitung" value="{{ $bulan }}">
+                                            <input type="hidden" name="bulan" value="{{ $bulan }}">
 
                                             @if ($kantor["bulan_$bulan"] == 0)
                                                 <button type="submit"

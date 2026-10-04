@@ -191,7 +191,8 @@ class DataAbsenController extends Controller
                         'checkOut_late'                  => $presensi['checkOut']['late'] ?? null,
 
                         'tak'                            => $presensi['tak'] ?? 0,
-
+                        // 'persentase'                     => 0,
+                        
                         'created_at'        => now(),
                         'updated_at'        => now(),
                     ];
@@ -242,9 +243,7 @@ class DataAbsenController extends Controller
             
         });
 
-        
-
-        return redirect('/pic/dashboard/pic')->with('status', 'Data berhasil disimpan');
+        return redirect('/admin/kantorYangAkanDisimpanRekapBulananByKantor')->with('success', 'Data berhasil disimpan');
     }
 
     // setting Jam - panggil dari simpanDataAbsenDariApiKeDB diatas

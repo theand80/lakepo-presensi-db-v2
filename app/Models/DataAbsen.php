@@ -47,5 +47,6 @@ class DataAbsen extends Model
         'status_change',
         'late',
         'tak',
+        'persentase',
     ];
 }

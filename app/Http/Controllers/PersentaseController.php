@@ -91,7 +91,7 @@ class PersentaseController extends Controller
         //
         // $data = ListKantor::all();
 
-        
+        $data = [];
 
         return view('admin.persentase.setPersentasev2', compact('data'));
     }

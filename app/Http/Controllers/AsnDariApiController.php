@@ -49,7 +49,9 @@ class AsnDariApiController extends Controller
         $tgl = '2026-08';
 
         ListKantor::select('id_kantor', 'nama_kantor')
-            ->skip(72)->limit(2) // TESTING: batasi 2 kantor
+            // ->skip(72)->limit(2) // TESTING: batasi 2 kantor
+            ->where('id_kantor', '7e504992-b3ea-4172-9bfc-3a3cb080c0d0')
+            // ->skip(0)->limit(2)
             ->chunkById(10, function ($listKantor) use ($tgl) {
 
                 foreach ($listKantor as $kantor) {
@@ -74,8 +76,9 @@ class AsnDariApiController extends Controller
                             continue;
                         }
 
-                        // TESTING: hanya ambil 4 ASN dari setiap kantor
-                        // $datas = array_slice($datas, 0, 4);
+                        // TESTING: hanya ambil 3 ASN dari setiap kantor
+                        $datas = array_slice($datas, 0, 3);
+                        // $datas = array_slice($datas, 6, 3);
 
                         $jumlahData = count($datas);
 
@@ -171,9 +174,10 @@ class AsnDariApiController extends Controller
             );
     }
 
-    public function lihatDataAsnDariApiKeDB(){
+    public function lihatDataAsnDariApiYangSudahKeDB(){
         // 
-        $data = AsnDariApi::limit(10)->get();
+        // $data = AsnDariApi::limit(10)->get();
+        $data = AsnDariApi::all();
         return view('admin.asnDariApi.listAsnDariApiYangSudahKeDB', compact('data'));
     }
 

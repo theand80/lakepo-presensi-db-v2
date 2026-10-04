@@ -88,7 +88,6 @@ class PicController extends Controller
 
         // dd($hasil);
 
-
         // $data = $this->__dataYangDitampilkan('c9956f8f-77ea-4bbf-a22a-182b6ac9823e', $tgl); // dibawah
         $data=[];
         foreach ($hasil as $id_kantor) {
@@ -113,9 +112,6 @@ class PicController extends Controller
                 return $item['persentase'] ?? 0;
             })
         ->values()->toArray();
-
-        
-
 
         // return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth'));
     }

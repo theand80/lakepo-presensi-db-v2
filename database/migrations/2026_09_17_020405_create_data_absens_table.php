@@ -55,6 +55,7 @@ return new class extends Migration
             $table->string('status_change')->nullable(); //"TK"
             $table->string('late'); //0
             $table->string('tak')->nullable();
+            $table->string('persentase')->nullable();
             // ---
             $table->timestamps();
             // --- 

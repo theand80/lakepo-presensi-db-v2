@@ -95,13 +95,15 @@ class DataAbsenController extends Controller
         $nama_kantor = $request['kantor_nama'];
         $bln = $request['bulan']; //
 
+        $bln = '08';
+
         $datas = $this->__rekapBulananByKantor($id, $bln); //diatas
 
         // dd($datas);
         // dd($datas[1]['presensi']);
 
-        // $data = $datas;
-        $data = array_slice($datas, 6, 3); // ambil 3 orang, dari urutan nama ke 6
+        $data = $datas;
+        // $data = array_slice($datas, 6, 3); // ambil 3 orang, dari urutan nama ke 6
 
         // dd($data);
         // return $data;

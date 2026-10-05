@@ -50,8 +50,8 @@ class AsnDariApiController extends Controller
 
         ListKantor::select('id_kantor', 'nama_kantor')
             // ->skip(72)->limit(2) // TESTING: batasi 2 kantor
-            ->where('id_kantor', '7e504992-b3ea-4172-9bfc-3a3cb080c0d0')
-            // ->skip(0)->limit(2)
+            // ->where('id_kantor', '44832e9f-feca-414e-8385-0f8b18f9a06b')
+            ->skip(220)->limit(20)
             ->chunkById(10, function ($listKantor) use ($tgl) {
 
                 foreach ($listKantor as $kantor) {
@@ -77,7 +77,7 @@ class AsnDariApiController extends Controller
                         }
 
                         // TESTING: hanya ambil 3 ASN dari setiap kantor
-                        $datas = array_slice($datas, 0, 3);
+                        // $datas = array_slice($datas, 0, 3);
                         // $datas = array_slice($datas, 6, 3);
 
                         $jumlahData = count($datas);

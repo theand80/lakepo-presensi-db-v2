@@ -30,11 +30,11 @@ class PicController extends Controller
         // jika sama, ambil kolom unor_siasn_induk, munculkan di list
         // $listKantor = AsnDariApi::select('unor_siasn_induk')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
         
-            $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->pluck('unor_simpegnas');
+            $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
             $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
 
-            // dd($unorSimpegnas);
-            // dd($listKantor);
+            dd($unorSimpegnas);
+            dd($listKantor);
 
             $selectedMonth = date('Y-m');
 

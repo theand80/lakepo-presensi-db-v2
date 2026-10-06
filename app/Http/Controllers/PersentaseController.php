@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataAbsen;
 use App\Models\ListKantor;
 use App\Models\Persentase;
 use Illuminate\Http\Request;
@@ -91,7 +92,11 @@ class PersentaseController extends Controller
         //
         // $data = ListKantor::all();
 
-        $data = [];
+        $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
+
+        // dd($unorSimpegnas);
+
+        $data = $unorSimpegnas;
 
         return view('admin.persentase.setPersentasev2', compact('data'));
     }
@@ -99,22 +104,26 @@ class PersentaseController extends Controller
     // ini dipanggil dari route
     public function __hitungPersentasev2(Request $request)
     {
+        // dd($request);
         $request->validate([
-            'namaKantor'            => 'required|string',
-            'bulanUntukDihitung'    => 'required|date',
+            'namaKantor'            => 'required|string', //DIKES - PKM PARUGA - Pustu Posprim Kel. Dara
+            'bulanUntukDihitung'    => 'required|date', //5
         ]);
         
         $selectedKantor = $request->input('namaKantor', '');
-        $selectedMonth = $request->input('bulanUntukDihitung', date('Y-m'));
+        // $selectedMonth = $request->input('bulanUntukDihitung', date('Y-m'));
+        $selectedMonth = str_pad(
+            $request->input('bulanUntukDihitung', date('m')), 2, '0', STR_PAD_LEFT
+        );
 
-        // dd($request);
         // 
         $unor_simpegnas_id = $selectedKantor;
         // $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
 
         // $tgl = '2026-08';
-        $tgl = $selectedMonth;
+        // $tgl = $selectedMonth;
+        $bln = $selectedMonth;
 
         //ini sebaiknya jadikan Service (cara panggil fungsi di controller lain laravel)
         // di PicController diubah jadi private, atau dihapus jika sudah menggunakan service
@@ -122,8 +131,10 @@ class PersentaseController extends Controller
         $data = $picController->__dataYangDitampilkan($unor_simpegnas_id, $tgl);
         // $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // diatas
 
-        $bln = substr($tgl, 5, 2);//dari 2026-08 jadi 08
+        // $bln = substr($tgl, 5, 2);//dari 2026-08 jadi 08
         // dd($data);
+
+        
 
         DB::transaction(function () use ($data, $bln) {
             $dataToUpsert = [];
@@ -143,22 +154,22 @@ class PersentaseController extends Controller
                 $persentase = round((1 - ($persentases / 100)) * 100, 2);
 
                 $dataToUpsert[] = [
-                    'nip' => $item['nip'],
-                    'nama' => $item['nama'],
-                    $bln => $persentase,
+                    // 'nip' => $item['nip'],
+                    // 'nama' => $item['nama'],
+                    'persentase' => $persentase,
                 ];
             }
 
             // dd($dataToUpsert);
 
             if (!empty($dataToUpsert)) {
-                Persentase::upsert(
+                DataAbsen::upsert(
                     $dataToUpsert,
                     ['nip'], // Kunci unik gabungan di DB tetap pakai 'date'
                     [
-                        'nama',
-                        'nip',
-                        $bln
+                        // 'nama',
+                        // 'nip',
+                        'persentase'
                     ]
                 );
 
@@ -166,7 +177,7 @@ class PersentaseController extends Controller
 
         });
 
-        return redirect('/pic/simpan-persentase')->with('success', 'Hitung Persentase bulan '.$bln.' berhasil dilakukan.');
+        return redirect('/pic/simpan-persentase-v2')->with('success', 'Hitung Persentase bulan '.$bln.' berhasil dilakukan.');
         // return 'coba persentase sukses';
 
     }

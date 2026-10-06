@@ -1,6 +1,7 @@
 <x-layout>
 
-    {{-- @dd($data->all()[0]) --}}
+    {{-- @dd($data->all()[0]['unor_simpegnas']) --}}
+    {{-- @dd(gettype($data)) // object --}}
     @if (session('error'))
         <div
             class="mb-4 flex items-center gap-3 rounded-lg border border-red-
@@ -78,7 +79,9 @@
                         </tr>
                     </thead>
                     <tbody>
+
                         @foreach ($data as $kantor)
+            
                             <tr class="bg-white border-b border-slate-100 hover:bg-slate-50">
                                 <td class="p-4">
                                     <input type="checkbox"
@@ -87,23 +90,23 @@
                                 <td class="px-4 py-3 font-medium text-slate-800 whitespace-nowrap">
                                     {{ $loop->iteration }}
                                 </td>
-                                <td class="px-4 py-3 border-r border-gray-200">{{ $kantor['nama_kantor'] }}</td>
+                                <td class="px-4 py-3 border-r border-gray-200">{{ $kantor['unor_simpegnas'] }}</td>
 
                                 @for ($bulan = 1; $bulan <= 12; $bulan++)
                                     <td class="px-4 py-3 text-xs text-center border-r border-gray-200">
                                         <form action="{{ url('/pic/simpan-persentase-v2') }}" method="POST">
                                             @csrf
 
-                                            <input type="hidden" name="kantor_id" value="{{ $kantor['id_kantor'] }}">
+                                            {{-- <input type="hidden" name="kantor_id" value="{{ $kantor['unor_simpegnas'] }}"> --}}
                                             <input type="hidden" name="namaKantor"
-                                                value="{{ $kantor['nama_kantor'] }}">
+                                                value="{{ $kantor['unor_simpegnas'] }}">
                                             {{-- <input type="hidden" name="bulan{{ $bulan }}" value="{{ $bulan }}"> --}}
                                             <input type="hidden" name="bulanUntukDihitung" value="{{ $bulan }}">
 
                                             @if ($kantor["bulan_$bulan"] == 0)
                                                 <button type="submit"
                                                     class="bg-green-600 text-white px-2 py-1 rounded-2xl cursor-pointer">
-                                                    Update
+                                                    Hitung
                                                 </button>
                                                 {{-- @elseif($kantor["bulan_$bulan"] == null)
                                                     <button type="submit"
@@ -113,7 +116,7 @@
                                             @else
                                                 <button type="submit"
                                                     class="bg-gray-400 text-white border-2 border-red-600 px-2 py-1 rounded-2xl cursor-pointer">
-                                                    ReUpdate
+                                                    Hitung Ulang
                                                 </button>
                                             @endif
                                         </form>

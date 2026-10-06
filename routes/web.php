@@ -26,7 +26,7 @@ Route::get('/admin/listKantorDariApiIndex', [AdminController::class, 'listKantor
 Route::get('/admin/simpanListKantorkeDB', [AdminController::class, 'simpanListKantorkeDB']);
 Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorDariDBIndex'])->name('lihatListKator-DariDB');
 
-// 2. absensi
+// 2. Absensi
 Route::get('/admin/lihatRekapBulananByKantor', [DataAbsenController::class, 'lihatDataAbsenDariApi'])
         ->name('lihatRekapBulananByKantor-DariApi'); // masih dd
 Route::get('/admin/kantorYangAkanDisimpanRekapBulananByKantor', [DataAbsenController::class, 'kantorYgAkanDisimpanDataAbsenDariApiKeDB']);

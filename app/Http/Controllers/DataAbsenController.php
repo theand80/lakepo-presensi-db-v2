@@ -95,7 +95,9 @@ class DataAbsenController extends Controller
         $nama_kantor = $request['kantor_nama'];
         $bln = $request['bulan']; //
 
-        $bln = '08';
+        // dd($bln);
+
+        // $bln = '8';
 
         $datas = $this->__rekapBulananByKantor($id, $bln); //diatas
 
@@ -203,40 +205,47 @@ class DataAbsenController extends Controller
 
             // 3. Eksekusi Upsert Massal (Tetap menggunakan acuan unique gabungan)
             if (!empty($dataToUpsert)) {
-                // ImportApi::insert($dataToUpsert);
-                DataAbsen::upsert(
-                    $dataToUpsert,
-                    ['nip', 'date'], // Kunci unik gabungan di DB tetap pakai 'date'
-                    [
-                        'status',
-                        'status_script',
-                        'late',
 
-                        'unor_simpegnas',
-                        'unor_simpegnas_id',
+                // Pecah data menjadi beberapa chunk, misalnya 200 record
+                foreach (array_chunk($dataToUpsert, 200) as $chunk) 
+                {
 
-                        'checkIn_work_from',
-                        'checkIn_status',
-                        'checkIn_status_script',
-                        'checkIn_time_with_timezone',
-                        'checkIn_late',
+                    // ImportApi::insert($dataToUpsert);
+                    DataAbsen::upsert(
+                        $chunk,
+                        // $dataToUpsert,
+                        ['nip', 'date'], // Kunci unik gabungan di DB tetap pakai 'date'
+                        [
+                            'status',
+                            'status_script',
+                            'late',
 
-                        'checkRest_work_from',
-                        'checkRest_status',
-                        'checkRest_time_with_timezone',
-                        'checkRest_late',
+                            'unor_simpegnas',
+                            'unor_simpegnas_id',
 
-                        'checkOut_work_from',
-                        'checkOut_status',
-                        'checkOut_status_script',
-                        'checkOut_time_with_timezone',
-                        'checkOut_late',
+                            'checkIn_work_from',
+                            'checkIn_status',
+                            'checkIn_status_script',
+                            'checkIn_time_with_timezone',
+                            'checkIn_late',
 
-                        'tak',
+                            'checkRest_work_from',
+                            'checkRest_status',
+                            'checkRest_time_with_timezone',
+                            'checkRest_late',
 
-                        'updated_at'
-                    ]
-                );
+                            'checkOut_work_from',
+                            'checkOut_status',
+                            'checkOut_status_script',
+                            'checkOut_time_with_timezone',
+                            'checkOut_late',
+
+                            'tak',
+
+                            'updated_at'
+                        ]
+                    );
+                }
             }
 
             DB::table('list_kantors')

@@ -31,7 +31,14 @@ class PicController extends Controller
         // $listKantor = AsnDariApi::select('unor_siasn_induk')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
         
             $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
-            $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
+            // $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
+            
+            $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')
+                ->whereIn('unor_simpegnas', $unorSimpegnas)
+                ->distinct()
+                ->pluck('unor_siasn_induk')
+                ->unique()
+                ->values();
 
             // dd($unorSimpegnas);
             // dd($listKantor);
@@ -48,10 +55,8 @@ class PicController extends Controller
     
     public function lihatSatuKantorSaja(Request $request)
     {
+        // dd($request->all());
 
-        dd($request->all());
-
-        // 
         // $request->validate([
         //     'filterNamaKantor'  => 'required|date',
         //     'month'             => 'required|string',
@@ -99,24 +104,24 @@ class PicController extends Controller
         // dd($data);
 
 
-        $persentases = Persentase::get();
+        // $persentases = Persentase::get();
 
-        $persentaseByNip = $persentases->keyBy('nip');
-        $data = collect($data)->map(
-            function ($item) use ($persentaseByNip, ) {
-                $persentase = $persentaseByNip->get($item['nip']);
-                if ($persentase) {
-                    $item['persentase'] = $persentase->{'08'};
-                }
-                return $item;
-            }
-        )
-        ->sortByDesc(function ($item) {
-                return $item['persentase'] ?? 0;
-            })
-        ->values()->toArray();
+        // $persentaseByNip = $persentases->keyBy('nip');
+        // $data = collect($data)->map(
+        //     function ($item) use ($persentaseByNip, ) {
+        //         $persentase = $persentaseByNip->get($item['nip']);
+        //         if ($persentase) {
+        //             $item['persentase'] = $persentase->{'08'};
+        //         }
+        //         return $item;
+        //     }
+        // )
+        // ->sortByDesc(function ($item) {
+        //         return $item['persentase'] ?? 0;
+        //     })
+        // ->values()->toArray();
 
-        // return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth'));
+        return view('pic.rekapSatuKantorSiasnSaja', compact('data', 'listKantor', 'selectedMonth'));
     }
 
     // dipanggil di index diatas dan dari __hitungPersentase dibawah

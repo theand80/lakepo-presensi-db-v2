@@ -2,6 +2,25 @@
 
     {{-- @dd($data->all()[0]['unor_simpegnas']) --}}
     {{-- @dd(gettype($data)) // object --}}
+    @if ($errors->any())
+        <div class="mb-4 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+
+            <div>
+                <p class="font-medium">Terdapat kesalahan:</p>
+
+                <ul class="mt-1 list-inside list-disc space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
     @if (session('error'))
         <div
             class="mb-4 flex items-center gap-3 rounded-lg border border-red-
@@ -81,7 +100,6 @@
                     <tbody>
 
                         @foreach ($data as $kantor)
-            
                             <tr class="bg-white border-b border-slate-100 hover:bg-slate-50">
                                 <td class="p-4">
                                     <input type="checkbox"
@@ -101,22 +119,23 @@
                                             <input type="hidden" name="namaKantor"
                                                 value="{{ $kantor['unor_simpegnas'] }}">
                                             {{-- <input type="hidden" name="bulan{{ $bulan }}" value="{{ $bulan }}"> --}}
-                                            <input type="hidden" name="bulanUntukDihitung" value="{{ $bulan }}">
+                                            {{-- <input type="hidden" name="bulanUntukDihitung" value="{{ $bulan }}"> --}}
+                                            {{-- <input type="hidden" name="bulanUntukDihitung" value="{{ sprintf('%02d', $bulan) }}"> --}}
+                                            {{-- Alternatif yang lebih Laravel-style --}}
+                                            <input type="hidden" name="bulanUntukDihitung"
+                                                value="{{ str_pad($bulan, 2, '0', STR_PAD_LEFT) }}">
+
+
 
                                             @if ($kantor["bulan_$bulan"] == 0)
                                                 <button type="submit"
                                                     class="bg-green-600 text-white px-2 py-1 rounded-2xl cursor-pointer">
                                                     Hitung
                                                 </button>
-                                                {{-- @elseif($kantor["bulan_$bulan"] == null)
-                                                    <button type="submit"
-                                                        class="bg-gray-400 text-white px-2 py-1 rounded-2xl cursor-pointer">
-                                                        Update
-                                                    </button> --}}
                                             @else
                                                 <button type="submit"
-                                                    class="bg-gray-400 text-white border-2 border-red-600 px-2 py-1 rounded-2xl cursor-pointer">
-                                                    Hitung Ulang
+                                                    class="bg-gray-400 text-white border-2 border-red-600 px-2 py-1 rounded-xl cursor-pointer">
+                                                    Ulang
                                                 </button>
                                             @endif
                                         </form>

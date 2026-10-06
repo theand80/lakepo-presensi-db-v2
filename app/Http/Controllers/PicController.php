@@ -137,9 +137,12 @@ class PicController extends Controller
     // dipanggil di index -> diatas, lihatSatuKantorSaja -> diatas dan dari __hitungPersentase -> dibawah
     public function __dataYangDitampilkan($unor_simpegnas_id, $tgl)
     {
-        // 
+        // dd($tgl);
+        // dd($unor_simpegnas_id->id_kantor);
+
         $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl . '%')->get()
                 ->groupBy('nip');
+
 
         // Ambil data ASN dan jadikan NIP sebagai key
         $dataAsn = AsnDariApi::select('nip', 'pangkat', 'golongan', 'status', 'jabatan')->get()->keyBy('nip');

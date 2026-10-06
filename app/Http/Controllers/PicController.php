@@ -105,6 +105,9 @@ class PicController extends Controller
         }
         // dd($data);
 
+        // gabungkan data agar di view tidak perlu foreach didalam foreach
+        $data = collect($data)->flatten(1)->values()->toArray();
+
         // $persentases = Persentase::get();
 
         // $persentaseByNip = $persentases->keyBy('nip');
@@ -142,6 +145,7 @@ class PicController extends Controller
 
         $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl . '%')->get()
                 ->groupBy('nip');
+
 
 
         // Ambil data ASN dan jadikan NIP sebagai key
@@ -229,16 +233,27 @@ class PicController extends Controller
             // Cari data ASN berdasarkan NIP
             $asn = $dataAsn->get($nip);
 
+            //  Ambil record tanggal 01
+            // | Jika $tgl = 2026-08 | maka tanggal yang dicari: 2026-08-01
+            $tanggal01 = $tgl . '-01';
+            $recordTanggal01 = $group->first(function ($record) use ($tanggal01) {
+                return $record->date == $tanggal01;
+            });
+
+            // Ambil persentase dari tanggal 01, Jika belum ada atau NULL, maka NULL.
+            $persentase = $recordTanggal01?->persentase;
+
             $rekap = [
                 'nip'       => $nip,
                 'nama'      => $group[0]['nama'],
 
-                'golongan'  => $asn->golongan ?? '',
-                'pangkat'   => $asn->pangkat ?? '',
-                'jabatan'   => $asn->jabatan ?? '-',
-                'status'    => $asn->status ?? '-',
-                'kantor'    => $first->unor_simpegnas ?? '-',
-                'rekap'     => array_fill_keys($kodeAbsen, 0),
+                'golongan'      => $asn->golongan ?? '',
+                'pangkat'       => $asn->pangkat ?? '',
+                'jabatan'       => $asn->jabatan ?? '-',
+                'status'        => $asn->status ?? '-',
+                'kantor'        => $group[0]->unor_simpegnas ?? '-',
+                'persentase'    => $persentase,
+                'rekap'         => array_fill_keys($kodeAbsen, 0),
             ];
 
             // hitung isi kolom status change dan atau status_script, jika hari libur, hitungan dilewati
@@ -272,6 +287,27 @@ class PicController extends Controller
 
             $data[] = $rekap;
         }
+
+        usort($data, function ($a, $b) {
+
+            $persentaseA = $a['persentase'];
+            $persentaseB = $b['persentase'];
+
+            // Keduanya NULL
+            if ($persentaseA === null && $persentaseB === null) {
+                return 0;
+            }
+            // A NULL → A ke bawah
+            if ($persentaseA === null) {
+                return 1;
+            }
+            // B NULL → B ke bawah
+            if ($persentaseB === null) {
+                return -1;
+            }
+            // Persentase terbesar di atas
+            return $persentaseB <=> $persentaseA;
+        });
 
         return $data;
     }

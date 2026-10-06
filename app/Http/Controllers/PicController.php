@@ -46,7 +46,9 @@ class PicController extends Controller
             $selectedMonth = date('Y-m');
 
             $data = [];
-            return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth'));
+
+            $selectedKantor = null;
+            return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor'));
         // }
 
         // dd($request);
@@ -57,10 +59,10 @@ class PicController extends Controller
     {
         // dd($request->all());
 
-        // $request->validate([
-        //     'filterNamaKantor'  => 'required|date',
-        //     'month'             => 'required|string',
-        // ]);
+        $request->validate([
+            'filterNamaKantor'  => 'required|string',
+            'month'             => 'required|date',
+        ]);
         
         $selectedMonth = $request->input('month', date('Y-m'));
         $selectedKantor = $request->input('filterNamaKantor', '');
@@ -70,8 +72,8 @@ class PicController extends Controller
 
         // $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
-        $tgl = '2026-08';
-        // $tgl = $selectedMonth;
+        // $tgl = '2026-08';
+        $tgl = $selectedMonth;
 
 
         $kantorYgDicariDatanya = AsnDariApi::where('unor_siasn_induk', $selectedKantor)->select('unor_simpegnas')->distinct()->get();
@@ -103,7 +105,6 @@ class PicController extends Controller
         }
         // dd($data);
 
-
         // $persentases = Persentase::get();
 
         // $persentaseByNip = $persentases->keyBy('nip');
@@ -121,14 +122,27 @@ class PicController extends Controller
         //     })
         // ->values()->toArray();
 
-        return view('pic.rekapSatuKantorSiasnSaja', compact('data', 'listKantor', 'selectedMonth'));
+        // List Kantor
+        $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
+        $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')
+            ->whereIn('unor_simpegnas', $unorSimpegnas)
+            ->distinct()
+            ->pluck('unor_siasn_induk')
+            ->unique()
+            ->values();
+
+        return view('pic.rekapSatuKantorSiasnSaja', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor'));
     }
 
-    // dipanggil di index diatas dan dari __hitungPersentase dibawah
+    // dipanggil di index -> diatas, lihatSatuKantorSaja -> diatas dan dari __hitungPersentase -> dibawah
     public function __dataYangDitampilkan($unor_simpegnas_id, $tgl)
     {
         // 
-        $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl . '%')->get()->groupBy('nip');
+        $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl . '%')->get()
+                ->groupBy('nip');
+
+        // Ambil data ASN dan jadikan NIP sebagai key
+        $dataAsn = AsnDariApi::select('nip', 'pangkat', 'golongan', 'status', 'jabatan')->get()->keyBy('nip');
 
         // $nipList = $records->keys()->toArray();
 
@@ -208,9 +222,14 @@ class PicController extends Controller
         $data = [];
 
         foreach ($records as $nip => $group) {
+
+            // Cari data ASN berdasarkan NIP
+            $asn = $dataAsn->get($nip);
+
             $rekap = [
                 'nip'       => $nip,
                 'nama'      => $group[0]['nama'],
+
                 'golongan'  => $asn->golongan ?? '',
                 'pangkat'   => $asn->pangkat ?? '',
                 'jabatan'   => $asn->jabatan ?? '-',
@@ -247,7 +266,6 @@ class PicController extends Controller
                     'H'     => $rekap['hadir'],
                 ] = $this->__jumlahkanBeberapaKode($rekap); //dibawah
             }
-
 
             $data[] = $rekap;
         }

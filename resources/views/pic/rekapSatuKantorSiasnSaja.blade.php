@@ -4,7 +4,7 @@
         @dd($data)
         @endif --}}
     {{-- @dd($selectedMonth) --}}
-        @dd($data)
+        {{-- @dd($data) --}}
 
 
     <div>
@@ -14,14 +14,16 @@
                 <span>Operator Nama Kantor</span>
                 <form action="{{ url('/pic/lihat-satu-kantor-saja') }}" method="post">
                     @csrf
-                    <div class="flex items-center gap-3 normal-case font-normal">
+                    <div class="flex items-center gap-3 normal-case font-normal"> 
                         <div class="flex items-center gap-2">
                             <label for="filterKantor" class="text-xs font-medium text-slate-600">Kantor:</label>
                             <select id="filterKantor" name="filterNamaKantor"
                                 class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none bg-white">
-                                <option value="">Semua Kantor</option>
-                                {{-- <option value="BKPSDM">BKPSDM</option>
-                                <option value="Dinas Pemberdayaan Perempuan dan Perlindungan Anak">Dinas Pemberdayaan Perempuan dan Perlindungan Anak</option> --}}
+
+                                <option value="" {{ empty($selectedKantor) ? 'selected' : '' }}>
+                                    Semua Kantor
+                                </option>
+
                                 @foreach ($listKantor as $kantor)
                                     <option value="{{ $kantor }}"
                                         {{ ($selectedKantor ?? '') == $kantor ? 'selected' : '' }}>
@@ -202,91 +204,100 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($data as $item)
-                            <tr class="bg-white border-b border-slate-100 hover:bg-slate-50"
-                                data-persentase="{{ $item['persentase'] ?? 0 }}">
-                                <td class="p-4">
-                                    <input type="checkbox"
-                                        class="w-4 h-4 border border-slate-300 rounded bg-slate-100 focus:ring-2 focus:ring-green-300">
-                                </td>
-                                <td class="px-4 py-3 font-medium text-slate-800 whitespace-nowrap">{{ $item['nip'] }}
-                                </td>
-                                <td class="px-4 py-3 min-w-[180px] max-w-[200px]">{{ $item['nama'] }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{ $item['pangkat'] == '' ? $item['golongan'] : $item['golongan'] . ' - ' . $item['pangkat'] }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{ str($item['jabatan'])->limit(40, '...') }}
-                                </td>
 
-                                @if ($item['status'] == 'PNS')
-                                    <td class="px-4 py-3 text-blue-600 font-bold min-w-[86px] max-w-[90px]">
-                                        {{ $item['status'] ?? '-' }}
+                        @forelse ($data as $value)
+                
+                            @forEach ($value as $item)
+                                <tr class="bg-white border-b border-slate-100 hover:bg-slate-50"
+                                    data-persentase="{{ $item['persentase'] ?? 0 }}">
+                                    <td class="p-4">
+                                        <input type="checkbox"
+                                            class="w-4 h-4 border border-slate-300 rounded bg-slate-100 focus:ring-2 focus:ring-green-300">
                                     </td>
-                                @elseif($item['status'] == 'PPPK')
-                                    <td class="px-4 py-3 text-green-600 font-bold min-w-[86px] max-w-[90px]">
-                                        {{ $item['status'] ?? '-' }}
+                                    <td class="px-4 py-3 font-medium text-slate-800 whitespace-nowrap">{{ $item['nip'] }}
                                     </td>
-                                @else
-                                    <td class="px-4 py-3 text-amber-500 font-bold min-w-[86px] max-w-[90px]">
-                                        {{ $item['status'] ?? '-' }}
+                                    <td class="px-4 py-3 min-w-[180px] max-w-[200px]">{{ $item['nama'] }}
                                     </td>
-                                @endif
+                                    <td class="px-4 py-3">
+                                        {{ $item['pangkat'] == '' ? $item['golongan'] : $item['golongan'] . ' - ' . $item['pangkat'] }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        {{ str($item['jabatan'])->limit(40, '...') }}
+                                    </td>
 
-                                <td class="px-4 py-3 text-center">{{ $item['hadir'] ?? 'N/a' }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['HN'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['DL'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['TB'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['CT'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['CM'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['CB'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['CS'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['CAP'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['CTLN'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['CH'] }}</td>
-                                <td class="px-4 py-3 text-center text-red-600 font-medium">{{ $item['rekap']['TK'] }}
-                                </td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['TAS'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['TL1'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['TL2'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['TL3'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['TL4'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW1'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW2'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW3'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW4'] }}</td>
-                                <td class="px-4 py-3 text-center">{{ $item['rekap']['TAK'] }}</td>
-                                <td class="px-4 py-3 font-semibold">
-                                    @if (!isset($item['persentase']) || $item['persentase'] === '')
-                                        <span class="text-red-600 text-center">N/a %</span>
-                                    @elseif ($item['persentase'] < 50)
-                                        <span class="text-red-600">{{ $item['persentase'] }}%</span>
-                                    @elseif ($item['persentase'] < 75)
-                                        <span class="text-amber-600">{{ $item['persentase'] }}%</span>
+                                    @if ($item['status'] == 'PNS')
+                                        <td class="px-4 py-3 text-blue-600 font-bold min-w-[86px] max-w-[90px]">
+                                            {{ $item['status'] ?? '-' }}
+                                        </td>
+                                    @elseif($item['status'] == 'PPPK')
+                                        <td class="px-4 py-3 text-green-600 font-bold min-w-[86px] max-w-[90px]">
+                                            {{ $item['status'] ?? '-' }}
+                                        </td>
                                     @else
-                                        <span class="text-green-600">{{ $item['persentase'] }}%</span>
+                                        <td class="px-4 py-3 text-amber-500 font-bold min-w-[86px] max-w-[90px]">
+                                            {{ $item['status'] ?? '-' }}
+                                        </td>
                                     @endif
-                                </td>
 
-                                <td class="px-4 py-3 text-center">
-                                    {{-- <a href="{{ route('lihatRekapBulananByNip-DariDB', ['nip' => $item['nip']]) }}"
-                                        class="font-medium text-green-600 hover:underline">Detail</a> --}}
-                                    <form action="{{ route('lihatRekapBulananByNip-DariDB') }}" method="post">
-                                        @csrf
-                                        <input type="hidden" name="nip" value="{{ $item['nip'] }}">
-                                        <button type="submit"
-                                            class="font-medium text-amber-600 hover:underline cursor-pointer">Detail</button>
-                                    </form>
-                                </td>
-                            </tr>
+                                    <td class="px-4 py-3 text-center">{{ $item['hadir'] ?? 'N/a' }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['HN'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['DL'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['TB'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['CT'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['CM'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['CB'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['CS'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['CAP'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['CTLN'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['CH'] }}</td>
+                                    <td class="px-4 py-3 text-center text-red-600 font-medium">{{ $item['rekap']['TK'] }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['TAS'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['TL1'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['TL2'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['TL3'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['TL4'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW1'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW2'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW3'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['PSW4'] }}</td>
+                                    <td class="px-4 py-3 text-center">{{ $item['rekap']['TAK'] }}</td>
+                                    <td class="px-4 py-3 font-semibold">
+                                        @if (!isset($item['persentase']) || $item['persentase'] === '')
+                                            <span class="text-red-600 text-center">N/a %</span>
+                                        @elseif ($item['persentase'] < 50)
+                                            <span class="text-red-600">{{ $item['persentase'] }}%</span>
+                                        @elseif ($item['persentase'] < 75)
+                                            <span class="text-amber-600">{{ $item['persentase'] }}%</span>
+                                        @else
+                                            <span class="text-green-600">{{ $item['persentase'] }}%</span>
+                                        @endif
+                                    </td>
+
+                                    <td class="px-4 py-3 text-center">
+                                        {{-- <a href="{{ route('lihatRekapBulananByNip-DariDB', ['nip' => $item['nip']]) }}"
+                                            class="font-medium text-green-600 hover:underline">Detail</a> --}}
+                                        <form action="{{ route('lihatRekapBulananByNip-DariDB') }}" method="post">
+                                            @csrf
+                                            <input type="hidden" name="nip" value="{{ $item['nip'] }}">
+                                            <button type="submit"
+                                                class="font-medium text-amber-600 hover:underline cursor-pointer">Detail</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            
+                            
+                            @endforeach
+
                         @empty
                             <tr>
                                 <td colspan="30" class="px-4 py-8 text-center text-slate-400">
                                     Tidak ada data ditemukan.
                                 </td>
                             </tr>
+                            
                         @endforelse
+
                     </tbody>
                 </table>
             </div>

@@ -1,4 +1,28 @@
 <x-layout>
+    @if ($errors->any())
+        <div class="mb-4 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+            </svg>
+
+            <div>
+                <p class="font-medium">Terdapat kesalahan:</p>
+
+                <ul class="mt-1 list-inside list-disc space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
+
     <x-slot:title>Operator Nama Kanto</x-slot>
     {{-- @if (count($data) > 0)
         @dd($data)
@@ -15,11 +39,24 @@
                     <div class="flex items-center gap-3 normal-case font-normal">
                         <div class="flex items-center gap-2">
                             <label for="filterKantor" class="text-xs font-medium text-slate-600">Kantor:</label>
-                            <select id="filterKantor" name="filterNamaKantor"
+                            {{-- <select id="filterKantor" name="filterNamaKantor"
                                 class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none bg-white">
                                 <option value="">Semua Kantor</option>
-                                {{-- <option value="BKPSDM">BKPSDM</option>
-                                <option value="Dinas Pemberdayaan Perempuan dan Perlindungan Anak">Dinas Pemberdayaan Perempuan dan Perlindungan Anak</option> --}}
+                                @foreach ($listKantor as $kantor)
+                                    <option value="{{ $kantor }}"
+                                        {{ ($selectedKantor ?? '') == $kantor ? 'selected' : '' }}>
+                                        {{ $kantor }}
+                                    </option>
+                                @endforeach
+                            </select> --}}
+
+                            <select id="filterKantor" name="filterNamaKantor"
+                                class="text-xs border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none bg-white">
+
+                                <option value="" {{ empty($selectedKantor) ? 'selected' : '' }}>
+                                    Semua Kantor
+                                </option>
+
                                 @foreach ($listKantor as $kantor)
                                     <option value="{{ $kantor }}"
                                         {{ ($selectedKantor ?? '') == $kantor ? 'selected' : '' }}>
@@ -27,6 +64,9 @@
                                     </option>
                                 @endforeach
                             </select>
+
+
+
                         </div>
                         <div class="flex items-center gap-2">
                             <label for="filterBulan" class="text-xs font-medium text-slate-600">Periode:</label>

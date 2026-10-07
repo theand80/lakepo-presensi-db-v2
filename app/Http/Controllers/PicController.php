@@ -138,26 +138,14 @@ class PicController extends Controller
         return view('pic.rekapSatuKantorSiasnSaja', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor'));
     }
 
-    // dipanggil di index -> diatas, lihatSatuKantorSaja -> diatas dan dari __hitungPersentase -> dibawah
-    public function __dataYangDitampilkan($unor_simpegnas_id, $tgl)
+    /**
+     * Daftar kode status absen yang dikenali saat rekap.
+     *
+     * @return array<int, string>
+     */
+    public static function kodeAbsen(): array
     {
-        // dd($tgl);
-        // dd($unor_simpegnas_id->id_kantor);
-
-        $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl . '%')->get()
-                ->groupBy('nip');
-
-
-
-        // Ambil data ASN dan jadikan NIP sebagai key
-        $dataAsn = AsnDariApi::select('nip', 'pangkat', 'golongan', 'status', 'jabatan')->get()->keyBy('nip');
-
-        // $nipList = $records->keys()->toArray();
-
-        // dd($records);
-        // dd($records['197009131999021001'][0]['nama']);
-
-        $kodeAbsen = [
+        return [
             'HN',
             'DL',
             'TB',
@@ -179,53 +167,75 @@ class PicController extends Controller
             'CP3',
             'CP4',
             'TAK',
-            // 
+            //
             'PGN',
             'PLN',
-            // 
+            //
             'TAD-PLN',
             'PGN-TAP',
-            // 
+            //
             'TM1-PLN',
             'TM2-PLN',
             'TM3-PLN',
             'TM4-PLN',
-            // 
+            //
             'PGN-CP1',
             'PGN-CP2',
             'PGN-CP3',
             'PGN-CP4',
-            // 
+            //
             'TAD-CP1',
             'TAD-CP2',
             'TAD-CP3',
             'TAD-CP4',
-            // 
+            //
             'TM1-TAP',
             'TM2-TAP',
             'TM3-TAP',
             'TM4-TAP',
-            // 
+            //
             'TM1-CP1',
             'TM2-CP1',
             'TM3-CP1',
             'TM4-CP1',
-            // 
+            //
             'TM1-CP2',
             'TM2-CP2',
             'TM3-CP2',
             'TM4-CP2',
-            // 
+            //
             'TM1-CP3',
             'TM2-CP3',
             'TM3-CP3',
             'TM4-CP3',
-            // 
+            //
             'TM1-CP4',
             'TM2-CP4',
             'TM3-CP4',
             'TM4-CP4',
         ];
+    }
+
+    // dipanggil di index -> diatas, lihatSatuKantorSaja -> diatas dan dari __hitungPersentase -> dibawah
+    public function __dataYangDitampilkan($unor_simpegnas_id, $tgl)
+    {
+        // dd($tgl);
+        // dd($unor_simpegnas_id->id_kantor);
+
+        $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl . '%')->get()
+                ->groupBy('nip');
+
+
+
+        // Ambil data ASN dan jadikan NIP sebagai key
+        $dataAsn = AsnDariApi::select('nip', 'pangkat', 'golongan', 'status', 'jabatan')->get()->keyBy('nip');
+
+        // $nipList = $records->keys()->toArray();
+
+        // dd($records);
+        // dd($records['197009131999021001'][0]['nama']);
+
+        $kodeAbsen = self::kodeAbsen();
 
         $data = [];
 
@@ -270,21 +280,20 @@ class PicController extends Controller
                 if (isset($rekap['rekap'][$st])) {
                     $rekap['rekap'][$st]++;
                 }
-
-                //jumlahkan beberapa kode
-                // $jumlahBeberapaKode = $this->__jumlahkanBeberapaKode($rekap);
-                [
-                    'TL1'   => $rekap['rekap']['TL1'],
-                    'TL2'   => $rekap['rekap']['TL2'],
-                    'TL3'   => $rekap['rekap']['TL3'],
-                    'TL4'   => $rekap['rekap']['TL4'],
-                    'PSW1'  => $rekap['rekap']['PSW1'],
-                    'PSW2'  => $rekap['rekap']['PSW2'],
-                    'PSW3'  => $rekap['rekap']['PSW3'],
-                    'PSW4'  => $rekap['rekap']['PSW4'],
-                    'H'     => $rekap['hadir'],
-                ] = $this->__jumlahkanBeberapaKode($rekap); //dibawah
             }
+
+            // jumlahkan beberapa kode, cukup sekali per NIP karena hasilnya hanya bergantung pada jumlah kode
+            [
+                'TL1'   => $rekap['rekap']['TL1'],
+                'TL2'   => $rekap['rekap']['TL2'],
+                'TL3'   => $rekap['rekap']['TL3'],
+                'TL4'   => $rekap['rekap']['TL4'],
+                'PSW1'  => $rekap['rekap']['PSW1'],
+                'PSW2'  => $rekap['rekap']['PSW2'],
+                'PSW3'  => $rekap['rekap']['PSW3'],
+                'PSW4'  => $rekap['rekap']['PSW4'],
+                'H'     => $rekap['hadir'],
+            ] = $this->__jumlahkanBeberapaKode($rekap); //dibawah
 
             $data[] = $rekap;
         }
@@ -313,8 +322,14 @@ class PicController extends Controller
         return $data;
     }
 
-    // dipanggil dari __dataYangDitampilkan diatas
-    private function __jumlahkanBeberapaKode($rekap)
+    // dipanggil dari __dataYangDitampilkan diatas dan dari PersentaseController
+    /**
+     * Jumlahkan kode absen mentah menjadi TL1-TL4 dan PSW1-PSW4.
+     *
+     * @param  array<string, mixed>  $rekap
+     * @return array<string, mixed>
+     */
+    public function __jumlahkanBeberapaKode(array $rekap): array
     {
         // dd($rekap);
         // 

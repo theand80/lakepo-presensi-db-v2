@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\downloadPresensiRekapByKantorExcelExport;
 use App\Exports\RekapAbsenExport;
 use App\Models\ApiSimpegnas;
 use App\Models\AsnDariApi;
@@ -384,27 +385,35 @@ class PicController extends Controller
     }
 
     
+    public function downloadPresensiRekapByKantorExcel(Request $request)
+    {
+        // dd($request->all());
+
+        $request->validate([
+            'namaKantor'  => 'required|string',
+            'month'             => 'required|date',
+        ]);
+        
+        $opd = $request->input('namaKantor', ''); //"Badan Kepegawaian dan Pengembangan Sumber Daya Manusia"
+        $month = $request->input('month', date('Y-m')); //"2026-08"
+        $bln = substr($month, 5, 2); //08
+        $thn = substr($month, 0, 4); //08
+
+
+        // 
+        $filename = 'kehadiran ASN bulan '.$bln.' tahun '.$thn.' di '.$opd.'.xlsx';
+        
+        // dd($filename);
+
+        return Excel::download(new downloadPresensiRekapByKantorExcelExport($opd, $month), $filename);
+
+    }
 
     public function bpk(Request $request)
     {
         return view('pic.bpk');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -474,14 +483,6 @@ class PicController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
@@ -507,11 +508,4 @@ class PicController extends Controller
         return redirect()->back()->with('success', 'Data presensi berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

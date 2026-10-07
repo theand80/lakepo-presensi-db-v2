@@ -55,6 +55,7 @@ Route::get('/admin/asn-kegiatan', [HariKegiatanController::class, 'ImportAsnYgMe
 // 3. rekap bulanan by kantor
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');
 Route::post('/pic/lihat-satu-kantor-saja', [PicController::class, 'lihatSatuKantorSaja']);
+Route::post('/pic/download-presensi-by-kantor-excel', [PicController::class, 'downloadPresensiRekapByKantorExcel']);
 
 // 4. persentase
 Route::get('/pic/simpan-persentase', [PersentaseController::class, 'persentase']);

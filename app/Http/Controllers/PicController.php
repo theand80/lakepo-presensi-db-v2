@@ -8,6 +8,7 @@ use App\Models\DataAbsen;
 use App\Models\DataAsn;
 use App\Models\ListKantor;
 use App\Models\Persentase;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -398,6 +399,31 @@ class PicController extends Controller
 
         return Excel::download(new downloadPresensiRekapByKantorExcelExport($data, $opd, $month), $filename);
 
+    }
+
+    public function downloadPresensiRekapByKantorPdf(Request $request)
+    {
+        $request->validate([
+            'namaKantor' => 'required|string',
+            'month' => 'required|date',
+        ]);
+
+        $sebagai = 'Rlt. Kepala BKPSDM';
+        $namaPenTtd = 'Drs Iwansyah. MS';
+        $pangkatGol = 'Penata Muda Tk.I / (III-d)';
+        $nipPenTtd = '123123112311231123';
+
+        $opd = $request->input('namaKantor', '');
+        $month = $request->input('month', date('Y-m'));
+        $bln = substr($month, 5, 2);
+        $thn = substr($month, 0, 4);
+
+        $filename = 'kehadiran ASN bulan '.$bln.' tahun '.$thn.' di '.str_replace('/', '-', $opd).'.pdf';
+        $data = $this->__rekapSatuKantor($opd, $month);
+
+        return Pdf::loadView('pic.pdf.rekapSatuKantor', compact('data', 'opd', 'month', 'bln', 'thn' , 'sebagai', 'namaPenTtd', 'pangkatGol', 'nipPenTtd'))
+            ->setPaper([0, 0, 330 / 25.4 * 72, 215 / 25.4 * 72], 'portrait')
+            ->download($filename);
     }
 
     public function bpk(Request $request)

@@ -187,8 +187,10 @@
                         </button>
                     </form>
                     {{--  --}}
-                    <form action="" method="post">
+                    <form action="{{ url('/pic/download-presensi-by-kantor-pdf') }}" method="post">
                         @csrf
+                        <input type="hidden" name="namaKantor" value="{{ $selectedKantor }}">
+                        <input type="hidden" name="month" value="{{ $selectedMonth }}">
                         <button type="submit"
                             class="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-rose-700 hover:bg-rose-800 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
                             <i class="fa-solid fa-file-pdf"></i> Download Rekapan PDF

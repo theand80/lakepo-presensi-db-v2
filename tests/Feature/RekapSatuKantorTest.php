@@ -116,3 +116,75 @@ test('download presensi rekap by kantor excel menghasilkan file yang sesuai', fu
         return true;
     });
 });
+
+test('download presensi rekap by kantor pdf menghasilkan file yang sesuai', function () {
+    $tahun = date('Y');
+
+    $kantor = ListKantor::factory()->create([
+        'nama_kantor' => 'Kantor Uji PDF',
+        'id_kantor' => 'kantor-uji-pdf-id',
+    ]);
+
+    AsnDariApi::create([
+        'nip' => '1122334455667788',
+        'nama' => 'ASN Uji PDF',
+        'pangkat' => 'Penata',
+        'golongan' => 'III/a',
+        'status' => 'PPPK',
+        'jabatan' => 'Pelaksana',
+        'unor_siasn' => 'Unor Siasn',
+        'unor_siasn_induk' => 'Kantor Uji PDF',
+        'unor_simpegnas_id' => $kantor->id_kantor,
+        'unor_simpegnas' => $kantor->nama_kantor,
+        'foto_simpegnas' => null,
+    ]);
+
+    DataAbsen::factory()->create([
+        'nip' => '1122334455667788',
+        'nama' => 'ASN Uji PDF',
+        'date' => $tahun.'-08-01',
+        'hari_libur' => '0',
+        'unor_simpegnas' => $kantor->nama_kantor,
+        'unor_simpegnas_id' => $kantor->id_kantor,
+        'status' => 'HM',
+        'status_change' => 'HN',
+        'status_script' => 'HN',
+        'persentase' => '90',
+    ]);
+
+    $response = $this->post('/pic/download-presensi-by-kantor-pdf', [
+        'namaKantor' => 'Kantor Uji PDF',
+        'month' => $tahun.'-08',
+    ]);
+
+    $response->assertOk();
+
+    $fileName = 'kehadiran ASN bulan 08 tahun '.$tahun.' di Kantor Uji PDF.pdf';
+    $response->assertDownload($fileName);
+
+    $content = $response->baseResponse->getContent();
+    expect(substr($content, 0, 5))->toBe('%PDF-');
+    expect($content)->toMatch('/\/MediaBox\s*\[\s*0\s+0\s+935\./');
+
+    $html = view('pic.pdf.rekapSatuKantor', [
+        'data' => [],
+        'opd' => 'Kantor Uji PDF',
+        'month' => $tahun.'-08',
+        'bln' => '08',
+        'thn' => $tahun,
+    ])->render();
+    expect($html)->toContain('Kantor Uji PDF');
+    expect($html)->toContain('Periode bulan');
+    expect($html)->toContain('@page');
+    preg_match_all('/<th[^>]*>([^<]+)<\/th>/i', $html, $m);
+    expect(count($m[0]))->toBe(28);
+});
+
+test('download presensi rekap by kantor pdf menolak jika namaKantor kosong', function () {
+    $tahun = date('Y');
+
+    $this->post('/pic/download-presensi-by-kantor-pdf', [
+        'namaKantor' => '',
+        'month' => $tahun.'-08',
+    ])->assertSessionHasErrors('namaKantor');
+});

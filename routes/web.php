@@ -28,10 +28,10 @@ Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorD
 
 // 2. Absensi
 Route::get('/admin/lihatRekapBulananByKantor', [DataAbsenController::class, 'lihatDataAbsenDariApi'])
-        ->name('lihatRekapBulananByKantor-DariApi'); // masih dd
+    ->name('lihatRekapBulananByKantor-DariApi'); // masih dd
 Route::get('/admin/kantorYangAkanDisimpanRekapBulananByKantor', [DataAbsenController::class, 'kantorYgAkanDisimpanDataAbsenDariApiKeDB']);
 Route::post('/admin/simpanRekapBulananByKantor', [DataAbsenController::class, 'simpanDataAbsenDariApiKeDB']);
-//Route::get('/admin/lihatDataAbsenDariDB', [AdminController::class, 'lihatDataAbsenDariDB']);
+// Route::get('/admin/lihatDataAbsenDariDB', [AdminController::class, 'lihatDataAbsenDariDB']);
 
 Route::post('/admin/lihatRekapBulananByNip', [AdminController::class, 'show'])->name('lihatRekapBulananByNip-DariDB');
 
@@ -56,6 +56,7 @@ Route::get('/admin/asn-kegiatan', [HariKegiatanController::class, 'ImportAsnYgMe
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');
 Route::post('/pic/lihat-satu-kantor-saja', [PicController::class, 'lihatSatuKantorSaja']);
 Route::post('/pic/download-presensi-by-kantor-excel', [PicController::class, 'downloadPresensiRekapByKantorExcel']);
+Route::post('/pic/download-presensi-by-kantor-pdf', [PicController::class, 'downloadPresensiRekapByKantorPdf']);
 
 // 4. persentase
 Route::get('/pic/simpan-persentase', [PersentaseController::class, 'persentase']);
@@ -65,49 +66,16 @@ Route::post('/pic/simpan-persentase', [PersentaseController::class, '__hitungPer
 Route::get('/pic/simpan-persentase-v2', [PersentaseController::class, 'persentasev2']);
 Route::post('/pic/simpan-persentase-v2', [PersentaseController::class, '__hitungPersentasev2']);
 
-
 Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 // Route::get('/pic/detail', [PicController::class, 'show']);
 
 Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
 
-
 // TARIK DATA DARI API (Data ASN V2)
 // tarik data semua asn dari simpegnasm simpan beserta nama kantor dan id kantorya
 Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAsnDariApiKeDB']);
-// 
+//
 Route::get('/admin/lihat-asn-dari-api', [AsnDariApiController::class, 'lihatDataAsnDariApiYangSudahKeDB']);
 Route::post('/admin/import-duk-excel-untuk-lengkapi-data-asn', [AsnDariApiController::class, 'lengkapiDataAsnDariApiKeDbMenggunakanDuk']);
 Route::delete('/admin/hapus-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'hapusSemuaDataAsnDariApiKeDb']);
 Route::post('/admin/download-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'downloadDataAsnDariApiKeDb']);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

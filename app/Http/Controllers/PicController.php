@@ -406,7 +406,7 @@ class PicController extends Controller
 
         $request->validate([
             'namaKantor'  => 'required|string',
-            'month'             => 'required|date',
+            'month'       => 'required|date',
         ]);
         
         $opd = $request->input('namaKantor', ''); //"Badan Kepegawaian dan Pengembangan Sumber Daya Manusia"
@@ -418,7 +418,6 @@ class PicController extends Controller
         // 
         $filename = 'kehadiran ASN bulan '.$bln.' tahun '.$thn.' di '.$opd.'.xlsx';
         
-        // dd($filename);
 
         return Excel::download(new downloadPresensiRekapByKantorExcelExport($opd, $month), $filename);
 

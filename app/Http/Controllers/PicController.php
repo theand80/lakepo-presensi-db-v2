@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exports\downloadPresensiRekapByKantorExcelExport;
-use App\Exports\RekapAbsenExport;
-use App\Models\ApiSimpegnas;
 use App\Models\AsnDariApi;
 use App\Models\DataAbsen;
 use App\Models\DataAsn;
-use App\Models\ImportApi;
 use App\Models\ListKantor;
 use App\Models\Persentase;
 use Illuminate\Http\Request;
@@ -25,89 +22,51 @@ class PicController extends Controller
     {
         // dd(empty($request->all()));
         // if (empty($request->all())) {
-            
+
         // kantor yang ada di data absen
-        // di data absen, kolom unor_simpegnas, cari yang sama di AsnDariApi kolom unor_simpegnas, 
+        // di data absen, kolom unor_simpegnas, cari yang sama di AsnDariApi kolom unor_simpegnas,
         // jika sama, ambil kolom unor_siasn_induk, munculkan di list
         // $listKantor = AsnDariApi::select('unor_siasn_induk')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
-        
-            $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
-            // $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
-            
-            $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')
-                ->whereIn('unor_simpegnas', $unorSimpegnas)
-                ->distinct()
-                ->pluck('unor_siasn_induk')
-                ->unique()
-                ->values();
 
-            // dd($unorSimpegnas);
-            // dd($listKantor);
+        $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
+        // $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
 
-            $selectedMonth = date('Y-m');
+        $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')
+            ->whereIn('unor_simpegnas', $unorSimpegnas)
+            ->distinct()
+            ->pluck('unor_siasn_induk')
+            ->unique()
+            ->values();
 
-            $data = [];
+        // dd($unorSimpegnas);
+        // dd($listKantor);
 
-            $selectedKantor = null;
-            return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor'));
+        $selectedMonth = date('Y-m');
+
+        $data = [];
+
+        $selectedKantor = null;
+
+        return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor'));
         // }
 
         // dd($request);
 
     }
-    
+
     public function lihatSatuKantorSaja(Request $request)
     {
         // dd($request->all());
 
         $request->validate([
-            'filterNamaKantor'  => 'required|string',
-            'month'             => 'required|date',
+            'filterNamaKantor' => 'required|string',
+            'month' => 'required|date',
         ]);
-        
+
         $selectedMonth = $request->input('month', date('Y-m'));
         $selectedKantor = $request->input('filterNamaKantor', '');
-        // $selectedMonth = $request->input('month', '2026-08-01');
 
-        // dd($selectedMonth);
-
-        // $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
-        // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
-        // $tgl = '2026-08';
-        $tgl = $selectedMonth;
-
-
-        $kantorYgDicariDatanya = AsnDariApi::where('unor_siasn_induk', $selectedKantor)->select('unor_simpegnas')->distinct()->get();
-        
-        $listKantor = ListKantor::get();
-
-        // dd($kantorYgDicariDatanya);
-        // dd($kantorYgDicariDatanya[0]['unor_simpegnas']);
-        // dd($kantorYgDicariDatanya[1]['unor_simpegnas']);
-
-        // dd($listKantor[0]['nama_kantor']);
-        // .
-        // .
-        // .
-        // dd($listKantor[300]['nama_kantor']);
-
-        // id didapatkan
-        $hasil = [];
-        foreach ($kantorYgDicariDatanya as $data) {
-            $hasil[] = collect($listKantor)->firstWhere('nama_kantor', $data['unor_simpegnas']);
-        }
-
-        // dd($hasil);
-
-        // $data = $this->__dataYangDitampilkan('c9956f8f-77ea-4bbf-a22a-182b6ac9823e', $tgl); // dibawah
-        $data=[];
-        foreach ($hasil as $id_kantor) {
-            $data[] = $this->__dataYangDitampilkan($id_kantor, $tgl); // dibawah
-        }
-        // dd($data);
-
-        // gabungkan data agar di view tidak perlu foreach didalam foreach
-        $data = collect($data)->flatten(1)->values()->toArray();
+        $data = $this->__rekapSatuKantor($selectedKantor, $selectedMonth);
 
         // $persentases = Persentase::get();
 
@@ -136,6 +95,27 @@ class PicController extends Controller
             ->values();
 
         return view('pic.rekapSatuKantorSiasnSaja', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor'));
+    }
+
+    public function __rekapSatuKantor(string $selectedKantor, string $tgl): array
+    {
+        $kantorYgDicariDatanya = AsnDariApi::where('unor_siasn_induk', $selectedKantor)->select('unor_simpegnas')->distinct()->get();
+        $listKantor = ListKantor::get();
+
+        $hasil = [];
+        foreach ($kantorYgDicariDatanya as $data) {
+            $id = collect($listKantor)->firstWhere('nama_kantor', $data['unor_simpegnas']);
+            if ($id !== null) {
+                $hasil[] = $id;
+            }
+        }
+
+        $data = [];
+        foreach ($hasil as $id_kantor) {
+            $data[] = $this->__dataYangDitampilkan($id_kantor, $tgl);
+        }
+
+        return collect($data)->flatten(1)->values()->toArray();
     }
 
     /**
@@ -222,10 +202,8 @@ class PicController extends Controller
         // dd($tgl);
         // dd($unor_simpegnas_id->id_kantor);
 
-        $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl . '%')->get()
-                ->groupBy('nip');
-
-
+        $records = DataAbsen::where('unor_simpegnas_id', $unor_simpegnas_id->id_kantor)->whereLike('date', $tgl.'%')->get()
+            ->groupBy('nip');
 
         // Ambil data ASN dan jadikan NIP sebagai key
         $dataAsn = AsnDariApi::select('nip', 'pangkat', 'golongan', 'status', 'jabatan')->get()->keyBy('nip');
@@ -246,7 +224,7 @@ class PicController extends Controller
 
             //  Ambil record tanggal 01
             // | Jika $tgl = 2026-08 | maka tanggal yang dicari: 2026-08-01
-            $tanggal01 = $tgl . '-01';
+            $tanggal01 = $tgl.'-01';
             $recordTanggal01 = $group->first(function ($record) use ($tanggal01) {
                 return $record->date == $tanggal01;
             });
@@ -255,16 +233,16 @@ class PicController extends Controller
             $persentase = $recordTanggal01?->persentase;
 
             $rekap = [
-                'nip'       => $nip,
-                'nama'      => $group[0]['nama'],
+                'nip' => $nip,
+                'nama' => $group[0]['nama'],
 
-                'golongan'      => $asn->golongan ?? '',
-                'pangkat'       => $asn->pangkat ?? '',
-                'jabatan'       => $asn->jabatan ?? '-',
-                'status'        => $asn->status ?? '-',
-                'kantor'        => $group[0]->unor_simpegnas ?? '-',
-                'persentase'    => $persentase,
-                'rekap'         => array_fill_keys($kodeAbsen, 0),
+                'golongan' => $asn->golongan ?? '',
+                'pangkat' => $asn->pangkat ?? '',
+                'jabatan' => $asn->jabatan ?? '-',
+                'status' => $asn->status ?? '-',
+                'kantor' => $group[0]->unor_simpegnas ?? '-',
+                'persentase' => $persentase,
+                'rekap' => array_fill_keys($kodeAbsen, 0),
             ];
 
             // hitung isi kolom status change dan atau status_script, jika hari libur, hitungan dilewati
@@ -284,16 +262,16 @@ class PicController extends Controller
 
             // jumlahkan beberapa kode, cukup sekali per NIP karena hasilnya hanya bergantung pada jumlah kode
             [
-                'TL1'   => $rekap['rekap']['TL1'],
-                'TL2'   => $rekap['rekap']['TL2'],
-                'TL3'   => $rekap['rekap']['TL3'],
-                'TL4'   => $rekap['rekap']['TL4'],
-                'PSW1'  => $rekap['rekap']['PSW1'],
-                'PSW2'  => $rekap['rekap']['PSW2'],
-                'PSW3'  => $rekap['rekap']['PSW3'],
-                'PSW4'  => $rekap['rekap']['PSW4'],
-                'H'     => $rekap['hadir'],
-            ] = $this->__jumlahkanBeberapaKode($rekap); //dibawah
+                'TL1' => $rekap['rekap']['TL1'],
+                'TL2' => $rekap['rekap']['TL2'],
+                'TL3' => $rekap['rekap']['TL3'],
+                'TL4' => $rekap['rekap']['TL4'],
+                'PSW1' => $rekap['rekap']['PSW1'],
+                'PSW2' => $rekap['rekap']['PSW2'],
+                'PSW3' => $rekap['rekap']['PSW3'],
+                'PSW4' => $rekap['rekap']['PSW4'],
+                'H' => $rekap['hadir'],
+            ] = $this->__jumlahkanBeberapaKode($rekap); // dibawah
 
             $data[] = $rekap;
         }
@@ -315,6 +293,7 @@ class PicController extends Controller
             if ($persentaseB === null) {
                 return -1;
             }
+
             // Persentase terbesar di atas
             return $persentaseB <=> $persentaseA;
         });
@@ -332,7 +311,7 @@ class PicController extends Controller
     public function __jumlahkanBeberapaKode(array $rekap): array
     {
         // dd($rekap);
-        // 
+        //
         $rekap['rekap']['TL1'] = $rekap['rekap']['TM1'] + $rekap['rekap']['TM1-CP1']
             + $rekap['rekap']['TM1-CP2'] + $rekap['rekap']['TM1-CP3'] + $rekap['rekap']['TM1-CP4']
             + $rekap['rekap']['TM1-PLN'] + $rekap['rekap']['TM1-TAP'];
@@ -387,39 +366,37 @@ class PicController extends Controller
             + $rekap['rekap']['PGN-CP4'] + $rekap['rekap']['TAD-CP4'];
 
         return [
-            'TL1'   => $rekap['rekap']['TL1'],
-            'TL2'   => $rekap['rekap']['TL2'],
-            'TL3'   => $rekap['rekap']['TL3'],
-            'TL4'   => $rekap['rekap']['TL4'],
-            'PSW1'  => $rekap['rekap']['PSW1'],
-            'PSW2'  => $rekap['rekap']['PSW2'],
-            'PSW3'  => $rekap['rekap']['PSW3'],
-            'PSW4'  => $rekap['rekap']['PSW4'],
-            'H'     => $rekap['hadir'],
+            'TL1' => $rekap['rekap']['TL1'],
+            'TL2' => $rekap['rekap']['TL2'],
+            'TL3' => $rekap['rekap']['TL3'],
+            'TL4' => $rekap['rekap']['TL4'],
+            'PSW1' => $rekap['rekap']['PSW1'],
+            'PSW2' => $rekap['rekap']['PSW2'],
+            'PSW3' => $rekap['rekap']['PSW3'],
+            'PSW4' => $rekap['rekap']['PSW4'],
+            'H' => $rekap['hadir'],
         ];
     }
 
-    
     public function downloadPresensiRekapByKantorExcel(Request $request)
     {
         // dd($request->all());
 
         $request->validate([
-            'namaKantor'  => 'required|string',
-            'month'       => 'required|date',
+            'namaKantor' => 'required|string',
+            'month' => 'required|date',
         ]);
-        
-        $opd = $request->input('namaKantor', ''); //"Badan Kepegawaian dan Pengembangan Sumber Daya Manusia"
-        $month = $request->input('month', date('Y-m')); //"2026-08"
-        $bln = substr($month, 5, 2); //08
-        $thn = substr($month, 0, 4); //08
 
+        $opd = $request->input('namaKantor', ''); // "Badan Kepegawaian dan Pengembangan Sumber Daya Manusia"
+        $month = $request->input('month', date('Y-m')); // "2026-08"
+        $bln = substr($month, 5, 2); // 08
+        $thn = substr($month, 0, 4); // 08
 
-        // 
-        $filename = 'kehadiran ASN bulan '.$bln.' tahun '.$thn.' di '.$opd.'.xlsx';
-        
+        //
+        $filename = 'kehadiran ASN bulan '.$bln.' tahun '.$thn.' di '.str_replace('/', '-', $opd).'.xlsx';
+        $data = $this->__rekapSatuKantor($opd, $month);
 
-        return Excel::download(new downloadPresensiRekapByKantorExcelExport($opd, $month), $filename);
+        return Excel::download(new downloadPresensiRekapByKantorExcelExport($data, $opd, $month), $filename);
 
     }
 
@@ -427,7 +404,6 @@ class PicController extends Controller
     {
         return view('pic.bpk');
     }
-
 
     /**
      * Display the specified resource.
@@ -504,13 +480,13 @@ class PicController extends Controller
         $record = DataAbsen::findOrFail($id);
 
         $data = $request->validate([
-            'status_change'                           => 'nullable|string|max:10',
-            'checkIn_status_change'                   => 'nullable|string|max:10',
-            'checkIn_time_with_timezone_change'       => 'nullable|string|max:19',
-            'checkRest_status_change'                 => 'nullable|string|max:10',
-            'checkRest_time_with_timezone_change'     => 'nullable|string|max:19',
-            'checkOut_status_change'                  => 'nullable|string|max:10',
-            'checkOut_time_with_timezone_change'      => 'nullable|string|max:19',
+            'status_change' => 'nullable|string|max:10',
+            'checkIn_status_change' => 'nullable|string|max:10',
+            'checkIn_time_with_timezone_change' => 'nullable|string|max:19',
+            'checkRest_status_change' => 'nullable|string|max:10',
+            'checkRest_time_with_timezone_change' => 'nullable|string|max:19',
+            'checkOut_status_change' => 'nullable|string|max:10',
+            'checkOut_time_with_timezone_change' => 'nullable|string|max:19',
         ]);
 
         foreach (['checkIn_time_with_timezone_change', 'checkRest_time_with_timezone_change', 'checkOut_time_with_timezone_change'] as $field) {
@@ -521,5 +497,4 @@ class PicController extends Controller
 
         return redirect()->back()->with('success', 'Data presensi berhasil diperbarui.');
     }
-
 }

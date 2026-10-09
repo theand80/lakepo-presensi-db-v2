@@ -423,7 +423,8 @@ class PicController extends Controller
 
         return Pdf::loadView('pic.pdf.rekapSatuKantor', compact('data', 'opd', 'month', 'bln', 'thn' , 'sebagai', 'namaPenTtd', 'pangkatGol', 'nipPenTtd'))
             ->setPaper([0, 0, 330 / 25.4 * 72, 215 / 25.4 * 72], 'portrait')
-            ->download($filename);
+            // ->download($filename);
+            ->stream($filename);
     }
 
     public function bpk(Request $request)

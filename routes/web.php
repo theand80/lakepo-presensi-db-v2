@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AsnDariApiController;
 use App\Http\Controllers\DataAbsenController;
 use App\Http\Controllers\DataAsnController;
+use App\Http\Controllers\PenandaTanganController;
 use App\Http\Controllers\PersentaseController;
 use App\Http\Controllers\PicController;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +27,7 @@ Route::get('/admin/listKantorDariApiIndex', [AdminController::class, 'listKantor
 Route::get('/admin/simpanListKantorkeDB', [AdminController::class, 'simpanListKantorkeDB']);
 Route::get('/admin/listKantorDariDBIndex', [AdminController::class, 'listKantorDariDBIndex'])->name('lihatListKator-DariDB');
 
-// 2. Absensi
+// 3. Absensi
 Route::get('/admin/lihatRekapBulananByKantor', [DataAbsenController::class, 'lihatDataAbsenDariApi'])
     ->name('lihatRekapBulananByKantor-DariApi'); // masih dd
 Route::get('/admin/kantorYangAkanDisimpanRekapBulananByKantor', [DataAbsenController::class, 'kantorYgAkanDisimpanDataAbsenDariApiKeDB']);
@@ -42,7 +43,7 @@ Route::post('/import-excel-update-data-asn', [DataAsnController::class, 'updateD
 Route::delete('/import-excel-delete-all-data-asn', [DataAsnController::class, 'destroyAllDataAsn']);
 Route::post('/admin/eksport-data-asn', [DataAsnController::class, 'exportDataAsn']);
 
-// set Jam dan Kode
+// 2. set Jam dan Kode
 Route::get('/admin/referensi', [AdminController::class, 'referensi']);
 
 // hariKegiatan
@@ -58,11 +59,16 @@ Route::post('/pic/lihat-satu-kantor-saja', [PicController::class, 'lihatSatuKant
 Route::post('/pic/download-presensi-by-kantor-excel', [PicController::class, 'downloadPresensiRekapByKantorExcel']);
 Route::post('/pic/download-presensi-by-kantor-pdf', [PicController::class, 'downloadPresensiRekapByKantorPdf']);
 
-// 4. persentase
+// set penanda tangan
+Route::post('/admin/list-penandatangan', [PenandaTanganController::class, 'index']);
+
+
+
+// persentase
 Route::get('/pic/simpan-persentase', [PersentaseController::class, 'persentase']);
 Route::post('/pic/simpan-persentase', [PersentaseController::class, '__hitungPersentase']);
 
-// persentase v2
+// 6. persentase v2
 Route::get('/pic/simpan-persentase-v2', [PersentaseController::class, 'persentasev2']);
 Route::post('/pic/simpan-persentase-v2', [PersentaseController::class, '__hitungPersentasev2']);
 
@@ -71,6 +77,7 @@ Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 
 Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
 
+// 4. dan 5.
 // TARIK DATA DARI API (Data ASN V2)
 // tarik data semua asn dari simpegnasm simpan beserta nama kantor dan id kantorya
 Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAsnDariApiKeDB']);

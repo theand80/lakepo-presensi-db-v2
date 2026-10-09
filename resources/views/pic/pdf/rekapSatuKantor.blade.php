@@ -68,7 +68,8 @@
         }
 
         .titlePersentase{
-            max-width: 14mm;
+            width: 14mm;
+            border-right: 0.25pt solid #000;
         }
         .colPersentase{
             /* max-width: 4mm; */
@@ -214,7 +215,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="28" class="empty">Tidak ada data.</td>
+                    <td colspan="29" class="empty">Tidak ada data.</td>
                 </tr>
             @endforelse
         </tbody>

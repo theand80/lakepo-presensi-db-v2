@@ -46,12 +46,12 @@ class AsnDariApiController extends Controller
 
     public function simpanDataAsnDariApiKeDB()
     {
-        $tgl = '2026-08';
+        $tgl = '2026-10';
 
         ListKantor::select('id_kantor', 'nama_kantor')
             // ->skip(72)->limit(2) // TESTING: batasi 2 kantor
             // ->where('id_kantor', '44832e9f-feca-414e-8385-0f8b18f9a06b')
-            ->skip(220)->limit(20)
+            ->skip(0)->limit(20) // ubah 0 kelipatan 20 sampai 220
             ->chunkById(10, function ($listKantor) use ($tgl) {
 
                 foreach ($listKantor as $kantor) {

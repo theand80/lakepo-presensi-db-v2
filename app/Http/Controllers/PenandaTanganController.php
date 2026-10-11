@@ -39,11 +39,12 @@ class PenandaTanganController extends Controller
 
             return $item;
         });
-        return $data;
+        // return $data;
 
         // ---------------
 
         // jika ingin menggunakan if dan foreach untuk menggantikan firstWhere atau keyBy
+        // $dataPenTtd = PenandaTangan::all();
         // $data = $kantor->map(function ($item) use ($dataPenTtd) {
         //     $ttd = null;
         //     foreach ($dataPenTtd as $penandaTangan) {
@@ -61,54 +62,41 @@ class PenandaTanganController extends Controller
         // return $data;
 
 
-        return view('admin.penadaTangan.listPenandaTangan', compact('kantor'));
+        return view('admin.penadaTangan.listPenandaTangan', compact('data'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+   public function __upsert(Request $request){
+    // 
+    dd($request->all());
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    // $request->validate([
+    //     'unor_siasn_induk'   => 'required|string', //DIKES - PKM PARUGA - Pustu Posprim Kel. Dara
+    //     'bulanUntukDihitung' => 'required|in:01,02,03,04,05,06,07,08,09,10,11,12',
+    // ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+    AsnDariApi::select('nip', 'nama', 'pangkat', 'golongan')->firstWhere('nip', $request->input('nip'))->get();
+    dd($request->all());
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    PenandaTangan::upsert(
+        [
+        'unor_siasn_induk' => $request->input('namaKantor', ''),
+        'sebagai' => $request->input('sebagai', ''),
+        'nip' => $nip,
+        'nama_pen_ttd' => $nip,
+        'pangkat_gol' => $nip,
+        ],
+        ['unor_siasn_induk'],
+        [
+            'sebagai',
+            'nip',
+            'nama_pen_ttd',
+            'pangkat_gol',
+            'updated_at',
+        ]
+    );
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+
+    return redirect('/admin/list-penandatangan')->with('success', 'Penanda Tangan Berhasil disimpan');
+   }
 }

@@ -72,6 +72,7 @@ Route::post('/pic/download-presensi-by-kantor-pdf', [PicController::class, 'down
 
 // set penanda tangan
 Route::get('/admin/list-penandatangan', [PenandaTanganController::class, 'index']);
+Route::post('/admin/simpan-penandatangan', [PenandaTanganController::class, '__upsert']);
 
 
 

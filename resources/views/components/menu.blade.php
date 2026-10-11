@@ -17,28 +17,34 @@
 
         <a href="{{ url('/admin/data-asn') }}" class="bg-green-600 py-2 px-4 text-white">Data ASN yg diimport dari
             Excel</a>
-            
+
         <a href="{{ url('/admin/lihatRekapBulananByKantor') }}" class="bg-gray-600 py-2 px-4 text-white">dd Import Data
             Absen dari API Simpegnas</a>
-        <a href="{{ url('/admin/kantorYangAkanDisimpanRekapBulananByKantor') }}" class="bg-yellow-900 py-2 px-4 text-white">Daftar Kantor yang akan di Import Data Absen dari API Simpegnas</a>
-        <a href="{{ url('/admin/simpanRekapBulananByKantor') }}" class="bg-sky-600 py-2 px-4 text-white">Import Data Absen dari API Simpegnas</a>
+        <a href="{{ url('/admin/kantorYangAkanDisimpanRekapBulananByKantor') }}"
+            class="bg-yellow-900 py-2 px-4 text-white">Daftar Kantor yang akan di Import Data Absen dari API
+            Simpegnas</a>
+        <a href="{{ url('/admin/simpanRekapBulananByKantor') }}" class="bg-sky-600 py-2 px-4 text-white">Import Data
+            Absen dari API Simpegnas</a>
 
     </div>
 
 
     <div class="min-h-[100px] flex items-center justify-center text-slate-500 bg-white gap-4">
+        <a href="{{ url('/admin/list-penandatangan') }}" class="bg-mauve-700 py-2 px-4 text-white">Penada Tangan</a>
 
         <a href="{{ url('/admin/asn-dari-api') }}" class="bg-red-900 py-2 px-4 text-white">ASN dari API</a>
-        <a href="{{ url('/admin/lihat-asn-dari-api') }}" class="bg-blue-900 py-2 px-4 text-white">Lihat ASN dari API yang sudah di DB</a>
+        <a href="{{ url('/admin/lihat-asn-dari-api') }}" class="bg-blue-900 py-2 px-4 text-white">Lihat ASN dari API
+            yang sudah di DB</a>
         <a href="{{ url('/pic/simpan-persentase') }}" class="bg-sky-600 py-2 px-4 text-white">Set Persentase</a>
-        <a href="{{ url('/pic/simpan-persentase-v2') }}" class="bg-green-600 py-2 px-4 text-white">Set Persentase v2</a>
+        <a href="{{ url('/pic/simpan-persentase-v2') }}" class="bg-green-600 py-2 px-4 text-white">Set Persentase
+            v2</a>
         {{-- <a href="http://" class="bg-red-900 py-2 px-4 text-white">Hari Libur</a> --}}
         {{-- <a href="http://" class="bg-yellow-800 py-2 px-4 text-white">Import Kegiatan</a> --}}
         <a href="http://" class="bg-yellow-600 py-2 px-4 text-white">List User</a>
 
         {{-- <a href="{{ url('/admin/lihatRekapBulananByNip') }}" class="bg-teal-600 py-2 px-4 text-white">Rekap Bulanan By Nip / Detail</a> --}}
 
-        
+
         <a href="http://" class="bg-blue-700 py-2 px-4 text-white">Rekapitulasi (chart)</a>
     </div>
 </div>

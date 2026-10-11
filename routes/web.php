@@ -52,6 +52,17 @@ Route::post('/admin/hari-kegiatan', [HariKegiatanController::class, 'simpanSetHa
 Route::delete('/admin/hari-kegiatan/{id}', [HariKegiatanController::class, 'hapusHariKegiatan']);
 Route::get('/admin/asn-kegiatan', [HariKegiatanController::class, 'ImportAsnYgMengikutiKegiatan']);
 
+// 4. dan 5.
+// TARIK DATA DARI API (Data ASN V2)
+// tarik data semua asn dari simpegnasm simpan beserta nama kantor dan id kantorya
+Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAsnDariApiKeDB']);
+//
+Route::get('/admin/lihat-asn-dari-api', [AsnDariApiController::class, 'lihatDataAsnDariApiYangSudahKeDB']);
+Route::post('/admin/import-duk-excel-untuk-lengkapi-data-asn', [AsnDariApiController::class, 'lengkapiDataAsnDariApiKeDbMenggunakanDuk']);
+Route::delete('/admin/hapus-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'hapusSemuaDataAsnDariApiKeDb']);
+Route::post('/admin/download-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'downloadDataAsnDariApiKeDb']);
+
+
 // ------------
 // 3. rekap bulanan by kantor
 Route::get('/pic/dashboard/pic', [PicController::class, 'index'])->name('lihatRekapBulananByKantor-DariDB');
@@ -60,7 +71,7 @@ Route::post('/pic/download-presensi-by-kantor-excel', [PicController::class, 'do
 Route::post('/pic/download-presensi-by-kantor-pdf', [PicController::class, 'downloadPresensiRekapByKantorPdf']);
 
 // set penanda tangan
-Route::post('/admin/list-penandatangan', [PenandaTanganController::class, 'index']);
+Route::get('/admin/list-penandatangan', [PenandaTanganController::class, 'index']);
 
 
 
@@ -77,12 +88,4 @@ Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 
 Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
 
-// 4. dan 5.
-// TARIK DATA DARI API (Data ASN V2)
-// tarik data semua asn dari simpegnasm simpan beserta nama kantor dan id kantorya
-Route::get('/admin/asn-dari-api', [AsnDariApiController::class, 'simpanDataAsnDariApiKeDB']);
-//
-Route::get('/admin/lihat-asn-dari-api', [AsnDariApiController::class, 'lihatDataAsnDariApiYangSudahKeDB']);
-Route::post('/admin/import-duk-excel-untuk-lengkapi-data-asn', [AsnDariApiController::class, 'lengkapiDataAsnDariApiKeDbMenggunakanDuk']);
-Route::delete('/admin/hapus-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'hapusSemuaDataAsnDariApiKeDb']);
-Route::post('/admin/download-data-asn-dari-api-ke-db', [AsnDariApiController::class, 'downloadDataAsnDariApiKeDb']);
+

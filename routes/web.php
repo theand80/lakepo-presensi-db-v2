@@ -8,6 +8,7 @@ use App\Http\Controllers\DataAsnController;
 use App\Http\Controllers\PenandaTanganController;
 use App\Http\Controllers\PersentaseController;
 use App\Http\Controllers\PicController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -74,8 +75,6 @@ Route::post('/pic/download-presensi-by-kantor-pdf', [PicController::class, 'down
 Route::get('/admin/list-penandatangan', [PenandaTanganController::class, 'index']);
 Route::post('/admin/simpan-penandatangan', [PenandaTanganController::class, '__upsert']);
 
-
-
 // persentase
 Route::get('/pic/simpan-persentase', [PersentaseController::class, 'persentase']);
 Route::post('/pic/simpan-persentase', [PersentaseController::class, '__hitungPersentase']);
@@ -89,4 +88,9 @@ Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 
 Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
 
+
+// User
+Route::get('/admin/list-user', [UserController::class, 'index']);
+Route::post('/admin/add-user', [UserController::class, 'store']);
+Route::delete('/admin/delete-user/{id}', [UserController::class, 'destroy']);
 

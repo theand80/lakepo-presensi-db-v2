@@ -67,32 +67,50 @@ class PenandaTanganController extends Controller
 
    public function __upsert(Request $request){
     // 
-    dd($request->all());
+    // dd($request->all());
 
     // $request->validate([
     //     'unor_siasn_induk'   => 'required|string', //DIKES - PKM PARUGA - Pustu Posprim Kel. Dara
-    //     'bulanUntukDihitung' => 'required|in:01,02,03,04,05,06,07,08,09,10,11,12',
+    //     'sebagai'            => 'required|string', 
+    //     'nip'                => 'required|string', 
+    //     // 'bulanUntukDihitung' => 'required|in:01,02,03,04,05,06,07,08,09,10,11,12',
     // ]);
 
-    AsnDariApi::select('nip', 'nama', 'pangkat', 'golongan')->firstWhere('nip', $request->input('nip'))->get();
-    dd($request->all());
+    $nip = $request->input('nip', '');
+
+    $dataAsn = AsnDariApi::select('nip', 'nama', 'pangkat', 'golongan')->where('nip', $nip)->distinct()->get();
+    // dd($dataAsn[0]);
 
 
-    PenandaTangan::upsert(
+    // pada UPSERT kolom unor_siasn_induk harus dijadikan unique terlebih dahulu
+    // PenandaTangan::upsert(
+    //     [
+    //     'unor_siasn_induk' => $request->input('namaKantor', ''),
+    //     'sebagai' => $request->input('sebagai', ''),
+    //     'nip' => $nip,
+    //     'nama_pen_ttd' => $dataAsn[0]->nama,
+    //     'pangkat_gol' => $dataAsn[0]->pangkat .' / ('.$dataAsn[0]->golongan.' )',
+    //     ],
+    //     ['unor_siasn_induk'],
+    //     [
+    //         'sebagai',
+    //         'nip',
+    //         'nama_pen_ttd',
+    //         'pangkat_gol',
+            
+    //     ]
+    // );
+
+    // alternatif dari unique upsert
+    PenandaTangan::updateOrCreate(
         [
-        'unor_siasn_induk' => $request->input('namaKantor', ''),
-        'sebagai' => $request->input('sebagai', ''),
-        'nip' => $nip,
-        'nama_pen_ttd' => $nip,
-        'pangkat_gol' => $nip,
+            'unor_siasn_induk' => $request->input('namaKantor', ''),
         ],
-        ['unor_siasn_induk'],
         [
-            'sebagai',
-            'nip',
-            'nama_pen_ttd',
-            'pangkat_gol',
-            'updated_at',
+            'sebagai' => $request->input('sebagai', ''),
+            'nip' => $nip,
+            'nama_pen_ttd' => $dataAsn[0]->nama,
+            'pangkat_gol' => $dataAsn[0]->pangkat . ' / (' . $dataAsn[0]->golongan . ')',
         ]
     );
 

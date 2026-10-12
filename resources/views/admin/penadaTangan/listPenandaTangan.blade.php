@@ -81,8 +81,6 @@
                                 <td class="p-3">{{ $value->unor_siasn_induk }}</td>
                                 <td class="p-3">{{ $value->penandaTangan->sebagai ?? '' }}</td>
                                 <td class="p-3">{{ $value->penandaTangan->nama_pen_ttd ?? '' }} </td>
-                                <td class="p-3">{{ $value->penandaTangan->pangkat_gol ?? '' }} </td>
-                                <td class="p-3">{{ $value->penandaTangan->nip ?? '' }} </td>
 
                                 <!-- PERBAIKAN: Menggunakan Class dan Menyimpan Data di Atribut HTML -->
                                 <td class="text-center p-3">

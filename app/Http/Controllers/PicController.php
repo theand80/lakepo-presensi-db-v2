@@ -7,6 +7,7 @@ use App\Models\AsnDariApi;
 use App\Models\DataAbsen;
 use App\Models\DataAsn;
 use App\Models\ListKantor;
+use App\Models\PenandaTangan;
 use App\Models\Persentase;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -404,16 +405,28 @@ class PicController extends Controller
     public function downloadPresensiRekapByKantorPdf(Request $request)
     {
         $request->validate([
-            'namaKantor' => 'required|string',
+            'namaKantor' => 'required|string', //Inspektorat
             'month' => 'required|date',
         ]);
 
-        $sebagai = 'Rlt. Kepala BKPSDM';
-        $namaPenTtd = 'Drs Iwansyah. MS';
-        $pangkatGol = 'Penata Muda Tk.I / (III-d)';
-        $nipPenTtd = '123123112311231123';
-
         $opd = $request->input('namaKantor', '');
+
+        $penTTD = PenandaTangan::select('sebagai', 'nama_pen_ttd', 'pangkat_gol', 'nip')->where('unor_siasn_induk', $opd)->get();
+        // dd($penTTD);
+
+        // if (empty($penTTD)) {
+        // if ($penTTD->count() == 0) { {
+        if ($penTTD->isEmpty()) {
+            return 'Data Belum Bisa di Download, Hubungi PIC';
+        }
+
+
+        $sebagai = $penTTD[0]->sebagai;
+        $namaPenTtd = $penTTD[0]->nama_pen_ttd;
+        $pangkatGol = $penTTD[0]->pangkat_gol;
+        $nipPenTtd = $penTTD[0]->nip;
+
+        
         $month = $request->input('month', date('Y-m'));
         $bln = substr($month, 5, 2);
         $thn = substr($month, 0, 4);

@@ -11,6 +11,18 @@ use Illuminate\Support\Facades\DB;
 
 class PersentaseController extends Controller
 {
+    /**
+     * Pastikan nama kantor berbasis unor_simpegnas termasuk yang boleh diakses user.
+     */
+    private function authorizeKantorSimpegnas(string $kantorName): void
+    {
+        $allowed = auth()->user()->kantorSimpegnasNames();
+
+        if ($allowed !== null && ! in_array($kantorName, $allowed, true)) {
+            abort(403, 'Anda tidak memiliki akses ke kantor tersebut.');
+        }
+    }
+
     //
     // persentase
     public function persentase()
@@ -23,23 +35,23 @@ class PersentaseController extends Controller
     public function __hitungPersentase(Request $request)
     {
         $request->validate([
-            'namaKantor'            => 'required|string',
-            'bulanUntukDihitung'    => 'required|date',
+            'namaKantor' => 'required|string',
+            'bulanUntukDihitung' => 'required|date',
         ]);
-        
+
         $selectedKantor = $request->input('namaKantor', '');
         $selectedMonth = $request->input('bulanUntukDihitung', date('Y-m'));
 
         // dd($request);
-        // 
-        $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; //bkpsdm
+        //
+        $unor_simpegnas_id = 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e'; // bkpsdm
         // $unor_simpegnas_id = 'fd7277d4-c35d-4de5-a479-1adad7cfceed'; // penanaman modal kantor
 
         // $tgl = '2026-08';
         $tgl = $selectedMonth;
         $data = $this->__dataYangDitampilkan($unor_simpegnas_id, $tgl); // diatas
 
-        $bln = substr($tgl, 5, 2);//dari 2026-08 jadi 08
+        $bln = substr($tgl, 5, 2); // dari 2026-08 jadi 08
         // dd($data);
 
         DB::transaction(function () use ($data, $bln) {
@@ -47,12 +59,11 @@ class PersentaseController extends Controller
             foreach ($data as $item) {
 
                 // hitung perentasenya
-                $persentases = ($item['rekap']['TK']*3) 
-                    + ($item['rekap']['TL1']*0.5) + ($item['rekap']['TL2']*1) 
-                    + ($item['rekap']['TL3']*1.25) + ($item['rekap']['TL4']*1.5)
-                    + ($item['rekap']['PSW1']*0.5) + ($item['rekap']['PSW2']*1) 
-                    + ($item['rekap']['PSW3']*1.25) + ($item['rekap']['PSW4']*1.5)
-                ;
+                $persentases = ($item['rekap']['TK'] * 3)
+                    + ($item['rekap']['TL1'] * 0.5) + ($item['rekap']['TL2'] * 1)
+                    + ($item['rekap']['TL3'] * 1.25) + ($item['rekap']['TL4'] * 1.5)
+                    + ($item['rekap']['PSW1'] * 0.5) + ($item['rekap']['PSW2'] * 1)
+                    + ($item['rekap']['PSW3'] * 1.25) + ($item['rekap']['PSW4'] * 1.5);
 
                 // $persentase = (1- ($persentases/100));
                 // $persentase = 100 - $persentases;
@@ -68,14 +79,14 @@ class PersentaseController extends Controller
 
             // dd($dataToUpsert);
 
-            if (!empty($dataToUpsert)) {
+            if (! empty($dataToUpsert)) {
                 Persentase::upsert(
                     $dataToUpsert,
                     ['nip'], // Kunci unik gabungan di DB tetap pakai 'date'
                     [
                         'nama',
                         'nip',
-                        $bln
+                        $bln,
                     ]
                 );
 
@@ -106,10 +117,10 @@ class PersentaseController extends Controller
 
         // Ambil semua data tanggal 01 pada tahun berjalan
         $dataAbsen = DataAbsen::select(
-                'unor_simpegnas',
-                'date',
-                'persentase'
-            )
+            'unor_simpegnas',
+            'date',
+            'persentase'
+        )
             ->whereIn('date', $tanggalTanggal01)
             ->get();
 
@@ -129,7 +140,6 @@ class PersentaseController extends Controller
                     $item["bulan_$bulan"] = 0;
                 }
 
-
                 // Cek persentase masing-masing bulan
                 foreach ($rows as $row) {
 
@@ -147,6 +157,12 @@ class PersentaseController extends Controller
             })
             ->values();
 
+        // Batasi hanya kantor yang boleh diakses user (berbasis unor_simpegnas)
+        $allowed = auth()->user()->kantorSimpegnasNames();
+        if ($allowed !== null) {
+            $data = $data->filter(fn ($item) => in_array($item['unor_simpegnas'], $allowed, true))->values();
+        }
+
         return view(
             'admin.persentase.setPersentasev2', compact('data')
         );
@@ -156,12 +172,14 @@ class PersentaseController extends Controller
     public function __hitungPersentasev2(Request $request)
     {
         $request->validate([
-            'namaKantor'            => 'required|string', //DIKES - PKM PARUGA - Pustu Posprim Kel. Dara
+            'namaKantor' => 'required|string', // DIKES - PKM PARUGA - Pustu Posprim Kel. Dara
             'bulanUntukDihitung' => 'required|in:01,02,03,04,05,06,07,08,09,10,11,12',
         ]);
 
         $selectedKantor = $request->input('namaKantor', '');
         $bln = $request->input('bulanUntukDihitung', date('m'));
+
+        $this->authorizeKantorSimpegnas($selectedKantor);
 
         $kantor = ListKantor::select('id_kantor')
             ->where('nama_kantor', $selectedKantor)
@@ -213,7 +231,7 @@ class PersentaseController extends Controller
                 }
             });
 
-        $picController = new PicController();
+        $picController = new PicController;
         $dataToUpdate = [];
 
         foreach ($jumlahKodePerNip as $nip => $jumlahKode) {
@@ -223,8 +241,8 @@ class PersentaseController extends Controller
             }
 
             $rekapTerjumlah = $picController->__jumlahkanBeberapaKode([
-                'nip'   => $nip,
-                'nama'  => $namaPerNip[$nip],
+                'nip' => $nip,
+                'nama' => $namaPerNip[$nip],
                 'rekap' => $jumlahKode,
             ]);
 
@@ -241,7 +259,7 @@ class PersentaseController extends Controller
             $persentase = round((1 - ($persentases / 100)) * 100, 2);
 
             $dataToUpdate[] = [
-                'nip'        => $nip,
+                'nip' => $nip,
                 'persentase' => $persentase,
             ];
         }

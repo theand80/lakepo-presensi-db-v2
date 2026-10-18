@@ -10,6 +10,7 @@ use App\Models\ListKantor;
 use App\Models\PenandaTangan;
 use App\Models\Persentase;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,31 +18,51 @@ use Maatwebsite\Excel\Facades\Excel;
 class PicController extends Controller
 {
     /**
+     * Batasi query unor_siasn_induk sesuai kantor yang boleh diakses user.
+     * Admin (null) tidak difilter.
+     *
+     * @param  Builder  $query
+     * @return Builder
+     */
+    private function scopeKantor($query)
+    {
+        $allowed = auth()->user()->kantorNames();
+
+        if ($allowed !== null) {
+            $query->whereIn('unor_siasn_induk', $allowed);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Pastikan nama kantor (unor_siasn_induk) termasuk yang boleh diakses user.
+     */
+    private function authorizeKantor(string $kantorName): void
+    {
+        $allowed = auth()->user()->kantorNames();
+
+        if ($allowed !== null && ! in_array($kantorName, $allowed, true)) {
+            abort(403, 'Anda tidak memiliki akses ke kantor tersebut.');
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      */
     // index: rekap dari data DB hasil import_api
     public function index()
     {
-        // dd(empty($request->all()));
-        // if (empty($request->all())) {
-
-        // kantor yang ada di data absen
-        // di data absen, kolom unor_simpegnas, cari yang sama di AsnDariApi kolom unor_simpegnas,
-        // jika sama, ambil kolom unor_siasn_induk, munculkan di list
-        // $listKantor = AsnDariApi::select('unor_siasn_induk')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
-
         $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
-        // $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')->whereIn('unor_simpegnas', $unorSimpegnas)->distinct()->pluck('unor_siasn_induk')->values();
 
-        $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')
-            ->whereIn('unor_simpegnas', $unorSimpegnas)
-            ->distinct()
+        $listKantor = $this->scopeKantor(
+            AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')
+                ->whereIn('unor_simpegnas', $unorSimpegnas)
+                ->distinct()
+        )
             ->pluck('unor_siasn_induk')
             ->unique()
             ->values();
-
-        // dd($unorSimpegnas);
-        // dd($listKantor);
 
         $selectedMonth = date('Y-m');
 
@@ -50,16 +71,10 @@ class PicController extends Controller
         $selectedKantor = null;
 
         return view('pic.rekap', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor'));
-        // }
-
-        // dd($request);
-
     }
 
     public function lihatSatuKantorSaja(Request $request)
     {
-        // dd($request->all());
-
         $request->validate([
             'filterNamaKantor' => 'required|string',
             'month' => 'required|date',
@@ -68,30 +83,17 @@ class PicController extends Controller
         $selectedMonth = $request->input('month', date('Y-m'));
         $selectedKantor = $request->input('filterNamaKantor', '');
 
+        $this->authorizeKantor($selectedKantor);
+
         $data = $this->__rekapSatuKantor($selectedKantor, $selectedMonth);
 
-        // $persentases = Persentase::get();
-
-        // $persentaseByNip = $persentases->keyBy('nip');
-        // $data = collect($data)->map(
-        //     function ($item) use ($persentaseByNip, ) {
-        //         $persentase = $persentaseByNip->get($item['nip']);
-        //         if ($persentase) {
-        //             $item['persentase'] = $persentase->{'08'};
-        //         }
-        //         return $item;
-        //     }
-        // )
-        // ->sortByDesc(function ($item) {
-        //         return $item['persentase'] ?? 0;
-        //     })
-        // ->values()->toArray();
-
-        // List Kantor
+        // List Kantor (dibatasi kantor yang boleh diakses)
         $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
-        $listKantor = AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')
-            ->whereIn('unor_simpegnas', $unorSimpegnas)
-            ->distinct()
+        $listKantor = $this->scopeKantor(
+            AsnDariApi::select('unor_siasn_induk', 'unor_simpegnas')
+                ->whereIn('unor_simpegnas', $unorSimpegnas)
+                ->distinct()
+        )
             ->pluck('unor_siasn_induk')
             ->unique()
             ->values();
@@ -394,6 +396,8 @@ class PicController extends Controller
         $bln = substr($month, 5, 2); // 08
         $thn = substr($month, 0, 4); // 08
 
+        $this->authorizeKantor($opd);
+
         //
         $filename = 'kehadiran ASN bulan '.$bln.' tahun '.$thn.' di '.str_replace('/', '-', $opd).'.xlsx';
         $data = $this->__rekapSatuKantor($opd, $month);
@@ -405,11 +409,13 @@ class PicController extends Controller
     public function downloadPresensiRekapByKantorPdf(Request $request)
     {
         $request->validate([
-            'namaKantor' => 'required|string', //Inspektorat
+            'namaKantor' => 'required|string', // Inspektorat
             'month' => 'required|date',
         ]);
 
         $opd = $request->input('namaKantor', '');
+
+        $this->authorizeKantor($opd);
 
         $penTTD = PenandaTangan::select('sebagai', 'nama_pen_ttd', 'pangkat_gol', 'nip')->where('unor_siasn_induk', $opd)->get();
         // dd($penTTD);
@@ -420,13 +426,11 @@ class PicController extends Controller
             return 'Data Belum Bisa di Download, Hubungi PIC';
         }
 
-
         $sebagai = $penTTD[0]->sebagai;
         $namaPenTtd = $penTTD[0]->nama_pen_ttd;
         $pangkatGol = $penTTD[0]->pangkat_gol;
         $nipPenTtd = $penTTD[0]->nip;
 
-        
         $month = $request->input('month', date('Y-m'));
         $bln = substr($month, 5, 2);
         $thn = substr($month, 0, 4);
@@ -434,7 +438,7 @@ class PicController extends Controller
         $filename = 'kehadiran ASN bulan '.$bln.' tahun '.$thn.' di '.str_replace('/', '-', $opd).'.pdf';
         $data = $this->__rekapSatuKantor($opd, $month);
 
-        return Pdf::loadView('pic.pdf.rekapSatuKantor', compact('data', 'opd', 'month', 'bln', 'thn' , 'sebagai', 'namaPenTtd', 'pangkatGol', 'nipPenTtd'))
+        return Pdf::loadView('pic.pdf.rekapSatuKantor', compact('data', 'opd', 'month', 'bln', 'thn', 'sebagai', 'namaPenTtd', 'pangkatGol', 'nipPenTtd'))
             ->setPaper([0, 0, 330 / 25.4 * 72, 215 / 25.4 * 72], 'portrait')
             // ->download($filename);
             ->stream($filename);

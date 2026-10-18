@@ -12,6 +12,12 @@
         </div>
     </div>
     <div class="flex items-center gap-2">
+        @auth
+            <div class="hidden sm:flex flex-col items-end leading-tight mr-2">
+                <span class="text-xs font-semibold text-gray-700">{{ auth()->user()->nama ?? auth()->user()->nip }}</span>
+                <span class="text-[10px] text-gray-400 uppercase">{{ auth()->user()->getRoleNames()->first() ?? '' }}</span>
+            </div>
+        @endauth
         <input type="text" placeholder="search..."
             class="bg-gray-100 border border-gray-200 py-1.5 px-3 text-gray-800 rounded text-xs outline-none w-28 sm:w-40 md:w-auto">
         <button onclick="toggleRightnav()" class="lg:hidden text-slate-600 hover:text-green-600">

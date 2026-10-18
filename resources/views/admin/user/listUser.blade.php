@@ -138,13 +138,34 @@
                                         required
                                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                     >
-                                        <option value="">Pilih hak akses</option>                        
+                                        <option value="">Pilih hak akses</option>
                                         <option value="admin">Admin</option>
                                         <option value="pic">Pic</option>
                                         <option value="operator">Operator</option>
                                     </select>
                                 </div>
 
+                            </div>
+
+                            <!-- Kantor yang boleh diakses (PIC / Operator) -->
+                            <div id="kantor-wrapper" class="mt-5 hidden">
+                                <label for="kantors"
+                                    class="mb-2 block text-sm font-medium text-gray-700">
+                                    Kantor yang Boleh Diakses
+                                    <span class="text-slate-400">(opsional — kosong = kantor sendiri / unor)</span>
+                                </label>
+                                <select
+                                    id="kantors"
+                                    name="kantors[]"
+                                    multiple
+                                    size="6"
+                                    class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                >
+                                    @foreach ($listKantor as $item)
+                                        <option value="{{ $item->unor_siasn_induk }}">{{ $item->unor_siasn_induk }}</option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-slate-400">Tahan Ctrl (Cmd) untuk memilih lebih dari satu.</p>
                             </div>
 
                             <!-- Tombol -->
@@ -189,6 +210,7 @@
                                 <th scope="col" class="px-6 py-4">Nama</th>
                                 <th scope="col" class="px-6 py-4">NIP</th>
                                 <th scope="col" class="px-6 py-4">Unor</th>
+                                <th scope="col" class="px-6 py-4">Kantor Akses</th>
                                 <th scope="col" class="px-6 py-4">Akses Sebagai</th>
                                 <th scope="col" class="px-6 py-4 text-center">Aksi</th>
                             </tr>
@@ -201,19 +223,29 @@
                                     <td class="px-6 py-4 font-medium text-gray-900">{{ $user->nama }}</td>
                                     <td class="px-6 py-4 text-gray-600">{{ $user->nip }}</td>
                                     <td class="px-6 py-4 text-gray-600">{{ $user->unor }}</td>
+                                    <td class="px-6 py-4 text-gray-600">
+                                        @php
+                                            $kantorTampil = $kantorPerUser->get($user->id);
+                                        @endphp
+                                        @if ($user->hasRole('admin'))
+                                            <span class="text-slate-400">Semua kantor</span>
+                                        @elseif ($kantorTampil)
+                                            <span class="text-xs text-gray-600">{{ $kantorTampil }}</span>
+                                        @else
+                                            <span class="text-slate-400">{{ $user->unor }} (default)</span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-                                            {{ Str::ucfirst($user->role) }}
+                                            {{ Str::ucfirst($user->getRoleNames()->first() ?? '-') }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-center gap-2">
-                                            {{-- <button
-                                                type="button"
-                                                class="rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                                            >
+                                            <a href="{{ url('/admin/edit-user', $user->id) }}"
+                                                class="rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                                 Edit
-                                            </button> --}}
+                                            </a>
 
                                             <form action="{{ url('/admin/delete-user', $user->id) }}" method="post"
                                                 onsubmit="return confirm('Yakin ingin menghapus data ini?')">
@@ -232,10 +264,25 @@
                             @endforeach
                         </tbody>
                     </table>
-                    
+
                     {{-- [ Kategori Grafik Kunjungan Mingguan ] --}}
 
                 </div>
             </div>
         </div>
+
+        <script>
+            (function () {
+                const akses = document.getElementById('akses');
+                const wrapper = document.getElementById('kantor-wrapper');
+
+                function toggleKantor() {
+                    const isKantorRole = akses.value === 'pic' || akses.value === 'operator';
+                    wrapper.classList.toggle('hidden', !isKantorRole);
+                }
+
+                akses.addEventListener('change', toggleKantor);
+                toggleKantor();
+            })();
+        </script>
 </x-layout>

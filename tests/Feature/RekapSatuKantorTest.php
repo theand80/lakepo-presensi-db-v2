@@ -8,6 +8,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    $this->actingAs(createUserWithRole('admin'));
+});
+
 test('lihat satu kantor saja menampilkan data ASN', function () {
     $tahun = date('Y');
 

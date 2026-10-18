@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 /*
@@ -44,7 +46,19 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function seedRoles(): void
 {
-    // ..
+    foreach (['admin', 'pic', 'operator'] as $role) {
+        Role::findOrCreate($role, 'web');
+    }
+}
+
+function createUserWithRole(string $role): User
+{
+    seedRoles();
+
+    $user = User::factory()->create();
+    $user->assignRole($role);
+
+    return $user;
 }

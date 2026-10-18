@@ -25,108 +25,69 @@
                     <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> Dashboard</div> <i
                         class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a></li>
-            {{-- <li><a href="{{ route('listKantor') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> API List Kantor</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li> --}}
-            {{-- <li><a href="{{ route('rekapBulananByKantor') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> API RekapBulananByKantor</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li> --}}
             <hr>
 
+            @role('admin')
+                <li><a href="{{ url('/admin') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-chart-simple mr-2.5 w-4"></i>Admin Dashboard</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <li><a href="{{ url('/admin/data-asn') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> Data ASN</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <li><a href="{{ url('/admin/lihat-asn-dari-api') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> Import API Simpegnas</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <li><a href="{{ url('/admin/hari-kegiatan') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> Hari Kegiatan</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <li><a href="{{ url('/admin/list-user') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> List User</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <hr>
+            @endrole
 
-            <li><a href="{{ url('/admin') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-chart-simple mr-2.5 w-4"></i>Admin Dashboard</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/import-excel-data-asn') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> Import Excel</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            {{-- <li><a href="{{ url('/simpan-list-kantor') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> Import List Kantor</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li> --}}
-            <li><a href="{{ url('/import-api') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> Import API Simpegnas</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/admin/hariLibur') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> Hari Libur</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/users') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> List User</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/user/edit') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-envelope mr-2.5 w-4"></i> User Edit (Hidden)</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
+            @role('pic')
+                <li><a href="{{ url('/pic/dashboard/pic') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Rekap Kehadiran</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <li><a href="{{ url('/pic/simpan-persentase-v2') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Persentase</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <li><a href="{{ url('/pic/dashboard/bpk') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> BPK</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <hr>
+            @endrole
 
-            <hr>
-
-            <li><a href="{{ url('/pic/dashboard') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Dashboard PIC BKPSDM</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/pic/dashboard') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> PIC BKPSDM</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            {{-- <li><a href="{{ route('pic.bpk') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> BPK</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li> --}}
-            <li><a href="{{ url('/pic/detail') }}"
-                    class="hidden flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Detail ASN (hidden)</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/pic/terbaikDanTerendah') }}"
-                    class="hidden flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i>Terbaik & Terendah (hidden)</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <hr>
-
-
-
-
-            <li><a href="{{ url('/operator/dashboard') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Dashboard Operator</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/operator') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Operator OPD</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/operator/detail') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Detail ASN (hidden)</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <li><a href="{{ url('/operator/terbaikDanTerendah') }}"
-                    class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
-                    <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i>Terbaik & Terendah (hidden)</div> <i
-                        class="fa-solid fa-chevron-right text-[10px]"></i>
-                </a></li>
-            <hr>
+            @role('operator')
+                <li><a href="{{ url('/pic/dashboard/pic') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Rekap Kehadiran</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <li><a href="{{ url('/pic/simpan-persentase-v2') }}"
+                        class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
+                        <div><i class="fa-solid fa-sliders mr-2.5 w-4"></i> Persentase</div> <i
+                            class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </a></li>
+                <hr>
+            @endrole
 
 
             <li><a href="{{ route('logout') }}"

@@ -3,14 +3,14 @@
 
 <!-- Sidebar -->
 <div id="sidenav"
-    class="sidenav-desktop z-50 h-[calc(100vh-50px)] w-[280px] bg-[#f4f7f6] overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+    class="sidenav-desktop z-50 h-[calc(100vh-50px)] w-70 bg-[#f4f7f6] overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-300">
     <div class="p-4">
         <div class="bg-white border border-slate-200 rounded-t-md p-5 flex justify-center">
-            <div class="relative w-full h-[90px] mb-2.5 flex justify-between items-center text-center">
+            <div class="relative w-full h-22.5 mb-2.5 flex justify-between items-center text-center">
                 <div class="text-[11px] text-slate-500"><b class="text-[#333]">Kota Bima</b><br><span
                         style="font-size:9px;">2026</span></div>
                 <div
-                    class="w-[70px] h-[70px] rounded-full border-[2px] border-gray-300 hover:border-green-700 flex justify-center items-center">
+                    class="w-17.5 h-17.5 rounded-full border-2 border-gray-300 hover:border-green-700 flex justify-center items-center">
                     <img src="{{ asset('KotaBima.png') }}" alt="Avatar" class="w-7 h-10 object-cover">
                 </div>
                 <div class="text-[11px] text-slate-500">14/07/2026<br><span class="text-[9px]">Senin</span></div>

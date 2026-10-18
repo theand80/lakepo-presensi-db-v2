@@ -37,7 +37,8 @@
         <!-- Import Data ASN -->
         <div class="w-full">
             <div class="w-2xl mx-auto">
-                <form action="{{ url('/admin/import-duk-excel-untuk-lengkapi-data-asn') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ url('/admin/import-duk-excel-untuk-lengkapi-data-asn') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
 
                     <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
@@ -72,7 +73,8 @@
                             <!-- Select Status -->
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
-                                <select name="status" class="w-full text-xs border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none bg-white">
+                                <select name="status"
+                                    class="w-full text-xs border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-300 focus:border-green-500 outline-none bg-white">
                                     <option value="PNS">PNS</option>
                                     <option value="PPPK">PPPK</option>
                                     <option value="P3K PW">P3K PW</option>
@@ -119,7 +121,7 @@
                     </form>
                 </div>
             </div>
-            <div class="overflow-auto max-h-[730px]">
+            <div class="overflow-auto max-h-182.5">
                 <table class="w-full text-sm text-left">
                     <thead class="text-xs text-slate-600 bg-slate-50 border-b border-slate-200">
                         <tr>
@@ -148,7 +150,7 @@
                                 </td>
                                 <td class="px-4 py-3">{{ $asn['nama'] }}</td>
                                 <td class="px-4 py-3 text-center">
-                                    {{ $asn['pangkat'] ? $asn['pangkat']." -" : ""}}  {{ $asn['golongan'] }}
+                                    {{ $asn['pangkat'] ? $asn['pangkat'] . ' -' : '' }} {{ $asn['golongan'] }}
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @if ($asn['status'] == 'PNS')
@@ -197,7 +199,7 @@
             </div>
 
             {{-- <div class="py-10 px-2"> --}}
-                {{-- {{ $data->appends(request()->query())->links() }} --}}
+            {{-- {{ $data->appends(request()->query())->links() }} --}}
             {{-- </div> --}}
 
             <nav class="flex items-center flex-col sm:flex-row justify-between p-4 border-t border-slate-200"
@@ -241,7 +243,7 @@
 
 
     <script>
-        document.getElementById('dropzone-update-data').addEventListener('change', function (e) {
+        document.getElementById('dropzone-update-data').addEventListener('change', function(e) {
             const fileInput = e.target;
             const dropzoneText = document.getElementById('dropzone-text-update-data');
 

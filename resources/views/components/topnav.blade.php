@@ -1,5 +1,5 @@
 <nav
-    class="fixed top-0 left-0 right-0 z-[60] bg-white flex justify-between items-center px-4 md:px-5 h-[50px] border-b border-gray-200 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+    class="fixed top-0 left-0 right-0 z-60 bg-white flex justify-between items-center px-4 md:px-5 h-12.5 border-b border-gray-200 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
     <div class="flex items-center">
         <button onclick="toggleSidenav()" class="md:hidden mr-3 text-slate-600 hover:text-green-600">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -200,6 +200,51 @@
                         <i class="fa-solid fa-gear text-slate-400 cursor-pointer"></i>
                     </div>
                 </div>
+
+                <!-- Pencarian & Filter Role -->
+                <div class="border-b border-slate-200 px-4 py-3">
+                    <form action="{{ url('/admin/list-user') }}" method="GET" class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                        <div class="flex-1">
+                            <label for="q" class="mb-1 block text-xs font-medium text-gray-500 uppercase">Cari</label>
+                            <input
+                                type="text"
+                                id="q"
+                                name="q"
+                                value="{{ $filterQ ?? '' }}"
+                                placeholder="Cari NIP / nama..."
+                                class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            >
+                        </div>
+                        <div class="sm:w-48">
+                            <label for="filter-role" class="mb-1 block text-xs font-medium text-gray-500 uppercase">Role</label>
+                            <select
+                                id="filter-role"
+                                name="role"
+                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            >
+                                <option value="">Semua Role</option>
+                                <option value="admin" {{ ($filterRole ?? '') === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="pic" {{ ($filterRole ?? '') === 'pic' ? 'selected' : '' }}>Pic</option>
+                                <option value="operator" {{ ($filterRole ?? '') === 'operator' ? 'selected' : '' }}>Operator</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <button
+                                type="submit"
+                                class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            >
+                                Filter
+                            </button>
+                            <a
+                                href="{{ url('/admin/list-user') }}"
+                                class="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                            >
+                                Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="min-h-[100px] flex items-center justify-center text-slate-500 bg-white">
                     {{-- [ Kategori Grafik Kunjungan Mingguan ] --}}
 
@@ -247,6 +292,20 @@
                                                 Edit
                                             </a>
 
+                                            @if ($user->id !== auth()->id())
+                                                <button
+                                                    type="button"
+                                                    class="quick-set-btn rounded-md bg-emerald-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                                                    data-user-id="{{ $user->id }}"
+                                                    data-user-nama="{{ $user->nama }}"
+                                                    data-user-nip="{{ $user->nip }}"
+                                                    data-role="{{ $user->getRoleNames()->first() ?? '' }}"
+                                                    data-kantors="{{ $kantorPerUser->get($user->id) ?? '' }}"
+                                                >
+                                                    Atur
+                                                </button>
+                                            @endif
+
                                             <form action="{{ url('/admin/delete-user', $user->id) }}" method="post"
                                                 onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                 @csrf
@@ -271,8 +330,102 @@
             </div>
         </div>
 
+        <!-- Modal Quick-Set Role & Kantor -->
+        <div id="quick-set-modal" class="fixed inset-0 z-50 hidden">
+            <div class="quick-set-backdrop absolute inset-0 bg-black/50"></div>
+            <div class="relative flex min-h-full items-center justify-center p-4">
+                <div class="w-full max-w-lg rounded-xl bg-white shadow-xl">
+                    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Atur Role & Kantor</h3>
+                        <button type="button" id="quick-set-close" class="text-gray-400 transition hover:text-gray-600">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+
+                    <form id="quick-set-form" method="POST" action="">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="space-y-4 px-6 py-5">
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">Nama</label>
+                                <input
+                                    type="text"
+                                    id="quick-set-nama"
+                                    readonly
+                                    class="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-600"
+                                >
+                            </div>
+
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">NIP</label>
+                                <input
+                                    type="text"
+                                    id="quick-set-nip"
+                                    readonly
+                                    class="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-600"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="quick-set-akses" class="mb-1 block text-sm font-medium text-gray-700">
+                                    Akses Sebagai <span class="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="quick-set-akses"
+                                    name="akses"
+                                    required
+                                    class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                >
+                                    <option value="admin">Admin</option>
+                                    <option value="pic">Pic</option>
+                                    <option value="operator">Operator</option>
+                                </select>
+                            </div>
+
+                            <div id="quick-set-kantor-wrapper" class="hidden">
+                                <label for="quick-set-kantors" class="mb-1 block text-sm font-medium text-gray-700">
+                                    Kantor yang Boleh Diakses
+                                    <span class="text-slate-400">(opsional — kosong = kantor sendiri / unor)</span>
+                                </label>
+                                <select
+                                    id="quick-set-kantors"
+                                    name="kantors[]"
+                                    multiple
+                                    size="6"
+                                    class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                >
+                                    @foreach ($listKantor as $item)
+                                        <option value="{{ $item->unor_siasn_induk }}">{{ $item->unor_siasn_induk }}</option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-slate-400">Tahan Ctrl (Cmd) untuk memilih lebih dari satu.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-3 border-t border-gray-200 px-6 py-4">
+                            <button
+                                type="button"
+                                id="quick-set-cancel"
+                                class="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                class="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                            >
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <script>
             (function () {
+                // form tambah user
                 const akses = document.getElementById('akses');
                 const wrapper = document.getElementById('kantor-wrapper');
 
@@ -283,6 +436,62 @@
 
                 akses.addEventListener('change', toggleKantor);
                 toggleKantor();
+            })();
+
+            (function () {
+                // modal quick-set
+                const modal = document.getElementById('quick-set-modal');
+                const form = document.getElementById('quick-set-form');
+                const namaInput = document.getElementById('quick-set-nama');
+                const nipInput = document.getElementById('quick-set-nip');
+                const aksesSelect = document.getElementById('quick-set-akses');
+                const kantorWrapper = document.getElementById('quick-set-kantor-wrapper');
+                const kantorSelect = document.getElementById('quick-set-kantors');
+                const allKantorOptions = Array.from(kantorSelect.options).map((o) => o.value);
+
+                function toggleModalKantor() {
+                    const isKantorRole = aksesSelect.value === 'pic' || aksesSelect.value === 'operator';
+                    kantorWrapper.classList.toggle('hidden', !isKantorRole);
+                }
+
+                aksesSelect.addEventListener('change', toggleModalKantor);
+
+                function openModal(btn) {
+                    const userId = btn.dataset.userId;
+                    form.action = '/admin/quick-set-role/' + userId;
+                    namaInput.value = btn.dataset.userNama || '';
+                    nipInput.value = btn.dataset.userNip || '';
+
+                    const role = btn.dataset.role || '';
+                    if (allKantorOptions.includes(role)) {
+                        aksesSelect.value = role;
+                    } else {
+                        aksesSelect.value = 'operator';
+                    }
+
+                    // pre-select kantor dari data-kantors (dipisah koma)
+                    const kantors = (btn.dataset.kantors || '').split(',').filter(Boolean);
+                    Array.from(kantorSelect.options).forEach((o) => {
+                        o.selected = kantors.includes(o.value);
+                    });
+
+                    toggleModalKantor();
+                    modal.classList.remove('hidden');
+                }
+
+                function closeModal() {
+                    modal.classList.add('hidden');
+                }
+
+                document.querySelectorAll('.quick-set-btn').forEach((btn) => {
+                    btn.addEventListener('click', function () {
+                        openModal(this);
+                    });
+                });
+
+                document.getElementById('quick-set-close').addEventListener('click', closeModal);
+                document.getElementById('quick-set-cancel').addEventListener('click', closeModal);
+                modal.querySelector('.quick-set-backdrop').addEventListener('click', closeModal);
             })();
         </script>
 </x-layout>

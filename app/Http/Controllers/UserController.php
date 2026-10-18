@@ -10,9 +10,24 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')->get();
+        $filterQ = $request->query('q');
+        $filterRole = $request->query('role');
+
+        $users = User::with('roles')
+            ->when($filterQ, function ($query, $q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('nip', 'like', "%{$q}%")
+                        ->orWhere('nama', 'like', "%{$q}%");
+                });
+            })
+            ->when($filterRole, function ($query, $role) {
+                $query->whereHas('roles', function ($sub) use ($role) {
+                    $sub->where('name', $role);
+                });
+            })
+            ->get();
 
         $listKantor = AsnDariApi::select('unor_siasn_induk')->distinct()->get();
 
@@ -23,7 +38,7 @@ class UserController extends Controller
             ->select('user_id', DB::raw('GROUP_CONCAT(unor_siasn_induk) as kantors'))
             ->pluck('kantors', 'user_id');
 
-        return view('admin.user.listUser', compact('users', 'listKantor', 'kantorPerUser'));
+        return view('admin.user.listUser', compact('users', 'listKantor', 'kantorPerUser', 'filterQ', 'filterRole'));
     }
 
     public function store(Request $request)
@@ -127,6 +142,35 @@ class UserController extends Controller
         }
 
         return redirect('/admin/list-user')->with('success', 'Data berhasil diperbarui');
+    }
+
+    public function quickSetRole(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        // blokir self-edit: admin tidak boleh ubah akunnya sendiri lewat quick-set
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Anda tidak dapat mengubah role/kantor akun Anda sendiri.');
+        }
+
+        $request->validate([
+            'akses' => 'required|string|in:admin,pic,operator',
+            'kantors' => 'nullable|array',
+            'kantors.*' => 'string|max:255',
+        ], [
+            'akses.required' => 'Akses wajib dipilih.',
+            'akses.in' => 'Akses yang dipilih tidak valid.',
+        ]);
+
+        $user->syncRoles([$request->input('akses')]);
+
+        if ($request->input('akses') === 'admin') {
+            $user->syncKantorUnor([]);
+        } else {
+            $user->syncKantorUnor($request->input('kantors', []));
+        }
+
+        return back()->with('success', 'Role & kantor berhasil diperbarui untuk '.$user->nama.'.');
     }
 
     public function destroy(string $id)

@@ -71,6 +71,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/add-user', [UserController::class, 'store']);
     Route::get('/admin/edit-user/{id}', [UserController::class, 'edit']);
     Route::put('/admin/update-user/{id}', [UserController::class, 'update']);
+    Route::put('/admin/quick-set-role/{id}', [UserController::class, 'quickSetRole']);
     Route::delete('/admin/delete-user/{id}', [UserController::class, 'destroy']);
 });
 

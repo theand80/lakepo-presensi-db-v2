@@ -209,3 +209,65 @@ test('admin tidak bisa self-demotion', function () {
 
     expect($admin->fresh()->hasRole('admin'))->toBeTrue();
 });
+
+test('admin quick-set user lain menjadi pic dengan kantor', function () {
+    $admin = createUserWithRole('admin');
+    $target = User::factory()->create(['unor' => 'Kantor Alpha']);
+    $target->assignRole('operator');
+
+    $this->actingAs($admin)->put('/admin/quick-set-role/'.$target->id, [
+        'akses' => 'pic',
+        'kantors' => ['Kantor Alpha', 'Kantor Beta'],
+    ])->assertSessionHas('success');
+
+    expect($target->fresh()->hasRole('pic'))->toBeTrue()
+        ->and($target->fresh()->hasRole('operator'))->toBeFalse();
+    expect($target->kantorUnorNames()->all())->toBe(['Kantor Alpha', 'Kantor Beta']);
+});
+
+test('admin quick-set ke admin mengosongkan kantor', function () {
+    $admin = createUserWithRole('admin');
+    $target = User::factory()->create(['unor' => 'Kantor Alpha']);
+    $target->assignRole('operator');
+    $target->syncKantorUnor(['Kantor Alpha']);
+
+    $this->actingAs($admin)->put('/admin/quick-set-role/'.$target->id, [
+        'akses' => 'admin',
+    ])->assertSessionHas('success');
+
+    expect($target->fresh()->hasRole('admin'))->toBeTrue();
+    expect($target->kantorUnorNames()->all())->toBe([]);
+});
+
+test('admin tidak bisa quick-set akunnya sendiri', function () {
+    $admin = createUserWithRole('admin');
+
+    $this->actingAs($admin)->put('/admin/quick-set-role/'.$admin->id, [
+        'akses' => 'operator',
+        'kantors' => ['Kantor Alpha'],
+    ])->assertSessionHas('error');
+
+    expect($admin->fresh()->hasRole('admin'))->toBeTrue();
+});
+
+test('list user bisa mencari dan filter role', function () {
+    $admin = createUserWithRole('admin');
+    $pic = User::factory()->create(['nip' => '999999999999999999', 'nama' => 'Budi Santoso']);
+    $pic->assignRole('pic');
+    $operator = User::factory()->create(['nip' => '888888888888888888', 'nama' => 'Siti Aminah']);
+    $operator->assignRole('operator');
+
+    $this->actingAs($admin)->get('/admin/list-user?q=Budi')
+        ->assertOk()
+        ->assertSee('Budi Santoso')
+        ->assertDontSee('Siti Aminah');
+
+    $this->actingAs($admin)->get('/admin/list-user?role=operator')
+        ->assertOk()
+        ->assertSee('Siti Aminah')
+        ->assertDontSee('Budi Santoso');
+
+    $this->actingAs($admin)->get('/admin/list-user?q=999999999999999999')
+        ->assertOk()
+        ->assertSee('Budi Santoso');
+});

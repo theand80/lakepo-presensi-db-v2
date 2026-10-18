@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\HariKegiatanController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AsnDariApiController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DataAbsenController;
 use App\Http\Controllers\DataAsnController;
 use App\Http\Controllers\PenandaTanganController;
@@ -15,11 +16,21 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// });
 
-Route::redirect('/', '/admin');
+
+Route::redirect('/', '/login');
+
+// Route::get('/login', function () {
+//     return view('auth.login');
+// })->name('login')->middleware('guest');
+Route::get('/login', [AuthController::class, 'login'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
+
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware('auth');
 
 Route::get('/admin', [AdminController::class, 'index']);
 

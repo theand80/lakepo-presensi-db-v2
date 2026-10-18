@@ -129,7 +129,7 @@
             <hr>
 
 
-            <li><a href="#"
+            <li><a href="{{ route('logout') }}"
                     class="flex justify-between items-center py-3 px-4 text-slate-600 no-underline border-b border-slate-100 transition-colors hover:bg-slate-50 hover:text-green-700">
                     <div><i class="fa-solid fa-power-off mr-2.5 w-4"></i> Logout</div> <i
                         class="fa-solid fa-chevron-right text-[10px]"></i>

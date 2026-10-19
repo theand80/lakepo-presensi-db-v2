@@ -53,8 +53,8 @@ class AsnDariApiController extends Controller
             // ->where('id_kantor', 'c9956f8f-77ea-4bbf-a22a-182b6ac9823e') // bkpsdm
             // ->where('id_kantor', '00567a6f-5f43-456b-b039-c40d605c4706') // inspektorat
             // ->where('id_kantor', '7e504992-b3ea-4172-9bfc-3a3cb080c0d0') //faridah
-            ->where('id_kantor', '7e504992-b3ea-4172-9bfc-3a3cb080c0d0')
-            // ->skip(0)->limit(20) // ubah 0 kelipatan 20 sampai 220
+            // ->where('id_kantor', '7e504992-b3ea-4172-9bfc-3a3cb080c0d0')
+            ->skip(0)->limit(20) // ubah 0 kelipatan 20 sampai 220
             // ->skip(54)->limit(1) // ubah 0 kelipatan 20 sampai 220
             ->chunkById(10, function ($listKantor) use ($tgl) {
 

@@ -73,6 +73,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/admin/update-user/{id}', [UserController::class, 'update']);
     Route::put('/admin/quick-set-role/{id}', [UserController::class, 'quickSetRole']);
     Route::delete('/admin/delete-user/{id}', [UserController::class, 'destroy']);
+
+    // persentase
+    Route::get('/pic/simpan-persentase', [PersentaseController::class, 'persentase']);
+    Route::post('/pic/simpan-persentase', [PersentaseController::class, '__hitungPersentase']);
+
+    // persentase v2
+    Route::get('/pic/simpan-persentase-v2', [PersentaseController::class, 'persentasev2']);
+    Route::post('/pic/simpan-persentase-v2', [PersentaseController::class, '__hitungPersentasev2']);
 });
 
 // Semua route pic: diakses admin, pic, dan operator (data di-scope per kantor)
@@ -83,14 +91,6 @@ Route::middleware(['auth', 'role:pic|operator|admin'])->group(function () {
     Route::post('/pic/download-presensi-by-kantor-excel', [PicController::class, 'downloadPresensiRekapByKantorExcel']);
     Route::post('/pic/download-presensi-by-kantor-pdf', [PicController::class, 'downloadPresensiRekapByKantorPdf']);
     Route::get('/pic/dashboard/bpk', [PicController::class, 'bpk']);
-
-    // persentase
-    Route::get('/pic/simpan-persentase', [PersentaseController::class, 'persentase']);
-    Route::post('/pic/simpan-persentase', [PersentaseController::class, '__hitungPersentase']);
-
-    // persentase v2
-    Route::get('/pic/simpan-persentase-v2', [PersentaseController::class, 'persentasev2']);
-    Route::post('/pic/simpan-persentase-v2', [PersentaseController::class, '__hitungPersentasev2']);
 
     Route::redirect('/pic/detail', '/admin/lihatRekapBulananByNip');
 });

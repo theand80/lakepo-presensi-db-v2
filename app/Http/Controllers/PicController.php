@@ -367,7 +367,9 @@ class PicController extends Controller
             + $rekap['rekap']['PGN-CP1'] + $rekap['rekap']['TAD-CP1']
             + $rekap['rekap']['PGN-CP2'] + $rekap['rekap']['TAD-CP2']
             + $rekap['rekap']['PGN-CP3'] + $rekap['rekap']['TAD-CP3']
-            + $rekap['rekap']['PGN-CP4'] + $rekap['rekap']['TAD-CP4'];
+            + $rekap['rekap']['PGN-CP4'] + $rekap['rekap']['TAD-CP4']
+            
+            + $rekap['rekap']['PGN-TAP'];
 
         return [
             'TL1' => $rekap['rekap']['TL1'],

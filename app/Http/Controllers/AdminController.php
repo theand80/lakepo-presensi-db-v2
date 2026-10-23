@@ -264,7 +264,7 @@ class AdminController extends Controller
             # code...
 
             $nip = $request['nip'];
-            $bulan = '2026-08';
+            $bulan = '2026-09';
             //
             $data = $this->__rekapBulananByNip($nip, $bulan); //diatas
 

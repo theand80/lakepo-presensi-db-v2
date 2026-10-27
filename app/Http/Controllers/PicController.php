@@ -87,6 +87,8 @@ class PicController extends Controller
 
         $data = $this->__rekapSatuKantor($selectedKantor, $selectedMonth);
 
+        $totalTas = collect($data)->sum(fn ($item) => $item['rekap']['TAS'] ?? 0);
+
         // List Kantor (dibatasi kantor yang boleh diakses)
         $unorSimpegnas = DataAbsen::select('unor_simpegnas')->distinct()->get();
         $listKantor = $this->scopeKantor(
@@ -98,7 +100,7 @@ class PicController extends Controller
             ->unique()
             ->values();
 
-        return view('pic.rekapSatuKantorSiasnSaja', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor'));
+        return view('pic.rekapSatuKantorSiasnSaja', compact('data', 'listKantor', 'selectedMonth', 'selectedKantor', 'totalTas'));
     }
 
     public function __rekapSatuKantor(string $selectedKantor, string $tgl): array
@@ -259,8 +261,16 @@ class PicController extends Controller
                 if ($record->status == 'LN') {
                     continue;
                 }
-                if (isset($rekap['rekap'][$st])) {
+                if (isset($rekap['rekap'][$st]) && $st !== 'TAS') {
                     $rekap['rekap'][$st]++;
+                }
+
+                // Hitung TAS (Tidak Absen Siang): checkIn/sore ada, tapi checkRest kosong
+                $pagi = $record->checkIn_time_with_timezone_change ?: $record->checkIn_time_with_timezone;
+                $sore = $record->checkOut_time_with_timezone_change ?: $record->checkOut_time_with_timezone;
+                $siang = $record->checkRest_time_with_timezone_change ?: $record->checkRest_time_with_timezone;
+                if ((filled($pagi) || filled($sore)) && ! filled($siang)) {
+                    $rekap['rekap']['TAS']++;
                 }
             }
 
@@ -368,7 +378,7 @@ class PicController extends Controller
             + $rekap['rekap']['PGN-CP2'] + $rekap['rekap']['TAD-CP2']
             + $rekap['rekap']['PGN-CP3'] + $rekap['rekap']['TAD-CP3']
             + $rekap['rekap']['PGN-CP4'] + $rekap['rekap']['TAD-CP4']
-            
+
             + $rekap['rekap']['PGN-TAP'];
 
         return [

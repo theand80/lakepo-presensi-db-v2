@@ -34,6 +34,7 @@ class PersentaseController extends Controller
     // ini dipanggil dari route
     public function __hitungPersentase(Request $request)
     {
+
         $request->validate([
             'namaKantor' => 'required|string',
             'bulanUntukDihitung' => 'required|date',
@@ -171,6 +172,9 @@ class PersentaseController extends Controller
     // ini dipanggil dari route
     public function __hitungPersentasev2(Request $request)
     {
+
+        dd($request);
+
         $request->validate([
             'namaKantor' => 'required|string', // DIKES - PKM PARUGA - Pustu Posprim Kel. Dara
             'bulanUntukDihitung' => 'required|in:01,02,03,04,05,06,07,08,09,10,11,12',

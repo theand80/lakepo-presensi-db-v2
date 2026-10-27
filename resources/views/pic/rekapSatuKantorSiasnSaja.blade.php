@@ -9,12 +9,8 @@
     @if ($errors->any())
         <div class="mb-4 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
 
             <div>
@@ -92,14 +88,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 content-center">
+                <div class="flex-1 grid grid-cols-2 sm:grid-cols-5 gap-4 p-5 content-center">
                     <div class="flex items-center gap-3 bg-green-50 rounded-lg p-3">
                         <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-100">
                             <i class="fa-solid fa-users text-green-600 text-sm"></i>
                         </div>
                         <div>
                             <p class="text-xs text-slate-500">Total ASN</p>
-                            <p class="text-lg font-bold text-green-700">32</p>
+                            <p class="text-lg font-bold text-green-700">{{ count($data) }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 bg-blue-50 rounded-lg p-3">
@@ -108,7 +104,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-500">Hadir (H+HN)</p>
-                            <p class="text-lg font-bold text-blue-700">12</p>
+                            <p class="text-lg font-bold text-blue-700">{{ collect($data)->sum(fn($item) => ($item['hadir'] ?? 0)) }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 bg-orange-50 rounded-lg p-3">
@@ -117,7 +113,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-500">Cuti (CT)</p>
-                            <p class="text-lg font-bold text-orange-700">3</p>
+                            <p class="text-lg font-bold text-orange-700">{{ collect($data)->sum(fn($item) => ($item['rekap']['CT'] ?? 0)) }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 bg-red-50 rounded-lg p-3">
@@ -126,7 +122,16 @@
                         </div>
                         <div>
                             <p class="text-xs text-slate-500">Tidak Hadir</p>
-                            <p class="text-lg font-bold text-red-700">23</p>
+                            <p class="text-lg font-bold text-red-700">{{ collect($data)->sum(fn($item) => ($item['rekap']['TK'] ?? 0)) }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-amber-50 rounded-lg p-3">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100">
+                            <i class="fa-solid fa-clock text-amber-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">Tidak Absen Siang (TAS)</p>
+                            <p class="text-lg font-bold text-amber-700">{{ $totalTas ?? collect($data)->sum(fn($item) => ($item['rekap']['TAS'] ?? 0)) }} hari</p>
                         </div>
                     </div>
                 </div>
@@ -335,6 +340,37 @@
                             </tr>
                         @endforelse
 
+                        @if(count($data) > 0)
+                            <tr class="bg-amber-50 border-t-2 border-amber-200 font-semibold">
+                                <td class="p-4"></td>
+                                <td class="px-4 py-3 whitespace-nowrap">TOTAL</td>
+                                <td class="px-4 py-3" colspan="4"></td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['hadir'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['HN'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['DL'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['TB'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['CT'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['CM'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['CB'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['CS'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['CAP'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['CTLN'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['CH'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center text-red-600">{{ collect($data)->sum(fn($item) => ($item['rekap']['TK'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center text-amber-700">{{ $totalTas ?? collect($data)->sum(fn($item) => ($item['rekap']['TAS'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['TL1'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['TL2'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['TL3'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['TL4'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['PSW1'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['PSW2'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['PSW3'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['PSW4'] ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-center">{{ collect($data)->sum(fn($item) => ($item['rekap']['TAK'] ?? 0)) }}</td>
+                                <td class="px-4 py-3"></td>
+                                <td class="px-4 py-3"></td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
